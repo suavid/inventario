@@ -1,0 +1,37 @@
+<h3>Producto en tránsito</h3>
+<form method="get" action="/nymsa/inventario/ver_producto_en_transito">
+	<div class="input-control text span5">
+		<input type="text" name="estilo" placeholder="Estilo"/>
+	</div>
+	<button type="submit">Filtrar</button>
+</form>
+
+<table class="table" style="text-align: center;">
+	<tr>
+		<th>Linea</th>
+		<th>Estilo</th>
+		<th>Color</th>
+		<th>Talla</th>
+		<th>Cantidad</th>
+		<th>Se espera el</th>
+	</tr>
+		<!-- START detalle -->
+		<tr>
+			<td>{linea}</td>
+			<td>{estilo}</td>
+			<td>{color}</td>
+			<td>{talla}</td>
+			<td>{cantidad}</td>
+			<td>{fecha_espera}</td>
+		</tr>
+		<!-- END detalle -->
+</table>
+
+<div style="text-align: center;">
+	<p>
+		<br/>
+		{paginacion}
+		<br/>
+		<br/>
+	</p>
+</div>

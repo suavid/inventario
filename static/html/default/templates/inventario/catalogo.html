@@ -1,0 +1,132 @@
+<script>
+    var grid_catalogo_id = "catalogo_grid";
+
+    var dsOption_catalogo = {
+        fields: [
+            {name: 'id'},
+            {name: 'descripcion'},
+            {name: 'inicio'},
+            {name: 'final'},
+            {name: 'nombre'}
+        ],
+        recordType: 'object'
+    };
+
+    var colsOption_catalogo = [
+        {id: 'id', header: "Id", width: 80},
+        {id: 'nombre', header: "Nombre", width: 250},
+        {id: 'descripcion', header: "Descripcion", width: 250},
+        {id: 'inicio', header: "Fecha de inicio", width: 150},
+        {id: 'final', header: "Fecha de final", width: 150}
+
+    ];
+
+    var gridOption_catalogo = {
+        id: grid_catalogo_id,
+        loadURL: '/nymsa/grid_tables/catalogo_grid_1',
+        saveURL: '',
+        width: "890", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption_catalogo,
+        columns: colsOption_catalogo,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent: 'reload | nav state'
+    };
+
+
+    var mygrid = new Sigma.Grid(gridOption_catalogo);
+    Sigma.Util.onLoad(function() {
+        mygrid.render();
+    });
+
+    function parseDate(String_) {
+        date = String_.split('-');
+        return date[2] + "." + date[1] + "." + date[0];
+    }
+
+    $(function() {
+        $('#_id').bind('change', function(data) {
+            Id_ = $('#_id').val();
+            uri = '/nymsa/inventario/DatosCatalogo';
+            data = {
+                "id": Id_
+
+            };
+
+                HttpRequest = $.post(uri, data, function(data) {
+                $('#nombre_').val(data.nombre);
+                $('#descripcion_').val(data.descripcion);
+                $('#inicio_').val(parseDate(data.inicio));
+                $('#final_').val(parseDate(data.final));
+                $('#imagenCatalogo').html('<img src="../static/img/catalogo/thumbnail_' + data.id + '.jpg" class="span6" class="polaroid bd-white shadow" alt="No asignado"/>')
+            }, "json");
+        });
+    });
+</script>
+<style type="text/css">
+    #ft *{
+        margin-bottom:10px; 
+    }
+</style>
+<section>
+    <div style="display:table;">
+        <form style="width:450px; float:left; border: solid 1px #d3d3d3; padding: 20px;" id="ft" action="/nymsa/inventario/salvarCatalogo" method="post" enctype="multipart/form-data">
+            <div class="bg-magenta fg-white" style="padding:5px">
+                Nuevo cat&aacute;logo de productos
+            </div>
+            <br/>
+            Id catálogo: (0 = Nuevo)
+            <div class="input-control text">
+                <input type="text" name="id" id="_id"/> 
+            </div>
+            <div class="input-control text">
+                Nombre: <input type="text" name="nombre" id="nombre_" required/>
+            </div>
+            <br/>
+            <br/>
+            Descripción: 
+            <div class="input-control textarea">
+                <textarea name="descripcion" id="descripcion_" required></textarea>
+            </div>
+            <br/>
+            Fecha de inicio:
+            <div id="picker2" class="input-control text" data-role="datepicker"/> 
+                <input type="text" name="inicio" id="inicio_" />
+                <button type="button" class="btn-date"></button>
+            </div>
+    Fecha de cierre: 
+    <div id="picker1" class="input-control text" data-role="datepicker"/> 
+        <input type="text" name="final" id="final_"/>
+        <button type="button" class="btn-date"></button>
+    </div>
+Imagen: 
+<br/>
+<br/>
+<div class="input-control">
+    <input type="file" name="archivo"/>
+</div>
+<button type="submit" class="bg-color-green fg-color-white">Guardar</button>
+</form>
+<div class="panel span6" style="float:left;margin-left:80px;">
+    <div class="panel-header">
+        Imagen del catálogo
+    </div>
+    <div class="panel-content">
+        <div id="imagenCatalogo">
+        </div>
+    </div>
+</div>
+</div>
+</section>
+<div id="bigbox" style="margin:15px;display:!none;">
+    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+    </div>
+</div>

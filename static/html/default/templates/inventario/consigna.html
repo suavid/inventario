@@ -1,0 +1,156 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        window.concepto_ingreso = "";
+        window.concepto_salida = "";
+        $('#bOrigen').bind("change", function(event) {
+            bodega = $('#bOrigen').val();
+            if (bodega != 1 && bodega != 2 && bodega != 3)
+            {
+                $("#bOrigen option[value=1]").attr("selected", "selected");
+            }
+        });
+        $('#idCliente').bind("change", function(event) {
+            uri = "/nymsa/cliente/datosCliente";
+            idCliente = $('#idCliente').val();
+            if (idCliente.trim() != "") {
+                ajaxRequest = $.post(uri, {cliente: idCliente}, function(data) {
+                    if (data.STATUS == "OK") {
+                        $('#nombre_cliente').val(data.primer_nombre + " " + data.segundo_nombre + " " + data.primer_apellido + " " + data.segundo_apellido);
+                        $('#direccion_cliente').val(data.direccions);
+                        $('#telefono_cliente').val(data.telefono);
+                    } else {
+                        $('#idCliente').val("");
+                        $('#nombre_cliente').val("");
+                        $('#direccion_cliente').val("");
+                        $('#telefono_cliente').val("");
+                        $('#idCliente').focus();
+                    }
+                }, "json");
+                uri_bo = "/nymsa/inventario/bodegaCliente";
+                ajaxRequest2 = $.post(uri_bo, {cliente: idCliente}, function(data) {
+                    if (data.STATUS == "OK") {
+                        $('#bDestino option').remove();
+                        $('#bDestino').append('<option value="' + data.id + '">' + data.nombre + '</option>');
+                        $('#bDestino').change();
+                    } else {
+                        $('#bDestino option').remove();
+                        $('#bDestino').append('<option value="0">No seleccionado</option>');
+                        $('#bDestino').change();
+                    }
+                }, "json");
+            } else
+            {
+                $('#idCliente').val("");
+                $('#nombre_cliente').val("");
+                $('#direccion_cliente').val("");
+                $('#telefono_cliente').val("");
+                $('#idCliente').focus();
+                $('#bDestino option').remove();
+                $('#bDestino').append('<option value="0">No seleccionado</option>');
+                $('#bDestino').change();
+            }
+        });
+    });
+
+    var validar = function()
+    {
+        origen = $('#bOrigen').val();
+        destino = $('#bDestino').val();
+        no = $('#bOrigen option:selected').text();
+        nd = $('#bDestino option:selected').text();
+        window.concepto_ingreso = "Consigna Para Cliente ";
+        window.concepto_ingreso += $('#nombre_cliente').val();
+        window.concepto_ingreso += " Ingreso a la bodega ";
+        window.concepto_ingreso += "\"" + nd + "\" ";
+        window.concepto_ingreso += "de la bodega ";
+        window.concepto_ingreso += "\"" + no + "\" ";
+
+        window.concepto_salida = "Consigna Para Cliente ";
+        window.concepto_salida += $('#nombre_cliente').val();
+        window.concepto_salida += " Traslado de la bodega ";
+        window.concepto_salida += "\"" + no + "\" ";
+        window.concepto_salida += "a la bodega ";
+        window.concepto_salida += "\"" + nd + "\" ";
+
+        if (destino == 0)
+        {
+            window.concepto_ingreso = "";
+            window.concepto_salida = "";
+        }
+    }
+
+    function c_co()
+    {
+        if (window.concepto_ingreso.trim() == "" || window.concepto_salida.trim() == "" || $('#bDestino').val() == 'undefined')
+        {
+            alert("No se puede completar la transaccion, favor revisar que el cliente posea bodega");
+        }
+        else
+        {
+            uri = "/nymsa/inventario/salvar_consigna";
+            uri += encodeURI("?concepto=" + window.concepto_ingreso);
+            uri += encodeURI("&concepto_alternativo=" + window.concepto_salida);
+            uri += encodeURI("&cliente=" + $('#idCliente').val().trim());
+            uri += encodeURI("&bodega_origen=" + $('#bOrigen').val().trim());
+            uri += encodeURI("&bodega_destino=" + $('#bDestino').val().trim());
+            uri += encodeURI("&proveedor_origen=" + $('#proveedor_origen').val().trim());
+            uri += encodeURI("&proveedor_nacional=" + $('#proveedor_nacional').val().trim());
+            uri += encodeURI("&fecha=" + $('#fecha').val().trim());
+            //alert(uri);
+            location.href = uri;
+        }
+    }
+</script>
+
+<section style="display:table;">
+    <div style="width:300px;text-align:right;float:left;margin:10px;">
+        Datos cliente
+        <hr/>
+        Codigo del cliente: <input type="text" id="idCliente"/>
+        <br/>
+        Nombre: <input type="text" id="nombre_cliente" readonly="readonly" />
+        <br/>
+        Direccion: <input type="text" id="direccion_cliente" readonly="readonly" />
+        <br/>
+        Telefono: <input type="text" id="telefono_cliente" readonly="readonly" />
+        <br/>
+        Bodega: 
+        <select id="bDestino" onchange="validar();">
+            <option value="0">No seleccionado</option>
+        </select>
+        <br/>
+    </div>
+    <div style="width:300px;text-align:right;float:left;margin:10px;">
+        Consigna
+        <hr/>
+        Fecha <input value="{fecha_sistema}" id="fecha" />
+        <br/>
+        <br/>
+        Bodega de origen:
+        <select  id="bOrigen" onchange="validar();">
+            <!-- START bodega -->
+            <option value="{id}">{nombre}</option>
+            <!-- END bodega -->
+        </select>
+        <br/>
+        <br/>
+        Proveedor origen:
+        <select  id="proveedor_origen">
+            <!-- START proveedor1 -->
+            <option value="{id}">{nombre}</option>
+            <!-- END proveedor1 -->
+        </select>
+        <br/>
+        <br/>
+        Proveedor nacional:
+        <select  id="proveedor_nacional">
+            <!-- START proveedor2 -->
+            <option value="{id}">{nombre}</option>
+            <!-- END proveedor2 -->
+        </select>
+        <br/>
+        <br/>
+        <button type="button" class="primary fg-white" onclick="c_co();">Siguiente</button>
+        <button type="button" onclick="location.href = '/nymsa/inventario/listadoConsigna'"><i class="icon-list"></i> Ver consignas</button>
+    </div>
+</section>

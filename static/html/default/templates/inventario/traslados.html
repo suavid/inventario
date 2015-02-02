@@ -1,0 +1,369 @@
+<script>
+    $(document).ready(function() {
+        window.vdate = false;
+        uri_parser = new url_handler();
+        uri_parser.initialize();
+        if (uri_parser.isKey('op'))
+        {
+            if (uri_parser.getValue('op') == "ajuste")
+            {
+                transaccion = decodeURI(uri_parser.getValue('transaccion'));
+                concepto = decodeURI(uri_parser.getValue('concepto'));
+                bodega = decodeURI(uri_parser.getValue('bodega'));
+                $("#transaccion option[value=" + transaccion + "]").attr("selected", "selected");
+                if (transaccion == '2D') {
+                    $("#bodega_origen option[value=" + bodega + "]").attr("selected", "selected");
+                    $('#bodega_origen_r').val(bodega);
+                    $("#bodega_origen").attr("disabled", "disabled");
+                } else {
+                    $("#bodega_destino option[value=" + bodega + "]").attr("selected", "selected");
+                    $('#bodega_destino_r').val(bodega);
+                    $("#bodega_destino").attr("disabled", "disabled");
+                }
+                $('#concepto').val(concepto);
+                pares = parseInt(uri_parser.getValue('pares'));
+                costo = parseFloat(uri_parser.getValue('costo'));
+
+                $('#total_pares').val(pares);
+                $('#total_costo').val(pares * costo);
+                $('#total_pares').attr("readonly", "readonly");
+                $('#total_costo').attr("readonly", "readonly");
+            }
+        }
+    });
+
+    var patron_fecha = new Array(4, 2, 2);
+
+    function mascara(d, sep, pat, nums) {
+        if (d.valant != d.value) {
+            val = d.value
+            largo = val.length
+            val = val.split(sep)
+            val2 = ''
+            for (r = 0; r < val.length; r++) {
+                val2 += val[r]
+            }
+            if (nums) {
+                for (z = 0; z < val2.length; z++) {
+                    if (isNaN(val2.charAt(z))) {
+                        letra = new RegExp(val2.charAt(z), "g")
+                        val2 = val2.replace(letra, "")
+                    }
+                }
+            }
+            val = ''
+            val3 = new Array()
+            for (s = 0; s < pat.length; s++) {
+                val3[s] = val2.substring(0, pat[s])
+                val2 = val2.substr(pat[s])
+            }
+            for (q = 0; q < val3.length; q++) {
+                if (q == 0) {
+                    val = val3[q]
+                }
+                else {
+                    if (val3[q] != "") {
+                        val += sep + val3[q]
+                    }
+                }
+            }
+            d.value = val
+            d.valant = val
+        }
+    }
+
+    function cdate() {
+        date_ = $('#fDate').val();
+        if (!validarFecha(date_)) {
+            window.vdate = false;
+            $.Notify({
+                caption: "Error de fecha",
+                content: "La fecha ingresada no es v&aacute;lida"
+            });
+        } else {
+            window.vdate = true;
+        }
+    }
+
+    var validarFecha = function(fecha) {
+        var fechaArr = fecha.split('-');
+        var aho = fechaArr[0];
+        var mes = fechaArr[1];
+        var dia = fechaArr[2];
+
+        var plantilla = new Date(aho, mes - 1, dia);//mes empieza de cero Enero = 0
+
+        if (!plantilla || plantilla.getFullYear() == aho && plantilla.getMonth() == mes - 1 && plantilla.getDate() == dia) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    var load_data = function()
+    {
+        // cargar datos de transaccion
+        uri = "/nymsa/inventario/carga_traslado";
+        data = {"cod": $('#id').val(), "transaccion": $('#transaccion').val()};
+        postRq = $.post(uri, data, function(data) {
+            if (data.status == "FOUND")
+            {
+                $('#fecha').attr("disabled", "disabled");
+                $('#proveedor_origen').attr("disabled", "disabled");
+                $('#proveedor_nacional').attr("disabled", "disabled");
+                $('#bodega_origen').attr("disabled", "disabled");
+                $('#bodega_destino').attr("disabled", "disabled");
+                $('#concepto').attr("disabled", "disabled");
+                $('#transaccion').attr("disabled", "disabled");
+                $('#total_pares').attr("disabled", "disabled");
+                $('#total_costo').attr("disabled", "disabled");
+
+
+                $('#fecha').val(data.fecha);
+                $("#proveedor_origen option[value=" + data.proveedor_origen + "]").attr("selected", "selected");
+                $("#proveedor_nacional option[value=" + data.proveedor_nacional + "]").attr("selected", "selected");
+                $("#bodega_origen option[value=" + data.bodega_origen + "]").attr("selected", "selected");
+                $("#bodega_destino option[value=" + data.bodega_destino + "]").attr("selected", "selected");
+                $('#concepto').val(data.concepto);
+                $('#total_pares').val(data.total_pares);
+                $('#total_costo').val(data.total_costo);
+                $("#transaccion option[value=" + data.transaccion + "]").attr("selected", "selected");
+
+                $('#fecha_r').val(data.fecha);
+                $('#proveedor_origen_r').val(data.proveedor_origen);
+                $('#proveedor_nacional_r').val(data.proveedor_nacional);
+                $('#bodega_origen_r').val(data.bodega_origen);
+                $('#bodega_destino_r').val(data.bodega_destino);
+                $('#concepto_r').val(data.concepto);
+                $('#transaccion_r').val(data.transaccion);
+                $('#total_pares_r').val(data.total_pares);
+                $('#total_costo_r').val(data.total_costo);
+                if (data.consigna == 1)
+                    $('#iConsigna').attr("checked", "checked");
+                else
+                    $('#iConsigna').removeAttr("checked");
+
+            }
+            else
+            {
+                $('#fecha').removeAttr("disabled");
+                $('#fecha').val("{fecha}");
+                $('#proveedor_origen').removeAttr("disabled");
+                $('#proveedor_nacional').removeAttr("disabled");
+                $('#bodega_origen').removeAttr("disabled");
+                $('#bodega_destino').removeAttr("disabled");
+                $('#concepto').removeAttr("disabled");
+                $('#transaccion').removeAttr("disabled");
+                $('#concepto').val("");
+                $('#total_pares').val(0);
+                $('#total_costo').val(0.0);
+                $('#iConsigna').removeAttr("checked");
+            }
+        }, "json");
+    }
+
+    var cambiar_bodegas = function()
+    {
+        transaccion = $('#transaccion').val();
+        switch (transaccion)
+        {
+            case "1B":
+                $("#bodega_destino option[value=1]").attr("selected", "selected");
+                break;
+            case "1A":
+                $("#bodega_origen option[value=1]").attr("selected", "selected");
+                break;
+            case "1D":
+                origen = $('#bodega_origen').val( );
+                destino = $('#bodega_destino').val( );
+                if (origen != 1 && origen != 2 && origen != 3)
+                {
+                    $("#bodega_origen option[value=1]").attr("selected", "selected");
+                }
+                if (destino != 1 && destino != 2 && destino != 3)
+                {
+                    $("#bodega_destino option[value=1]").attr("selected", "selected");
+                }
+                break;
+            case "2D":
+                origen = $('#bodega_origen').val( );
+                destino = $('#bodega_destino').val( );
+                if (origen != 1 && origen != 2 && origen != 3)
+                {
+                    $("#bodega_origen option[value=1]").attr("selected", "selected");
+                }
+                if (destino != 1 && destino != 2 && destino != 3)
+                {
+                    $("#bodega_destino option[value=1]").attr("selected", "selected");
+                }
+                break;
+            case "1E":
+                origen = $('#bodega_origen').val( );
+                destino = $('#bodega_destino').val( );
+                if (origen != 1 && origen != 2 && origen != 3)
+                {
+                    $("#bodega_origen option[value=1]").attr("selected", "selected");
+                }
+                if (destino != 1 && destino != 2 && destino != 3)
+                {
+                    $("#bodega_destino option[value=1]").attr("selected", "selected");
+                }
+                break;
+            case "2E":
+                origen = $('#bodega_origen').val( );
+                destino = $('#bodega_destino').val( );
+                if (origen != 1 && origen != 2 && origen != 3)
+                {
+                    $("#bodega_origen option[value=1]").attr("selected", "selected");
+                }
+                if (destino != 1 && destino != 2 && destino != 3)
+                {
+                    $("#bodega_destino option[value=1]").attr("selected", "selected");
+                }
+                break;
+            default:
+                alert("No implementado");
+                break;
+        }
+    }
+
+</script>
+<style type="text/css">
+    #fg div{
+        margin: 5px;
+    }
+</style>
+<section>
+    <form id="fg" style="display:table;" method="post" action="/nymsa/inventario/salvar_traslado">
+        <div style="width:400px; float:left;"> 
+            <div class="input-control checkbox">
+                <label>
+                    <input type="checkbox" id="iConsigna"/>
+                    <span class="check"></span>
+                    Consigna
+                </label>
+            </div>
+            <br/>
+            Transaccion
+            <div class="input-control select">
+                <select name="transaccion" id="transaccion">
+                    <!-- START transacciones -->
+                    <option value="{cod}"> {nombre}</option>
+                    <!-- END transacciones -->
+                </select>
+            </div>
+            <div class="input-control text" style="display:table;">
+                <div style="float:left;">
+                    <label>
+                        # Documento (0 = nuevo)
+                        <br/>
+                        <input type="text" onchange="load_data();" onkeyup="load_data();" style="width:100px" id="id" name="id" value="0" required="required"/>
+                    </label>
+                </div>
+                <div style="float:left;">
+                    <label>
+                        Fecha
+                        <br/>
+                        <input type="text" id="fDate" name="fecha" id="transaccion" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" style="width:100px" />
+                    </label>
+                </div>
+            </div>
+            <br/>
+            Proveedor Origen
+            <div class="input-control select">
+                <select name="proveedor_origen" id="proveedor_origen">
+                    <!-- START proveedor1 -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END proveedor1 -->
+                </select>
+            </div>
+            <input type="hidden" id="bodega_origen_r" name="bodega_origen_r" value="0" />
+            <input type="hidden" id="bodega_destino_r" name="bodega_destino_r" value="0" />
+            <input type="hidden" id="transaccion_r" name="transaccion_r" value="0" />
+            <input type="hidden" id="proveedor_nacional_r" name="proveedor_nacional_r" value="0" />
+            <input type="hidden" id="proveedor_origen_r" name="proveedor_origen_r" value="0" />
+            <input type="hidden" id="fecha_r" name="fecha_r" value="0" />
+            <input type="hidden" id="concepto_r" name="concepto_r" value="0" />
+            <input type="hidden" id="total_pares_r" name="total_pares_r" value="0" />
+            <input type="hidden" id="total_costo_r" name="total_costo_r" value="0" />
+            <br/>
+            Proveedor Nacional (importador)
+            <div class="input-control select">
+                <select name="proveedor_nacional" id="proveedor_nacional">
+                    <!-- START proveedor2 -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END proveedor2 -->
+                </select>
+            </div>
+            <br/>
+            Origen
+            <div class="input-control select">
+                <select name="bodega_origen" id="bodega_origen" onchange="cambiar_bodegas();">
+                    <!-- START bodega1 -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END bodega1 -->
+                </select>
+            </div>
+            <br/>
+            Destino
+            <div class="input-control select">
+                <select name="bodega_destino" id="bodega_destino" onchange="cambiar_bodegas();">
+                    <!-- START bodega2 -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END bodega2 -->
+                </select>
+            </div>
+            <br/>
+            Concepto
+            <div class="input-control text">
+                <input type="text" name="concepto" id="concepto" required="required" />
+            </div>
+        </div>
+        <div style="float:left;margin-left:50px; width:400px;">
+            <!--<h3>Cuentas por pagar</h3>
+            Serie
+            <div class="input-control text">
+                <input type="text" />
+            </div>
+            Factura
+            <div class="input-control text">
+                <input type="text" value="0" />
+            </div>
+            Fecha
+            <div class="input-control text">
+                <input type="text" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" />
+            </div>
+            Periodo
+            <div class="input-control text">
+                <input type="text" />
+            </div>
+            Monto factura
+            <div class="input-control text">
+                <input type="text" value="0.0" />
+            </div>
+            <br/>
+            <br/>-->
+            Total pares
+            <div class="input-control text">
+                <input type="text" id="total_pares" name="total_pares" />
+            </div>
+            Total costo
+            <div class="input-control text">
+                <input type="text" id="total_costo" name="total_costo" />
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <button type="submit" class="button large success">Siguiente</button>
+            <button type="button" class="button large" onclick="location.href = '/nymsa/inventario/listadoTraslado'"><i class="icon-list"></i> Ver traslados</button>
+        </div>
+    </form>
+</section>

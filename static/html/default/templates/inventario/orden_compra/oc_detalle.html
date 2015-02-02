@@ -1,0 +1,313 @@
+<!-- START general -->
+<script>
+    $(function(){
+
+    window.total_pares = 0;
+            window.total_costo = 0;
+            window.colision = false;
+            window.data_oc = {
+            "id": {id},
+                    "estado": "{estado}",
+                    "tipo": "{tipo}",
+                    "total": {total},
+                    "total_costo": {total_costo}
+            }
+
+    window.detail = {
+    "linea":0,
+            "estilo":"",
+            "color":0,
+            "talla":0.0,
+            "cantidad":0,
+            "costo":0.0,
+            "id_orden":{id}
+    };
+    });
+            function nuevo_item(){
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Seleccion de linea',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>Seleccione una linea</h3>",
+                            "<div class='input-control text'><input type='text' id='clinea' /></div></div>",
+                            "<br/><div style='text-align:right;'><button onclick='seleccionar_estilo_p();'>Siguiente</button></div>"
+                    ].join('')
+            });
+            }
+
+    function seleccionar_estilo_p(){
+    window.detail.linea = $('#clinea').val();
+            if (isNaN(window.detail.linea) || window.detail.linea <= 0){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Seleccion de Estilo',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>Seleccione un Estilo</h3>",
+                            "<div class='input-control text'><input type='text' id='cestilo' /></div></div>",
+                            "<br/><div style='text-align:right;'><button onclick='seleccionar_color_p();'>Siguiente</button></div>"
+                    ].join('')
+            });
+    }
+    }
+
+    function seleccionar_color_p(){
+    window.detail.estilo = $('#cestilo').val();
+            $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Seleccion de Color',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>Seleccione un Color</h3>",
+                            "<div class='input-control text'><input type='text' id='ccolor' /></div></div>",
+                            "<br/><div style='text-align:right;'><button onclick='seleccionar_talla_p();'>Siguiente</button></div>"
+                    ].join('')
+            });
+    }
+
+    function seleccionar_talla_p(){
+    window.detail.color = $('#ccolor').val();
+            if (isNaN(window.detail.color) || window.detail.color <= 0){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Seleccion de Talla',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>Seleccione una Talla</h3>",
+                            "<div class='input-control text'><input type='text' id='ctalla' /></div></div>",
+                            "<br/><div style='text-align:right;'><button onclick='seleccionar_cantidad_p();'>Siguiente</button></div>"
+                    ].join('')
+            });
+    }
+    }
+
+    function seleccionar_cantidad_p(){
+    window.detail.talla = parseFloat($('#ctalla').val());
+            if (isNaN(window.detail.talla) || window.detail.talla <= 0){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    uri = '/nymsa/inventario/verificarProducto'
+            snt = {
+            "estilo":window.detail.estilo,
+                    "linea":window.detail.linea,
+                    "color":window.detail.color,
+                    "talla": window.detail.talla
+            };
+            fs = $.post(uri, snt, function(data){
+            if (data.status == "EXISTS"){
+            window.detail.costo = data.costo;
+                    $.Dialog.close();
+                    $.Dialog({
+                    shadow: true,
+                            overlay: false,
+                            icon: '<span class="icon-new"></span>',
+                            title: 'Seleccion de Cantidad',
+                            width: 500,
+                            padding: 10,
+                            draggable:true,
+                            content: [
+                                    "<div style='text-align:center;'><h3>Seleccione la cantidad a ordenar</h3>",
+                                    "<div class='input-control text'><input type='text' id='ccantidad' /></div></div>",
+                                    "<br/><div style='text-align:right;'><button onclick='confirmar_p();'>Siguiente</button></div>"
+                            ].join('')
+                    });
+            } else{
+                    alert("El código ingresado no corresponde con ningún producto");
+                    $.Dialog.close();
+            }
+            }, "json");
+    }
+    }
+
+    function confirmar_p(){
+    window.detail.cantidad = $('#ccantidad').val();
+            if (isNaN(window.detail.cantidad)){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Confirmacion',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>¿Está seguro?</h3>",
+                            "Codigo del producto a ordenar: " + window.detail.linea + "-" + window.detail.estilo + "-" + window.detail.color + "-" + window.detail.talla + "</div>",
+                            "<br/><br/><div style='text-align:right;'><button onclick='commit_p();'>Confirmar Orden</button></div>"
+                    ].join('')
+            });
+    }
+    }
+
+    function commit_p(){
+    $.Dialog.close();
+            tabla_detalle = $('#oc_detalle');
+            fila = $('<tr>');
+            c_linea = $('<td>', {
+            class:"linea"
+            });
+            c_estilo = $('<td>', {
+            class:"estilo"
+            });
+            c_color = $('<td>', {
+            class:"color"
+            });
+            c_talla = $('<td>', {
+            class:"talla"
+            });
+            c_pares = $('<td>', {
+            class:"pares"
+            });
+            $('.linea').each(function(){
+    if (parseInt($(this).html()) == parseInt(window.detail.linea)){
+    estilo_ = $(this).next();
+            if ($(estilo_).html() == window.detail.estilo){
+    color_ = $(estilo_).next();
+            if (parseInt($(color_).html()) == parseInt(window.detail.color)){
+    talla_ = $(color_).next();
+            if (parseFloat($(talla_).html()) == parseFloat(window.detail.talla)){
+    window.colision = true;
+            pares_ = $(talla_).next();
+            $(pares_).html(parseInt($(pares_).html()) + parseInt(window.detail.cantidad));
+            total_ = $(talla_).next().next().next();
+            $(total_).html(parseInt($(pares_).html()) * parseFloat(window.detail.costo));
+            uri_dt = '/nymsa/inventario/actualizar_detalle_oc';
+            fga = $.post(uri_dt, window.detail, function(data){}, "json");
+            if (parseInt($(pares_).html()) <= 0){
+    $(pares_).parent().remove();
+            del_uri = "/nymsa/inventario/del_detalle";
+            del_dat = {
+            "estilo":window.detail.estilo,
+                    "linea":window.detail.linea,
+                    "color":window.detail.color,
+                    "talla":window.detail.talla,
+                    "id_orden":{id}
+            };
+            $.post(del_uri, del_dat, function(data){}, "json");
+    }
+    }
+    }
+    }
+    }
+    });
+            if (!window.colision){
+    c_cunitario = $('<td>');
+            c_total = $('<td>', {
+            class:"totales"
+            });
+            c_linea.html(window.detail.linea);
+            c_estilo.html(window.detail.estilo);
+            c_color.html(window.detail.color);
+            c_talla.html(window.detail.talla);
+            c_pares.html(window.detail.cantidad);
+            c_cunitario.html(window.detail.costo);
+            c_total.html(parseFloat(window.detail.cantidad * window.detail.costo).toFixed(2));
+            fila.append(c_linea);
+            fila.append(c_estilo);
+            fila.append(c_color);
+            fila.append(c_talla);
+            fila.append(c_pares);
+            fila.append(c_cunitario);
+            fila.append(c_total);
+            tabla_detalle.append(fila);
+            uri_dt = '/nymsa/inventario/agregar_detalle_oc';
+            fga = $.post(uri_dt, window.detail, function(data){}, "json");
+    }
+
+    window.colision = false;
+            window.total_costo = 0;
+            window.total_pares = 0;
+            $('.pares').each(function(){
+    window.total_pares += parseInt($(this).html());
+    });
+            $('.totales').each(function(){
+    window.total_costo += parseFloat($(this).html());
+    });
+            $('#cantP').html(window.total_pares);
+            $('#totalC').html(parseFloat(window.total_costo).toFixed(2));
+            uri_g = '/nymsa/inventario/actualizar_oc';
+            u_oc = {
+            "id":{id},
+                    "total": parseInt(window.total_pares),
+                    "total_costo": parseFloat(window.total_costo)
+            };
+            fga = $.post(uri_g, u_oc, function(data){}, "json");
+    }
+
+    function bloquear_orden(){
+    s = confirm("Esta completamente seguro?");
+            if (s){
+    location.href = "/nymsa/inventario/bloquear_orden?id={id}";
+    }
+    }
+</script>
+        
+<div style="margin-top:30px;">
+    <div style="display:table;">
+        <div style="float:left; padding: 15px;border:solid 1px #D3D3D3;">
+            <h3><strong># Orden:</strong> {id}</h3>
+            <h3><strong>Estado:</strong> {estado}</h3> 
+            <h3><strong>Tipo:</strong> {tipo}</h3> 
+            <h3><strong>Total Pares:</strong> <span id="cantP">{total}</span></h3> 
+            <h3><strong>Total costo:</strong> <span id="totalC">{total_costo}</span></h3>
+            <button class="primary" onclick="nuevo_item()">Agregar</button>
+        </div>
+        <div style="margin-left:35px;float:left;">
+            <table id="oc_detalle" class="table bordered">
+                <thead>
+                    <tr class="success fg-white">
+                        <th>Linea</th>
+                        <th>Estilo</th>
+                        <th>Color</th>
+                        <th>Talla</th>
+                        <th>Pares</th>
+                        <th>Costo u.</th>
+                        <th>Total costo</th>
+                    </tr>
+                </thead>
+            </table>
+            <br/>
+            <button onclick="bloquear_orden();">Confirmar Orden</button>
+        </div>
+    </div>
+</div>
+<!-- END general -->

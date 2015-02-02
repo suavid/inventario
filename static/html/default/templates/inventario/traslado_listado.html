@@ -1,0 +1,81 @@
+<script>
+
+    function detalle_render(value, record, columnObj, grid, colNo, rowNo) {
+
+        return '<a onclick="impresion(' + record['id'] + ',' + record['editable'] + ')">Imprimir</a>';
+    }
+
+    var grid_id = "listado";
+
+    var dsOption = {
+        fields: [
+            {name: 'cod'},
+            {name: 'fecha'},
+            {name: 'bodega_origen'},
+            {name: 'bodega_destino'},
+            {name: 'transaccion'},
+            {name: 'total_pares'},
+            {name: 'total_costo'}
+        ],
+        recordType: 'object'
+    }
+
+    var colsOption = [
+        {id: 'cod', header: "No. Doc", width: 100},
+        {id: 'fecha', header: "Fecha", width: 100},
+        {id: 'bodega_origen', header: "Origen", width: 100},
+        {id: 'bodega_destino', header: "Destino", width: 100},
+        {id: 'concepto', header: "Concepto", width: 100},
+        {id: 'transaccion', header: "Transaccion", width: 100},
+        {id: 'total_pares', header: "Pares", width: 100},
+        {id: 'total_costo', header: "Costo", width: 100},
+        {id: 'opcion', header: "Detalle", width: 100, renderer: detalle_render}
+    ];
+
+
+    var gridOption = {
+        id: grid_id,
+        loadURL: '/nymsa/inventario/cargar_cfd?tblname=traslado&field=consigna&value=0',
+        saveURL: '',
+        width: "100%", //"100%", // 700,
+        height: "320", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption,
+        columns: colsOption,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        toolbarContent: 'reload | filter | nav state'
+    };
+
+    var mygrid = new Sigma.Grid(gridOption);
+    Sigma.Util.onLoad(function() {
+        mygrid.render();
+    });
+
+    function impresion(id, editable)
+    {
+        if (editable == 0) {
+            var vurl = window.open('/nymsa/inventario/imprimirTraslado/' + id, '_blank');
+        } else {
+            alert("Este es un documento no aplicado");
+        }
+    }
+</script>
+<section>
+    <div id="bigbox" style="margin:15px;display:!none;">
+        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+        </div>
+    </div>
+    <form method="post" action="/nymsa/inventario/imprimirTraslado" target="blank" id="frmImp">
+        <input type="hidden" name="id" value="" id="id_" />
+        <input type="hidden" name="transaccion" value="" id="transaccion" />
+        <input type="hidden" name="fecha" value="" id="fecha" />
+        <input type="hidden" name="concepto" value="" id="concepto" />
+        <input type="hidden" name="total_costo" value="" id="total_costo" />
+        <input type="hidden" name="total_pares" value="" id="total_pares" />
+    </form>
+</section>

@@ -1,0 +1,45 @@
+{paginacion}
+<br/>
+<br/>
+<a href="/nymsa/inventario/exportarHistorial/{modulo}" target="blank">
+    <i class="icon-file-pdf"></i> exportar
+</a>
+<br/>
+<table class="table" style="text-align:center;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>
+                Propietario
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Creado el
+            </th>
+            <th>
+                Módulo
+            </th>
+        </tr>
+    </thead>
+    <!-- START historial -->
+    <tr>
+        <td>
+            <a href="/nymsa/inventario/reporteDocumentoPr?id={id_documento}" target="_blank">{id_documento}</a>
+        </td>
+        <td>
+            {propietario}
+        </td>
+        <td>
+            {{estado}}
+        </td>
+        <td>
+            {fecha_creacion}
+        </td>
+        <td>
+            {modulo}
+        </td>
+    </tr>
+    <!-- END historial -->
+</table>

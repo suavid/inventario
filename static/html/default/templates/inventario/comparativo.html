@@ -1,0 +1,126 @@
+<script>
+    $(function() {
+        procesar_consulta();
+        $('input[type="radio"]').bind('change', function() {
+            procesar_consulta();
+        });
+        $('#bodega').bind('change', function() {
+            procesar_consulta();
+        });
+        $('#linea_limitInf').bind('change', function() {
+            procesar_consulta();
+        });
+        $('#linea_limitSup').bind('change', function() {
+            procesar_consulta();
+        });
+        $('#proveedor_limitInf').bind('change', function() {
+            procesar_consulta();
+        });
+        $('#proveedor_limitSup').bind('change', function() {
+            procesar_consulta();
+        });
+    });
+
+
+    function procesar_consulta() {
+        /* data filtro */
+        linea_limitInf = $('#linea_limitInf').val();
+        linea_limitSup = $('#linea_limitSup').val();
+        proveedor_limitInf = $('#proveedor_limitInf').val();
+        proveedor_limitSup = $('#proveedor_limitSup').val();
+        bodega = $('#bodega').val();
+
+        /* tipo consulta seleccionado */
+        tipo_query = $("input[name='t_consulta']:checked").val();
+        /* uri de consulta de inventario */
+        uri = "/nymsa/inventario/hacer_comparativo";
+
+        /* data de peticion */
+        data = {
+            "lineaInf": linea_limitInf,
+            "lineaSup": linea_limitSup,
+            "provInf": proveedor_limitInf,
+            "provSup": proveedor_limitSup,
+            "bodega": bodega,
+            "tipoQuery": tipo_query
+
+        };
+
+        /* realizacion de la peticion */
+        jqr = $.post(uri, data, function(data) {
+            $('#tabla_comparativa').html(data.html);
+        }, "json");
+    }
+</script>
+<section>
+    <div style="display:table;">
+        <div id="filtro_consulta" style="float:left;">
+            Bodega
+            <div class="input-control select">
+                <select id="bodega">
+                    <option value="0">Todas</option>
+                    <!-- START bodegas -->
+                    <option value="{id}">{nombre}</option>
+                    <!-- END bodegas -->
+                </select>
+            </div>
+            <br/>
+            Linea
+            <div class="input-control text">
+                <input type="text" id="linea_limitInf" value="1" style="width:100px;" />
+                <input type="text" id="linea_limitSup" value="999" style="width:100px;"/>
+            </div>
+            <br/>
+            Proveedor
+            <div class="input-control text">
+                <input type="text" id="proveedor_limitInf" value="1" style="width:100px;"/>
+                <input type="text" id="proveedor_limitSup" value="9999" style="width:100px;"/>
+            </div>
+        </div>
+        <div id="tipo_consultas" style="margin-left:100px;background:#D3D3D3;border:solid 1px #E3E3E3;padding:15px;width:300px;float:left;">
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" name="t_consulta" value="1" checked="checked" />
+                    <span class="check"></span>
+                    Linea
+                </label>
+            </div>
+            <br/>
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" name="t_consulta" value="2" />
+                    <span class="check"></span>
+                    Linea - Proveedor
+                </label>
+            </div>
+            <br/>
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" name="t_consulta" value="3" />
+                    <span class="check"></span>
+                    Linea - Proveedor - Estilo
+                </label>
+            </div>
+            <br/>
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" name="t_consulta" value="4" />
+                    <span class="check"></span>
+                    Linea - Proveedor - Estilo - Color
+                </label>
+            </div>
+            <br/>
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" name="t_consulta" value="5" />
+                    <span class="check"></span>
+                    Linea - Proveedor - Estilo - Color - Talla
+                </label>
+            </div>
+        </div>
+    </div>
+    Ajuste disponible para filtros específicos
+    <div id="tabla_comparativa" style="margin-top:30px;">
+
+    </div>
+</section>

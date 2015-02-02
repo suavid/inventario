@@ -1,0 +1,695 @@
+<style>
+    #bigbox{
+        position: absolute;
+        width: 40%;
+        top: 370px;
+        right: 0px;
+    }
+
+    #bigbox2{
+        position: absolute;
+        width: 40%;
+        top: 100px;
+        right: 0px;
+    }
+</style>
+<script>
+
+    var grid_demo_id = "stock_grid";
+    var grid_demo3_id = "producto_grid";
+
+    function img_render(value, record, columnObj, grid, colNo, rowNo) {
+        var producto = record['control_estilo'];
+        var color = record['color'];
+        return '<img src="../static/img/productos/thumbnail_' + producto + '_' + color + '" alt="No disponible" width="100"/>';
+    }
+
+    function precio_format(value, record, columnObj, grid, colNo, rowNo) {
+        return '$' + record['precio'];
+    }
+
+    function costo_format(value, record, columnObj, grid, colNo, rowNo) {
+        return '$' + record['costo'];
+    }
+
+    function stock_render(value, record, columnObj, grid, colNo, rowNo) {
+        var producto = record['control_estilo'];
+        var color = record['color'];
+        var talla = record['talla'];
+        var linea = record['linea'];
+        return '<span class="metrouicss"><a href="javascript: void(0);" class="button fg-color-white bg-color-green" onclick="cambiarPrecio(event,\'' + producto + '\',' + color + ',' + talla + ',' + linea + ');">Cambiar precio</a></span>';
+    }
+
+    function cambiarPrecio(event, estilo, color, talla, linea) {
+        var nuevoPrecio = prompt("Nuevo precio \nProducto " + estilo + "-" + color + "-" + talla + "-" + linea, "");
+        if (nuevoPrecio.toString().trim() == "" || (nuevoPrecio + 0.0) <= 0 || isNaN(nuevoPrecio)) {
+            alert('Es necesario que ingrese una cantidad valida');
+        } else {
+            if (confirm("Esta Seguro de querer realizar esta accion?")) {
+                uri = '/nymsa/inventario/nuevoPrecioProducto/' + parseFloat(nuevoPrecio) + '/' + estilo + '/' + color + '/' + parseFloat(talla) + '/' + linea;
+                data = {};
+                ajaxRq = $.post(uri, data, function(data) {
+                    if (data.status == 200) {
+                        alert("Precio actualizado correctamente");
+                        location.href = location.href;
+                    } else {
+                        alert("Error");
+                    }
+                }, "json");
+            }
+        }
+    }
+
+    var dsOption = {
+        fields: [
+            {name: 'control_estilo'},
+            {name: 'color'},
+            {name: 'talla'},
+            {name: 'linea'},
+            {name: 'fecha_ingreso'}
+        ],
+        recordType: 'object'
+    }
+
+    var dsOption3 = {
+        fields: [
+            {name: 'estilo'},
+            {name: 'linea'},
+            {name: 'codigo_origen'},
+            {name: 'descripcion'},
+            {name: 'proveedor'},
+            {name: 'catalogo'},
+            {name: 'n_pagina'},
+            {name: 'genero'},
+            {name: 'marca'},
+            {name: 'propiedad'},
+            {name: 'observacion'},
+            {name: 'fecha_ingreso'},
+            {name: 'nota'}
+        ],
+        uniqueField: 1,
+        recordType: 'object'
+    }
+
+    var colsOption = [
+        {id: 'linea', header: "Linea", width: 90},
+        {id: 'control_estilo', header: "Estilo", width: 80},
+        {id: 'color', header: "Color", width: 90},
+        {id: 'talla', header: "Talla", width: 90},
+        {id: 'precio', header: "Precio", width: 75, renderer: precio_format},
+        {id: 'costo', header: "Costo", width: 75, renderer: costo_format}
+    ];
+
+    var colsOption3 = [
+        {id: 'linea', header: "Linea", width: 40},
+        {id: 'estilo', header: "Estilo", width: 60},
+        {id: 'descripcion', header: "Descripcion", width: 100},
+        {id: 'proveedor', header: "Proveedor", width: 50},
+        {id: 'catalogo', header: "Catalogo", width: 50},
+        {id: 'n_pagina', header: "N. Pagina", width: 60},
+        {id: 'genero', header: "Genero", width: 50},
+        {id: 'marca', header: "Marca", width: 50},
+        {id: 'fecha_ingreso', header: "Fecha", width: 80}
+    ];
+
+    var gridOption = {
+        id: grid_demo_id,
+        loadURL: '/nymsa/inventario/cargar_stock2',
+        saveURL: '',
+        width: "100%", //"100%", // 700,
+        height: "250", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption,
+        columns: colsOption,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        toolbarContent: 'reload filter nav state'
+    };
+
+    var gridOption3 = {
+        id: grid_demo3_id,
+        loadURL: '/nymsa/inventario/cargar?tblname=producto',
+        saveURL: '',
+        width: "100%", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container: 'gridbox2',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption3,
+        columns: colsOption3,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00"},
+        pageSize: 10,
+        toolbarContent: 'filter | nav state'
+    };
+
+
+    var mygrid = new Sigma.Grid(gridOption);
+    Sigma.Util.onLoad(
+            function() {
+                mygrid.render();
+                Sigma.$('bigbox4').style.display = "none";
+                Sigma.$('bigbox3').style.display = "none";
+            });
+
+    var mygrid2 = new Sigma.Grid(gridOption3);
+    Sigma.Util.onLoad(function() {
+        mygrid2.render();
+    });
+
+
+    $(function() {
+
+        $('#btnCambios').bind('click', function(event) {
+            event.preventDefault();     // prevenir eventos por defecto del navegador
+            mConfirmar = confirm("Esta seguro de realiar esta accion?"); // pide la confirmacion del usuario
+
+            if (mConfirmar) {
+                /* se confirma la realizacion de los cambios */
+                campos = $('#selecciones input[type="checkbox"]');  // obtiene todos los posibles cambios
+                selecciones = [];                                   // array de selecciones
+
+
+                /* obtener aquellos cambios que van a ser aplicados  */
+                ct = 0;
+                for (i = 0; i < campos.length; i++) {
+                    if ($(campos[i]).attr("checked")) {
+                        selecciones[ct++] = $(campos[i]).attr("id").split("_")[1]; // si el campo esta marcado se agrega a selecciones
+                    }
+                }
+
+                /* verifica que ningun cambio confirmado posee un valor no valido  */
+                empty_var = false       // control de campo vacio
+                for (i = 0; i < selecciones.length; i++) {
+                    if ($("#n" + selecciones[i]).val().trim() == "") {
+                        empty_var = true;                   // un campo vacio evita que toda la informacion sea enviada
+                        $("#n" + selecciones[i]).focus();     // enfoca el campo respectivo (la primera ocurrencia)
+                    }
+                }
+
+                /* si no hay datos faltantes se procesa la peticion  */
+                if (!empty_var) {
+
+                    estilo = $('#estilo').val().trim(); // obtiene es estilo seleccionado
+                    linea = $('#linea').val().trim();  // obtiene la linea seleccionada 
+
+                    /* debe indicarse un estilo y una linea para reducir errores */
+                    if (estilo != "" || linea != "") {
+
+                        /* cambios que se aplican al producto independientemente del color o la talla */
+                        uriG = '/nymsa/inventario/cambiarDatoGeneral';  // url que manera la peticion de cambios
+
+                        // datos necesarios para este tipo de cambios
+                        dataG = {
+                            "estilo": estilo,
+                            "linea": linea
+                        };
+
+                        for (i = 0; i < selecciones.length; i++) {
+                            dataG[selecciones[i]] = $('#n' + selecciones[i]).val(); // obtiene los valores que se van a cambiar
+                        }
+
+                        /*  se realizan los cambios de manera asincrona y se actualiza el grid */
+                        GRqu = $.post(uriG, dataG, function(data) {
+                            grid = Sigma.$grid("producto_grid");
+                            grid.reload();
+                        }, "json");
+
+                        /******* cambios especificos (se puede filtrar por distintos colores y tallas) **********/
+
+                        /* cambio de precio */
+                        // encontrar precio
+                        pos = -1;
+                        for (i = 0; i < selecciones.length; i++)
+                            if (selecciones[i] == 'precio')
+                                pos = i; // verifica la posicion del precio dentro de las selecciones (-1 si no lo puede encontrar)
+
+                        // primero verificamos si el precio fue seleccionado para cambiar
+                        if (pos != -1) {
+                            // primero revisamos que el precio sea numerico
+                            if ($('#n' + selecciones[pos]).val().toString().trim() == "" || ($('#n' + selecciones[pos]).val() + 0.0) <= 0 || isNaN($('#n' + selecciones[pos]).val())) {
+                                alert('Es necesario que ingrese una cantidad valida'); // validamos que el tipo de dato sea correcto
+                            } else {
+
+                                //uri     = '/nymsa/inventario/CambioMasivoDePrecio';     // url que atendera la peticion de cambio de precio
+
+                                /* se obtienen los datos necesarios*/
+                                talla = $('#talla').val().trim();         // talla inferior
+                                talla2 = $('#talla2').val().trim();        // talla superior
+                                precio = $('#n' + selecciones[pos]).val();   // el nuevo precio a ser aplicado
+
+                                // si las tallas estan vacias asumimos su valor como cero
+                                if (talla == "")
+                                    talla = 0;
+                                if (talla2 == "")
+                                    talla2 = 0;
+
+                                if (((talla + 0.0) < 0 || isNaN(talla)) || ((talla2 + 0.0) < 0 || isNaN(talla2))) {
+                                    alert("No se han ingresado tallas validas"); // verificamos que cada valor de talla especificado sea valido
+                                } else {
+                                    color = $('#color').val().trim();                 // obtenemos el color (puede que no se haya ingresado)
+                                    uri = '/nymsa/inventario/efectuarCambioPrecios';  // url que atendera la peticion
+
+                                    // datos necesarios para completar la transaccion
+                                    data = {
+                                        "estilo": estilo,
+                                        "linea": linea,
+                                        "color": color,
+                                        "precio": precio,
+                                        "talla1": talla,
+                                        "talla2": talla2
+
+                                    };
+
+                                    // se realiza la peticion y se actualiza el grid
+                                    rqCP = $.post(uri, data, function(data) {
+                                        grid = Sigma.$grid("stock_grid");
+                                        grid.reload();
+                                    }, "json");
+                                }
+                            }
+
+                        } // fin de procedimiento para cambiar precio
+
+
+                        /* cambio de costo */
+                        // encontrar costo
+                        pos = -1;
+                        for (i = 0; i < selecciones.length; i++) {
+                            if (selecciones[i] == 'costo') {
+                                pos = i; // verifica la posicion del costo dentro de las selecciones (-1 si no lo puede encontrar)
+                            }
+                        }
+
+                        // primero verificamos si el costo fue seleccionado para cambiar
+                        if (pos != -1) {
+                            if ($('#n' + selecciones[pos]).val().toString().trim() == "" || ($('#n' + selecciones[pos]).val() + 0.0) <= 0 || isNaN($('#n' + selecciones[pos]).val())) {
+                                alert('Es necesario que ingrese una cantidad valida'); // primero revisamos que el costo sea numerico
+                            } else {
+
+                                // uri = '/nymsa/inventario/CambioMasivoDeCosto';
+
+                                // seleccionamos los datos que vamos a necesitar
+                                talla = $('#talla').val().trim();
+                                talla2 = $('#talla2').val().trim();
+                                costo = $('#n' + selecciones[pos]).val();
+
+                                // si los datos 
+                                if (talla == "")
+                                    talla = 0;
+                                if (talla2 == "")
+                                    talla2 = 0;
+
+                                if (((talla + 0.0) < 0 || isNaN(talla)) || ((talla2 + 0.0) < 0 || isNaN(talla2))) {
+                                    alert("No se han ingresado tallas validas"); // verifica que los datos de tallas sean validos
+                                } else {
+                                    color = $('#color').val().trim();                 // obtiene el color (no es un campo requerido y por lo tanto puede ir vacio)
+                                    uri = '/nymsa/inventario/efectuarCambioCostos';    // url que se va a encargar de manejar la peticion
+
+                                    // datos necesarios para realizar la peticion
+                                    data = {
+                                        "estilo": estilo,
+                                        "linea": linea,
+                                        "color": color,
+                                        "costo": costo,
+                                        "talla1": talla,
+                                        "talla2": talla2
+
+                                    };
+
+                                    // se realiza la pericion y se actualiza el grid
+                                    rqCP = $.post(uri, data, function(data) {
+                                        grid = Sigma.$grid("stock_grid");
+                                        grid.reload();
+                                    }, "json");
+                                }
+                            }
+
+                        } // fin de procedimiento para cambiar costo
+
+                    } else {
+                        alert("Seleccione una linea y un estilo");
+                    }
+
+                } else {
+                    alert("No puede dejar datos en blanco");
+                }
+            }
+        });
+
+        $('#estilo').bind('change', function(event) {
+            estilo = $('#estilo').val().trim();
+            linea = $('#linea').val().trim();
+
+            //fliltrar(estilo,linea);
+            FILTRO();
+            FILTRO_ESPECIFICO();
+            uri = "/nymsa/inventario/DatosGeneralesProducto";
+            data = {
+                "estilo": estilo,
+                "linea": linea
+            };
+            http_request = $.post(uri, data, function(data) {
+                $('#proveedor').val(data.proveedor);
+                $('#catalogo').val(data.catalogo);
+                $('#pagina').val(data.n_pagina);
+                $('#propiedad option[value='+data.propiedad+']').attr("selected","selected");
+            }, "json");
+
+        });
+
+        $('#linea').bind('change', function(event) {
+            estilo = $('#estilo').val().trim();
+            linea = $('#linea').val().trim();
+            FILTRO();
+            FILTRO_ESPECIFICO();
+        });
+
+        $('#color').bind('change', function(event) {
+            FILTRO();
+            FILTRO_ESPECIFICO();
+        });
+
+        $('#talla').bind('change', function(event) {
+            FILTRO();
+            FILTRO_ESPECIFICO();
+        });
+
+        $('#talla2').bind('change', function(event) {
+            FILTRO();
+            FILTRO_ESPECIFICO();
+        });
+
+    });
+
+
+    //*****************************************************
+
+
+    function FILTRO() {
+        estilo = $('#estilo').val().trim();
+        linea = $('#linea').val().trim();
+        var filtros = [];
+        if (estilo != "")
+            filtros.push(['estilo', estilo].join(":"));
+        if (linea != "")
+            filtros.push(['linea', linea].join(":"));
+        if (linea != "" || estilo != "") {
+            var uri = "/nymsa/inventario/cargar_con_filtro?tblname=producto&filtros=" + filtros;
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = uri;
+            grid.reload();
+        }
+    }
+
+    function FILTRO_ESPECIFICO() {
+        estilo = $('#estilo').val().trim();
+        linea = $('#linea').val().trim();
+        color = $('#color').val().trim();
+        talla = $('#talla').val().trim();
+        talla2 = $('#talla2').val().trim();
+
+        var filtros = [];
+        if (estilo != "")
+            filtros.push(['control_estilo', estilo].join(":"));
+        if (linea != "")
+            filtros.push(['linea', linea].join(":"));
+        if (color != "")
+            filtros.push(['color', color].join(":"));
+
+        if (linea != "" || estilo != "") {
+            var uri = "/nymsa/inventario/cargar_stock2_con_filtro?filtros=" + filtros + '&talla=' + talla + '&talla2=' + talla2;
+            var grid = Sigma.$grid("stock_grid");
+            grid.loadURL = uri;
+            grid.reload();
+        }
+    }
+
+    /*************************************************/
+
+    function fliltrar(estilo, linea) {
+        var filterInfo = [
+            {
+                fieldName: "control_estilo",
+                logic: "equal",
+                value: estilo
+            },
+            {
+                fieldName: "linea",
+                logic: "equal",
+                value: linea
+            }
+        ]
+
+        var filterInfo2 = [
+            {
+                fieldName: "estilo",
+                logic: "equal",
+                value: estilo
+            },
+            {
+                fieldName: "linea",
+                logic: "equal",
+                value: linea
+            }
+        ]
+
+        var grid = Sigma.$grid("stock_grid");
+        var grid2 = Sigma.$grid("producto_grid");
+        var rowNOs = grid.applyFilter(filterInfo);
+        var rowNOs2 = grid2.applyFilter(filterInfo2);
+    }
+
+    function fliltrarColor(estilo, linea, color) {
+        var filterInfo = [
+            {
+                fieldName: "control_estilo",
+                logic: "equal",
+                value: estilo
+            },
+            {
+                fieldName: "linea",
+                logic: "equal",
+                value: linea
+            },
+            {
+                fieldName: "color",
+                logic: "equal",
+                value: color
+            }
+        ]
+        var grid = Sigma.$grid("stock_grid");
+        var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    function fliltrarTalla(estilo, linea, color, talla, talla2) {
+        var filterInfo = [
+            {
+                fieldName: "control_estilo",
+                logic: "equal",
+                value: estilo
+            },
+            {
+                fieldName: "linea",
+                logic: "equal",
+                value: linea
+            },
+            {
+                fieldName: "color",
+                logic: "equal",
+                value: color
+            },
+            {
+                fieldName: "talla",
+                logic: "greatEqual",
+                value: talla
+            },
+            {
+                fieldName: "talla",
+                logic: "lessEqual",
+                value: talla2
+            }
+        ]
+        var grid = Sigma.$grid("stock_grid");
+        var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+</script>
+<section style="width:60%; overflow:auto;">
+    <div style="display:table;">
+        <p style="text-align:justify;padding-right:45px;padding-bottom:15px">
+            Puede combinar los campos de distintas maneras según considere conveniente,
+            esto hará su trabajo más fácil y podrá realizar sus tareas de forma más sencilla
+            pero ojo! debe estar seguro de lo que está haciendo
+        </p>
+        <p><strong>Parámetros de selección</strong></p>
+        <hr/>
+        <form style="margin-left:5px;float:left;">
+            <table style="width:150px;" class="table hovered">
+                <tr>
+                    <td>
+                        Linea:
+                    </td>
+                    <td> 
+                        <input type="text" name="linea" id="linea" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Estilo:
+                    </td>
+                    <td>  
+                        <input type="text" name="estilo" id="estilo"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Color:
+                    </td>
+                    <td>
+                        <input type="text" name="color" id="color"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Talla
+                    </td>
+                    <td> 
+                        <input type="text" name="talla" id="talla" style="width: 40%" /> - 
+                        <input type="text" name="talla2" id="talla2" style="width: 40%"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <!--
+        <div style="width:150px; min-height:150px; border:solid 1px #D3D3D3; float:left; margin-left:50px; padding:5px">
+            <img src="" alt="No disponible" style="width:140px; min-height:140px;" id="prev"/>
+        </div>
+        -->
+    </div>
+    <p><strong>Seleccione para aplicar cambios</strong></p>
+    <hr/>
+
+    <div style="display: table; text-align:right;">
+        <form style="float:left;">
+            <table style="width:100px;" class="table hovered" >
+                <caption>
+                    <p>
+                        Datos anteriores
+                    </p>
+                </caption>
+                <tr>
+                    <td>
+                        Precio:
+                    </td>
+                    <td> 
+                        <input type="text" name="precio" id="precio" style="width:100px;" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Proveedor:
+                    </td>
+                    <td> 
+                        <input type="text" name="proveedor" id="proveedor" style="width:100px;" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Catalogo:
+                    </td>
+                    <td> 
+                        <input type="text" name="catalogo" id="catalogo" style="width:100px;" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Pagina:
+                    </td>
+                    <td> 
+                        <input type="text" name="pagina" id="pagina" style="width:100px;" readonly/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Propiedad:
+                    </td>
+                    <td> 
+                        <select name="propiedad" id="propiedad" style="width:100px;" disabled="disabled">
+                            <option value="1">Liquidacion</option>
+                            <option value="2">Comprado</option>
+                            <option value="3">Consignacion</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+
+
+        <form style="float:left;" id="selecciones">
+            <table style="width:250px;" class="table hovered">
+                <caption>
+                    <p>
+                        Datos nuevos
+                    </p>
+                </caption>
+                <tr>
+                    <td> 
+                        <input type="text" name="nprecio" id="nprecio" style="width:100px;"/>
+                        Modificar? 
+                        <input type="checkbox" name="_precio" id="_precio" />
+                    </td>
+                </tr>
+                <tr>
+                    <td> 
+                        <select name="nproveedor" id="nproveedor" style="width:100px;"/>
+                        <!-- START l_proveedor -->
+                            <option value="{id}">{nombre} (ID:{id})</option>
+                        <!-- END l_proveedor -->
+                        </select>
+                Modificar?
+                <input type="checkbox" name="_proveedor" id="_proveedor" />
+                </td>
+                </tr>
+                <tr>
+                    <td> 
+                        <select name="ncatalogo" id="ncatalogo" style="width:100px;"/>
+                        <!-- START l_catalogos -->
+                        <option value="{id}">{nombre} (ID:{id})</option>
+                        <!-- END l_catalogos -->
+                        </select>
+                            Modificar?
+                        <input type="checkbox" name="_catalogo" id="_catalogo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td> 
+                        <input type="text" name="npagina" id="npagina" style="width:100px;"/>
+                        Modificar?
+                        <input type="checkbox" name="_pagina" id="_pagina" />
+                    </td>
+                </tr>
+                <tr>
+                    <td> 
+                        <select name="npropiedad" id="npropiedad" style="width:100px;">
+                            <option value="1">Liquidacion</option>
+                            <option value="2">Comprado</option>
+                            <option value="3">Consignacion</option>
+                        </select>
+                        </select>
+                        Modificar?
+                        <input type="checkbox" name="_propiedad" id="_propiedad" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <p style="text-align:right;">
+            <button class="bg-color-blue fg-color-white" id="btnCambios">Guardar</button>
+        </p>
+        </form>
+    </div>
+</section>

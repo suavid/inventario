@@ -1,0 +1,43 @@
+<script>
+    function new_doc(event) {
+        event.preventDefault();
+        var rq_url = '/nymsa/inventario/crear_documento';
+        var ajax_loader = $.post(rq_url);
+        ajax_loader.done(function(data) {
+            data = data.trim();
+            $('#ajax-content-loader').html(data);
+        });
+    }
+
+    function view_doc(event) {
+        event.preventDefault();
+        var rq_url = '/nymsa/inventario/abrir_documento';
+        var ajax_loader = $.post(rq_url);
+        ajax_loader.done(function(data) {
+            data = data.trim();
+            $('#ajax-content-loader').html(data);
+        });
+    }
+
+    function view_history(event) {
+        event.preventDefault();
+        var rq_url = '/nymsa/inventario/historial';
+        var ajax_loader = $.post(rq_url);
+        ajax_loader.done(function(data) {
+            data = data.trim();
+            $('#ajax-content-loader').html(data);
+        });
+    }
+
+</script>
+<ul>
+    <li>
+        <a href="javascript: void(0);" onclick="new_doc(event);"><i class="icon-new"></i>Nuevo documento</a>
+    </li>
+    <li>
+        <a href="javascript: void(0);" onclick="view_doc(event);"><i class="icon-eye"></i>Ver documentos</a>
+    </li>
+    <li>
+        <a href="javascript: void(0);" onclick="view_history(event);"><i class="icon-history"></i>Historial</a>
+    </li>
+</ul>

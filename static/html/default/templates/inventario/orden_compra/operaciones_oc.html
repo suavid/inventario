@@ -1,0 +1,22 @@
+<script type="text/javascript">
+	
+		function bloquear(id_detalle){
+			$('#inpt'+id_detalle).attr("disabled", "disabled");
+			$('#btn'+id_detalle).attr("disabled", "disabled");
+		}
+
+</script>
+<table class="table hovered">
+<!-- START operaciones -->
+	<tr>
+		<td>{descripcion}</td>
+		<td>{fecha}</td>
+		<td><a href="javascript: void(0);" onclick="deshacer({id_detalle});"><i class="icon-undo"></i> Deshacer</a></td>
+	</tr>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			bloquear({id_detalle});
+		});
+	</script>
+<!-- END operaciones -->
+</table>

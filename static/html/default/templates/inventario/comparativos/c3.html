@@ -1,0 +1,49 @@
+<script>
+    function difHandler(event, idInput) {
+        clases = idInput.split(' ');
+        idInput = clases.join('.');
+        $('.d_' + idInput).html(parseFloat($('.f_' + idInput).val()) - parseFloat($('.t_' + idInput).html()));
+    }
+
+    $(document).ready(function() {
+        $('#inv input').each(function() {
+            $(this).change();
+        });
+    });
+</script>
+<div>
+    <table id="inv" class="table bordered" style="text-align:center;">
+        <thead>
+            <tr>
+                <th>Linea</th>
+                <th>Proveedor</th>
+                <th>Estilo</th>
+                <th>Teorico</th>
+                <th>Fisico</th>
+                <th>Diferencia</th>
+            </tr>
+        </thead>
+        <!-- START inventario -->
+        <tr>
+            <td>
+                {linea}
+            </td>
+            <td>
+                {proveedor}
+            </td>
+            <td>
+                {estilo}
+            </td>
+            <td>
+                <span class="t_{linea}{proveedor}{estilo}">{stock}</span>
+            </td>
+            <td>
+                <input type="text" class="f_{linea}{proveedor}{estilo}" value="0" onchange="difHandler(event, '{linea}{proveedor}{estilo}');" />
+            </td>
+            <td>
+                <span class="d_{linea}{proveedor}{estilo}"></span>
+            </td>
+        </tr>
+        <!-- END inventario -->
+    </table>
+</div>

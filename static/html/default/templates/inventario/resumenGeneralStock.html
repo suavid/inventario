@@ -1,0 +1,83 @@
+<script>
+
+    var grid_detalle_id = "detalle_grid";
+
+    function img_render(value, record, columnObj, grid, colNo, rowNo) {
+        var producto = record['estilo'];
+        var color = record['color'];
+        return '<img src="../static/img/productos/thumbnail_' + producto + '_' + color + '" alt="No disponible" width="100"/>';
+    }
+
+    var dsOption_detalle = {
+        fields: [
+            {name: 'estilo'},
+            {name: 'color'},
+            {name: 'talla'},
+            {name: 'linea'},
+            {name: 'stock'}
+        ],
+        recordType: 'object'
+    }
+
+    var colsOption_detalle = [
+        {id: 'estilo', header: "Estilo", width: 80},
+        {id: 'color', header: "Color", width: 100},
+        {id: 'talla', header: "Talla", width: 100},
+        {id: 'linea', header: "Linea", width: 100},
+        {id: 'stock', header: "Stock", width: 100},
+        {id: 'img', header: "Foto", width: 100, renderer: img_render}
+    ];
+
+    var gridOption_detalle = {
+        id: grid_detalle_id,
+        loadURL: '/nymsa/inventario/cargar?tblname=estado_bodega',
+        saveURL: '',
+        width: "100%", //"100%", // 700,
+        height: "400", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption_detalle,
+        columns: colsOption_detalle,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        toolbarContent: 'reload filter nav state'
+    };
+
+    var mygrid = new Sigma.Grid(gridOption_detalle);
+    Sigma.Util.onLoad(
+            function() {
+                mygrid.render();
+                Sigma.$('bigbox4').style.display = "none";
+                Sigma.$('bigbox3').style.display = "none";
+                Sigma.$('bigbox2').style.display = "none";
+            });
+
+</script>
+
+<style type="text/css">
+
+    .gt-head-div {
+
+        height:24px;
+
+    }
+    .gt-inner {
+
+        height:80px;
+
+    }
+
+</style>
+
+<section>
+    <a href="/nymsa/inventario/exportarEstadoBodega" target="blank" class="button big">
+        <i class="icon-file-pdf"></i>
+        Informe sin foto
+    </a>
+    <a href="/nymsa/inventario/exportarEstadoBodegaImg" target="blank" class="button big">
+        <i class="icon-file-pdf"></i>
+        Informe con foto
+    </a>
+</section>

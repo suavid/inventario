@@ -1,0 +1,62 @@
+<script>
+    var grid_marca_id = "marca_grid";
+
+    var dsOption_marca = {
+        fields: [
+            {name: 'id'},
+            {name: 'nombre'}
+        ],
+        recordType: 'object'
+    }
+
+    var colsOption_marca = [
+        {id: 'id', header: "Id", width: 80},
+        {id: 'nombre', header: "Marcas", width: 515, editor: {type: 'text'}}
+    ];
+
+    var gridOption_marca = {
+        id: grid_marca_id,
+        loadURL: '/{systemModuleName}/grid_tables/marca_grid_1',
+        saveURL: '/{systemModuleName}/inventario/actualizar?tblname=marca',
+        width: "600", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption_marca,
+        columns: colsOption_marca,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        allowCustomSkin : true ,
+        skin: "mac",
+        toolbarContent: 'reload | del save | nav state'
+    };
+
+
+    var mygrid = new Sigma.Grid(gridOption_marca);
+    //Sigma.Util.onLoad(function() {
+        mygrid.render();
+    //});
+</script>
+
+<div id="page-container">
+    <div id="content">
+        <form action="/{systemModuleName}/inventario/guardar_marca" method="post">
+            <input type="checkbox" name="rellenar"/> Reutilizar Id's
+            <br/>
+            <br/>
+            <h3>Nueva marca:</h3> 
+            <div class="input-control text">
+                <input type="text" autofocus name="nombre" required/> 
+            </div>
+            <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>
+        </form>
+    </div>
+    <div id="bigbox" style="margin:15px;display:!none;">
+        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+</div>

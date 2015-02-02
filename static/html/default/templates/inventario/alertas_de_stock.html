@@ -1,0 +1,41 @@
+<h3>Alertas de stock bajo</h3>
+<table class="table" style="text-align: center;">
+	<tr>
+		<th>Linea</th>
+		<th>Grupo</th>
+		<th>Mínimo de stock admitido</th>
+		<th></th>
+	</tr>
+	<!-- START detalle -->
+		<tr>
+			<td>{linea}</td>
+			<td>{grupo}</td>
+			<td> <div class="input-control text"><input id="inp_{id_linea}_{id_grupo}" style="text-align: center;" onkeyup="validarEntero(event);" type="text" value="0" /></div></td>
+			<td><button type="button" onclick="actualizarMinimo({id_linea}, {id_grupo});">Aplicar cambios</button></td>
+		</tr>
+	<!-- END detalle -->
+</table>
+
+<script type="text/javascript">
+	
+	function validarEntero(e){
+		var val = $(e.target).val();
+		if(isNaN(val)){
+			$(e.target).val($(e.target).val().substring(0,$(e.target).val().length-1));
+		}
+	}
+
+	function actualizarMinimo(linea, grupo){
+		var con = confirm("Esta seguro que desea estos cambios?");
+		if(con){
+			var val  = $('#inp_'+linea+'_'+grupo).val();
+			var uri  = "/nymsa/inventario/actualizarMinimo";
+			var data = {"linea": linea, "grupo": grupo, "minimo_stock": val};
+
+			$.post(uri, data, function(response){
+
+				alert("Cambios aplicados correctamente!");
+			}, "json");
+		}
+	}
+</script>

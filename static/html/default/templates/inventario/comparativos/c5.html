@@ -1,0 +1,223 @@
+<script>
+
+    function difHandler(event, idInput, linea, estilo, color, talla, costo, bodega)
+    {
+        cant = $(event.target).val().trim();
+        
+        if (!isNaN(cant))
+        {
+
+            uri = "/nymsa/inventario/actualizar_fisico";
+            data = {
+                "linea":linea,
+                "estilo":estilo,
+                "color":color,
+                "talla":talla,
+                "cantidad":cant
+            };
+
+            make = $.post(uri, data, function(d){}, "json");
+        }
+
+        idInput = idInput.split('.').join('');
+        clases = idInput.split(' ');
+        idInput = clases.join('.');
+        
+        var diferencia = parseInt($('.f_' + idInput).val()) - parseInt($('.t_' + idInput).html());
+        
+        $('.d_' + idInput).html(diferencia);
+        
+        var pos = existeDiferencia(estilo,linea,color,talla);
+
+        if(pos < 0)
+            agregarDiferencia(estilo, linea, color, talla, diferencia, costo, bodega);
+        else
+            actualizarDiferencia(pos, diferencia);
+    }
+
+    function parseClass(event){
+        input = event.target;
+        class_ = $(input).attr('class');
+        c2 = class_.replace("f_", "t_");
+        c3 = class_.replace("f_", "d_");
+        e2 = document.getElementsByClassName(c2);
+        e3 = document.getElementsByClassName(c3);
+        $(input).removeClass(class_)
+        class_ = class_.split('.').join('');
+        $(input).addClass(class_);
+        $(e2).addClass(class_.replace("f_", "t_"));
+        $(e3).addClass(class_.replace("f_", "d_"));
+    }
+
+    function parseClass2(event){
+        input = event.target;
+        class_ = $(input).attr('class');
+        c2 = class_.replace("i_", "t_");
+        c3 = class_.replace("i_", "d_");
+        e2 = document.getElementsByClassName(c2);
+        e3 = document.getElementsByClassName(c3);
+        $(input).removeClass(class_)
+        class_ = class_.split('.').join('');
+        $(input).addClass(class_);
+        $(e2).addClass(class_.replace("i_", "t_"));
+        $(e3).addClass(class_.replace("i_", "d_"));
+    }
+
+    function agregarDiferencia(e, l, c, t, d, ct, bd){
+        var item = {
+            estilo: e,
+            linea: l,
+            color: c,
+            talla: t,
+            diferencia: d,
+            costo: ct, 
+            bodega: bd
+        }
+
+        window._diferenciaComparativos.push(item);
+    }
+
+    function existeDiferencia(e, l, c, t){
+        for(var i = 0; i < window._diferenciaComparativos.length; i++){
+            if(window._diferenciaComparativos[i].linea == l && window._diferenciaComparativos[i].estilo == e && window._diferenciaComparativos[i].color == c && window._diferenciaComparativos[i].talla == t){
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    function actualizarDiferencia(i, d){
+
+        window._diferenciaComparativos[i].diferencia = d;
+    }
+
+    function ajustarDiferencias(){
+        for(var i = 0; i < window._diferenciaComparativos.length; i++){
+            var dif = window._diferenciaComparativos[i].diferencia;
+            // fisico - teorico
+            if(dif > 0){
+                // fisico > teorico (entrada por ajuste)
+            }else if(dif < 0){
+                // teorico > fisico (salida por ajuste)
+            }
+        }
+    }
+
+    $(document).ready(function(){
+
+        window._diferenciaComparativos = [];
+        
+        $('#inv input').each(function(){
+            $(this).change();
+        });
+
+    });
+    </script>
+<div>
+ <button type="button" onclick="ajustarDiferencias();">Ajustar</button>
+    <table id="inv" class="table bordered" style="text-align:center;">
+        <thead>
+            <tr>
+                <th>Bodega</th>
+                <th>Linea</th>
+                <th>Proveedor</th>
+                <th>Estilo</th>
+                <th>Color</th>
+                <th>Talla</th>
+                <th>Costo</th>
+                <th>Teorico</th>
+                <th>Fisico</th>
+                <th>Diferencia</th>
+            </tr>
+        </thead>
+        <!-- START inventario -->
+        <tr>
+            <td>
+                {bodega}
+            </td>
+            <td>
+                {linea}
+            </td>
+            <td>
+                {proveedor}
+            </td>
+            <td>
+                {estilo}
+            </td>
+            <td>
+                {color}
+            </td>
+            <td>
+                {talla}
+            </td>
+            <td>
+                ${costo}
+            </td>
+            <td>
+                <span class="t_{linea}{proveedor}{estilo}{color}{talla}">{stock}</span>
+            </td>
+            <td>
+                <input type="text" class="f_{linea}{proveedor}{estilo}{color}{talla}" value="{fisico}" onchange="parseClass(event); difHandler(event, '{linea}{proveedor}{estilo}{color}{talla}', {id_linea}, {estilo}, {id_color}, {talla}, {costo}, {bodega});" />
+            </td>
+            <td>
+                <span class="d_{linea}{proveedor}{estilo}{color}{talla}"></span>
+            </td>
+            <!--<td>
+                <button class="i_{linea}{proveedor}{estilo}{color}{talla}" onclick="parseClass2(event); ajustar(event, '{linea}{proveedor}{estilo}{color}{talla}', {costo}, {bodega});" >Ajustar</button>
+            </td>-->
+        </tr>
+        <!-- END inventario -->
+    </table>
+</div>
+<script type="text/javascript">
+
+    function ajustar(event, idInput, costo, bodega)
+    {
+        idInput = idInput.split('.').join('');
+        clases  = idInput.split(' ');
+        idInput = clases.join('.');
+        dif     = parseInt($('.d_' + idInput).html());
+                    
+        if (confirm("Esta seguro? tenga cuidado"))
+        {
+            if (isNaN(dif))
+            {
+                alert("Ingrese valores validos");
+            }
+            else
+            {
+                if (dif < 0)
+                {
+                    /* salida por ajuste */
+                    tran = "2D";
+                    uri = "/nymsa/inventario/traslados?op=ajuste";
+                    uri += "&transaccion=" + tran;
+                    uri += "&costo=" + costo;
+                    uri += "&bodega=" + bodega;
+                    uri += "&pares=" + (dif * - 1);
+                    uri += "&concepto=" + encodeURIComponent("Salida por ajuste");
+                    var vurl = window.open(uri, '_blank');
+                }
+                else if (dif > 0)
+                {
+                    /* entrada por ajuste */
+                    tran = "1D";
+                    uri = "/nymsa/inventario/traslados?op=ajuste";
+                    uri += "&transaccion=" + tran;
+                    uri += "&costo=" + costo;
+                    uri += "&bodega=" + bodega;
+                    uri += "&pares=" + dif;
+                    uri += "&concepto=" + encodeURIComponent("Ingreso por ajuste");
+                    var vurl = window.open(uri, '_blank');
+                }
+                else
+                {
+                    alert("Todo parece bien");
+                }
+            }
+        }
+    }
+
+
+</script>

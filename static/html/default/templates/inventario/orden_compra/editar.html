@@ -1,0 +1,835 @@
+<script>
+    $(function(){
+
+        window.total_pares = 0;
+        window.total_costo = 0;
+        window.colision = false;
+        window.data_oc = {
+            "id": 0,
+            "estado": "",
+            "tipo": "0",
+            "total": 0,
+            "total_costo": 0.0
+        };
+
+        window.detail = {
+            "linea":0,
+            "estilo":"",
+            "color":0,
+            "talla":0.0,
+            "cantidad":0,
+            "costo":0.0,
+            "id_orden":0,
+            "recibidos": 0
+        };
+    });
+    
+    /*function nuevo_item(){
+                $.Dialog({
+                shadow: true,
+                        overlay: false,
+                        icon: '<span class="icon-new"></span>',
+                        title: 'Seleccion de linea',
+                        width: 500,
+                        padding: 10,
+                        draggable:true,
+                        content: [
+                                "<div style='text-align:center;'><h3>Seleccione una linea</h3>",
+                                "<div class='input-control select'><select id='clinea'></div>",
+                                "<br/><div style='text-align:right;'><button onclick='seleccionar_estilo_p();'>Siguiente</button></div>"
+                        ].join('')
+                });
+    }*/
+
+    /*function seleccionar_estilo_p(){
+    window.detail.linea = $('#clinea').val();
+            if (isNaN(window.detail.linea) || window.detail.linea <= 0){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Seleccion de Estilo',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>Seleccione un Estilo</h3>",
+                            "<div class='input-control text'><input type='text' id='cestilo' /></div></div>",
+                            "<br/><div style='text-align:right;'><button onclick='seleccionar_color_p();'>Siguiente</button></div>"
+                    ].join('')
+            });
+    }
+    }*/
+
+    /*function seleccionar_color_p(){
+        window.detail.estilo = $('#cestilo').val();
+        $.Dialog.close();
+        $.Dialog({
+            shadow: true,
+            overlay: false,
+            icon: '<span class="icon-new"></span>',
+            title: 'Seleccion de Color',
+            width: 500,
+            padding: 10,
+            draggable:true,
+            content: [
+                "<div style='text-align:center;'><h3>Seleccione un Color</h3>",
+                "<div class='input-control select'><select id='ccolor' onfocus='llenar();'></select></div></div>",
+                "<br/><div style='text-align:right;'><button onclick='seleccionar_talla_p();'>Siguiente</button></div>"
+            ].join('')
+        });
+
+    }*/
+
+    function llenar(){
+        $('#ccolor option').remove();
+        for(var s = 1; s < window._colors.length; s++){
+            $('#ccolor').append('<option value="'+window._colors[s].id+'">'+window._colors[s].nombre+'</option>')
+        }
+    }
+
+    /*function seleccionar_talla_p(){
+    window.detail.color = $('#ccolor').val();
+            if (isNaN(window.detail.color) || window.detail.color <= 0){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Seleccion de Talla',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>Seleccione una Talla</h3>",
+                            "<div class='input-control text'><input type='text' id='ctalla' /></div></div>",
+                            "<br/><div style='text-align:right;'><button onclick='seleccionar_cantidad_p();'>Siguiente</button></div>"
+                    ].join('')
+            });
+    }
+    }*/
+
+    /*function seleccionar_cantidad_p(){
+    window.detail.talla = parseFloat($('#ctalla').val());
+            if (isNaN(window.detail.talla) || window.detail.talla <= 0){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    uri = '/nymsa/inventario/verificarProducto'
+            snt = {
+            "estilo":window.detail.estilo,
+                    "linea":window.detail.linea,
+                    "color":window.detail.color,
+                    "talla": window.detail.talla
+            };
+            fs = $.post(uri, snt, function(data){
+            if (data.status == "EXISTS"){
+            window.detail.costo = data.costo;
+                    $.Dialog.close();
+                    $.Dialog({
+                    shadow: true,
+                            overlay: false,
+                            icon: '<span class="icon-new"></span>',
+                            title: 'Seleccion de Cantidad',
+                            width: 500,
+                            padding: 10,
+                            draggable:true,
+                            content: [
+                                    "<div style='text-align:center;'><h3>Seleccione la cantidad a ordenar</h3>",
+                                    "<div class='input-control text'><input type='text' id='ccantidad' /></div></div>",
+                                    "<br/><div style='text-align:right;'><button onclick='confirmar_p();'>Siguiente</button></div>"
+                            ].join('')
+                    });
+            } else{
+            alert("El código ingresado no corresponde con ningún producto");
+                    $.Dialog.close();
+            }
+            }, "json");
+    }
+    }*/
+
+
+    /*function confirmar_p(){
+        window.detail.cantidad = $('#ccantidad').val();
+        if (isNaN(window.detail.cantidad)){
+    $.Notify({
+    caption: "Error de datos",
+            content: "Debe ingresar un número válido"
+    });
+    } else{
+    $.Dialog.close();
+            $.Dialog({
+            shadow: true,
+                    overlay: false,
+                    icon: '<span class="icon-new"></span>',
+                    title: 'Confirmacion',
+                    width: 500,
+                    padding: 10,
+                    draggable:true,
+                    content: [
+                            "<div style='text-align:center;'><h3>¿Está seguro?</h3>",
+                            "Codigo del producto a ordenar: " + window.detail.linea + "-" + window.detail.estilo + "-" + window.detail.color + "-" + window.detail.talla + "</div>",
+                            "<br/><br/><div style='text-align:right;'><button onclick='commit_p();'>Confirmar Orden</button></div>"
+                    ].join('')
+            });
+    }
+    }*/
+
+    function commit_p(){
+        //$.Dialog.close();
+
+        window.detail.estilo   = $('#bEstilo').val();
+        window.detail.linea    = $('#bLinea').val();
+        window.detail.color    = $('#bColor').val();
+        window.detail.talla    = $('#bTalla').val();
+        window.detail.costo    = $('#bCosto').val();
+        window.detail.cantidad = Math.round($('#bCantidad').val());
+
+        tabla_detalle = $('#oc_detalle');
+
+         fila = $('<tr>');
+            
+            c_linea = $('<td>', {
+                class:"linea"
+            });
+                
+            c_estilo = $('<td>', {
+                class:"estilo"
+            });
+
+            c_codor= $('<td>', {
+                class:"codor"
+            });
+                
+            c_color = $('<td>', {
+                class:"color"
+            });
+                
+            c_talla = $('<td>', {
+                class:"talla"
+            });
+                
+            c_pares = $('<td>', {
+                class:"pares"
+            });
+                
+            c_cunitario = $('<td>');
+            
+            c_total = $('<td>', {
+                class:"totales"
+            });
+
+            c_anexo = $('<td>', {
+                class:"anexo"
+            });
+            
+        $('.linea').each(function(){
+            if (parseInt($(this).html()) == parseInt(window.detail.linea)){
+                estilo_ = $(this).next();
+                if ($(estilo_).html() == window.detail.estilo){
+                    color_ = $(estilo_).next();
+                    if (parseInt($(color_).html()) == parseInt(window.detail.color)){
+                        talla_ = $(color_).next();
+                        if (parseFloat($(talla_).html()) == parseFloat(window.detail.talla)){
+                            window.colision = true;
+                            pares_ = $(talla_).next();
+                            $(pares_).html(parseInt($(pares_).html()) + parseInt(window.detail.cantidad));
+                            total_ = $(talla_).next().next().next();
+                            $(total_).html(parseInt($(pares_).html()) * parseFloat(window.detail.costo));
+                            uri_dt = '/nymsa/inventario/actualizar_detalle_oc';
+                            fga = $.post(uri_dt, window.detail, function(data){}, "json");
+                            if (parseInt($(pares_).html()) <= 0){
+                                $(pares_).parent().remove();
+                                del_uri = "/nymsa/inventario/del_detalle";
+                                del_dat = {
+                                    "estilo":window.detail.estilo,
+                                    "linea":window.detail.linea,
+                                    "color":window.detail.color,
+                                    "talla":window.detail.talla,
+                                    "id_orden":window.data_oc.id
+                                };
+                                $.post(del_uri, del_dat, function(data){}, "json");
+                            }
+                        }
+                    }
+                }
+            }       
+        });
+            
+        if (!window.colision){
+            c_cunitario = $('<td>');
+
+            c_total = $('<td>', {
+                class:"totales"
+            });
+
+            c_linea.html(window.detail.linea);
+            c_estilo.html(window.detail.estilo);
+            c_color.html(window.detail.color);
+            c_talla.html(window.detail.talla);
+            c_pares.html(window.detail.cantidad);
+            c_cunitario.html(window.detail.costo);
+            c_total.html(parseFloat(window.detail.cantidad * window.detail.costo).toFixed(2));
+
+
+            c_codor.html(window.detail.codigo_origen);
+            c_anexo.html("");
+
+            c_del = $('<td><a href="javascript: void(0);" onclick="delDet('+window.detail.linea+',\''+window.detail.estilo+'\','+window.detail.color+','+window.detail.talla+')">Eliminar</a></td>');
+
+            c_total.html(parseFloat(window.detail.cantidad * window.detail.costo).toFixed(2));
+
+
+            fila.append(c_linea);
+            fila.append(c_estilo);
+            fila.append(c_codor);
+            fila.append(c_color);
+            fila.append(c_talla);
+            fila.append(c_pares);
+            fila.append(c_cunitario);
+            fila.append(c_total);
+            fila.append(c_del);
+            fila.append(c_anexo);
+            
+            tabla_detalle.append(fila);
+
+            uri_dt = '/nymsa/inventario/agregar_detalle_oc';
+            fga = $.post(uri_dt, window.detail, function(data){}, "json");
+
+            resetInputs();
+        }
+
+        window.colision = false;
+        window.total_costo = 0;
+        window.total_pares = 0;
+        
+        $('.pares').each(function(){
+            window.total_pares += parseInt($(this).html());
+        });
+            
+        $('.totales').each(function(){
+            window.total_costo += parseFloat($(this).html());
+        });
+            
+        $('#cantP').html(window.total_pares);
+        $('#totalC').html(parseFloat(window.total_costo).toFixed(2));
+        uri_g = '/nymsa/inventario/actualizar_oc';
+        u_oc = {
+            "id":window.data_oc.id,
+            "total": parseInt(window.total_pares),
+            "total_costo": parseFloat(window.total_costo)
+        };
+            
+        fga = $.post(uri_g, u_oc, function(data){}, "json");
+    }
+
+    function anexar(){
+        //$.Dialog.close();
+
+        window.detail.estilo   = $('#bEstilo').val();
+        window.detail.linea    = $('#bLinea').val();
+        window.detail.color    = $('#bColor').val();
+        window.detail.talla    = $('#bTalla').val();
+        window.detail.costo    = $('#bCosto').val();
+        window.detail.cantidad = Math.round($('#bCantidad').val());
+
+        tabla_detalle = $('#oc_detalle');
+
+         fila = $('<tr>');
+            
+            c_linea = $('<td>', {
+                class:"linea"
+            });
+                
+            c_estilo = $('<td>', {
+                class:"estilo"
+            });
+
+            c_codor= $('<td>', {
+                class:"codor"
+            });
+                
+            c_color = $('<td>', {
+                class:"color"
+            });
+                
+            c_talla = $('<td>', {
+                class:"talla"
+            });
+                
+            c_pares = $('<td>', {
+                class:"pares"
+            });
+                
+            c_cunitario = $('<td>');
+            
+            c_total = $('<td>', {
+                class:"totales"
+            });
+
+            c_anexo = $('<td>', {
+                class:"anexo"
+            });
+            
+        $('.linea').each(function(){
+            if (parseInt($(this).html()) == parseInt(window.detail.linea)){
+                estilo_ = $(this).next();
+                if ($(estilo_).html() == window.detail.estilo){
+                    color_ = $(estilo_).next();
+                    if (parseInt($(color_).html()) == parseInt(window.detail.color)){
+                        talla_ = $(color_).next();
+                        if (parseFloat($(talla_).html()) == parseFloat(window.detail.talla)){
+                            window.colision = true;
+                            pares_ = $(talla_).next();
+                            $(pares_).html(parseInt($(pares_).html()) + parseInt(window.detail.cantidad));
+                            total_ = $(talla_).next().next().next();
+                            $(total_).html(parseInt($(pares_).html()) * parseFloat(window.detail.costo));
+                            uri_dt = '/nymsa/inventario/actualizar_detalle_oc';
+                            fga = $.post(uri_dt, window.detail, function(data){}, "json");
+                            if (parseInt($(pares_).html()) <= 0){
+                                $(pares_).parent().remove();
+                                del_uri = "/nymsa/inventario/del_detalle";
+                                del_dat = {
+                                    "estilo":window.detail.estilo,
+                                    "linea":window.detail.linea,
+                                    "color":window.detail.color,
+                                    "talla":window.detail.talla,
+                                    "id_orden":window.data_oc.id
+                                };
+                                $.post(del_uri, del_dat, function(data){}, "json");
+                            }
+                        }
+                    }
+                }
+            }       
+        });
+            
+        if (!window.colision){
+            c_cunitario = $('<td>');
+
+            c_total = $('<td>', {
+                class:"totales"
+            });
+
+            c_linea.html(window.detail.linea);
+            c_estilo.html(window.detail.estilo);
+            c_color.html(window.detail.color);
+            c_talla.html(window.detail.talla);
+            c_pares.html(window.detail.cantidad);
+            c_cunitario.html(window.detail.costo);
+            c_total.html(parseFloat(window.detail.cantidad * window.detail.costo).toFixed(2));
+
+
+            c_codor.html(window.detail.codigo_origen);
+            c_anexo.html('<i class="icon-flag"></i>');
+
+            c_del = $('<td><a href="javascript: void(0);" onclick="delDet('+window.detail.linea+',\''+window.detail.estilo+'\','+window.detail.color+','+window.detail.talla+')">Eliminar</a></td>');
+
+            c_total.html(parseFloat(window.detail.cantidad * window.detail.costo).toFixed(2));
+
+
+            fila.append(c_linea);
+            fila.append(c_estilo);
+            fila.append(c_codor);
+            fila.append(c_color);
+            fila.append(c_talla);
+            fila.append(c_pares);
+            fila.append(c_cunitario);
+            fila.append(c_total);
+            fila.append(c_del);
+            fila.append(c_anexo);
+            
+            tabla_detalle.append(fila);
+
+            uri_dt = '/nymsa/inventario/agregar_detalle_oc_a';
+            fga = $.post(uri_dt, window.detail, function(data){}, "json");
+
+            resetInputs();
+        }
+
+        window.colision = false;
+        window.total_costo = 0;
+        window.total_pares = 0;
+        
+        $('.pares').each(function(){
+            window.total_pares += parseInt($(this).html());
+        });
+            
+        $('.totales').each(function(){
+            window.total_costo += parseFloat($(this).html());
+        });
+            
+        $('#cantP').html(window.total_pares);
+        $('#totalC').html(parseFloat(window.total_costo).toFixed(2));
+        uri_g = '/nymsa/inventario/actualizar_oc';
+        u_oc = {
+            "id":window.data_oc.id,
+            "total": parseInt(window.total_pares),
+            "total_costo": parseFloat(window.total_costo)
+        };
+            
+        fga = $.post(uri_g, u_oc, function(data){}, "json");
+    }
+
+    function bloquear_orden(){
+        s = confirm("Esta completamente seguro?");
+        if (s){
+            location.href = "/nymsa/inventario/bloquear_orden?id="+window.data_oc.id;
+        }
+    }
+
+    function actualizar_estado(){
+        s = confirm("Esta completamente seguro?");
+        if (s){
+            estado = $("input[name='est']:checked").val();
+            location.href = "/nymsa/inventario/estado_oc?estado=" + estado + "&id=" + window.data_oc.id;
+        }
+    }
+</script>
+<div style="margin-top:30px;">
+    <!-- START detalle -->
+    <script type="text/javascript">
+        $(function(){
+            var anexo = "";
+
+            if("{es_anexo}"=="1") anexo ='<i class="icon-flag"></i>';
+            
+            tabla_detalle = $('#oc_detalle');
+            
+            fila = $('<tr>');
+            
+            c_linea = $('<td>', {
+                class:"linea"
+            });
+                
+            c_estilo = $('<td>', {
+                class:"estilo"
+            });
+
+            c_codor= $('<td>', {
+                class:"codor"
+            });
+                
+            c_color = $('<td>', {
+                class:"color"
+            });
+                
+            c_talla = $('<td>', {
+                class:"talla"
+            });
+                
+            c_pares = $('<td>', {
+                class:"pares"
+            });
+                
+            c_cunitario = $('<td>');
+            
+            c_total = $('<td>', {
+                class:"totales"
+            });
+
+            c_anexo = $('<td>', {
+                class:"anexo"
+            });
+                
+            c_linea.html({linea});
+            c_estilo.html({estilo});
+            c_color.html({color});
+            c_talla.html({talla});
+            c_codor.html("{codigo_origen}");
+            c_pares.html({cantidad});
+            c_cunitario.html({costo});
+            c_anexo.html(anexo);
+
+            c_del = $('<td><a href="javascript: void(0);" onclick="delDet({linea},\'{estilo}\',{color},{talla})">Eliminar</a></td>');
+
+            c_total.html(parseFloat({cantidad} * {costo}).toFixed(2));
+
+            fila.append(c_linea);
+            fila.append(c_estilo);
+            fila.append(c_codor);
+            fila.append(c_color);
+            fila.append(c_talla);
+            fila.append(c_pares);
+            fila.append(c_cunitario);
+            fila.append(c_total);
+            fila.append(c_del);
+            fila.append(c_anexo);
+            tabla_detalle.append(fila);
+
+        });
+    </script>
+    <!-- END detalle -->
+    <div style="display:table;">
+        <div style="float:left; padding: 15px;border:solid 1px #D3D3D3;" class="span3">
+            <!-- START general -->
+            <script type="text/javascript">
+                $(function(){
+                    window.data_oc.id = {id};
+                    window.data_oc.estado = "{estado}";
+                    window.data_oc.tipo = "{tipo}";
+                    window.data_oc.total = {total};
+                    window.data_oc.total_costo = {total_costo};
+                    window.detail.id_orden = {id};
+                    window.data_oc.editable = {editable};
+                    if ( ("{estado}" != "PENDIENTE") || {editable}==0 ){
+                        $('.btnS').attr("disabled", "disabled");
+                        $('.btnS').addClass("disabled");
+                        $('#btnAnexo').removeAttr("disabled");
+                        $('.btnS').removeClass("primary");
+                    } else{
+                        $('.btnS').removeAttr("disabled");
+                        $('.btnS').removeClass("disabled");
+                    }
+
+                    if ( ("{estado}" == "ENTREGADO")){
+                        $('#btnAnexo').attr("disabled", "disabled");
+                        $('#rdRec').attr("disabled", "disabled");
+                    }
+                });
+            </script>
+
+
+
+            <strong># Orden</strong><br/> {id}<br/><br/>
+            <strong>Estado</strong><br/> {estado}<br/><br/> 
+            <strong>Tipo</strong><br/> {tipo}<br/> <br/>
+            <strong>Total Pares</strong><br/> <span id="cantP">{total}</span><br/> <br/>
+            <strong>Total costo</strong><br/> <span id="totalC">{total_costo}</span><br/><br/><br/>
+            <!--<button class="primary btnS" onclick="nuevo_item()">Agregar producto</button>-->
+            <!-- END general -->
+        </div>
+        <style>
+            #info-bar input,#info-bar select{
+                margin: 0px;
+            }
+
+            #info-titles{
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            #info-bar{
+                margin-top: 10px;
+                margin-right: 20px;
+                border: solid 1px #D3D3D3;
+                padding-bottom: 5px;
+                padding-top: 5px;
+                padding-left: 15px;
+            }
+
+            #info-titles p{
+                width: 70px;
+                margin-left: 2px;
+                margin-right: 2px;
+                float: left;
+                text-align: center;
+                font-size: 12px;
+            }
+        </style>
+        <div class="span10" style="float: left; margin-left: 30px;">
+            <div class="input-control text" id="info-bar">
+                <select id="bLinea" style="width:130px;" > 
+                    <!-- START linea -->
+                    <option value="{id}">[{id}]  {nombre}</option>
+                    <!-- END linea -->
+                </select>
+                <input type="text" id="bEstilo" style="width:70px;padding: 0px;" onchange="requestColors();" />
+
+                <select id="bColor" style="width:70px;padding: 0px;" onchange="requestRun();">
+                </select>
+
+                <select id="bTalla"  style="width:70px;padding: 0px;" >
+                </select>
+
+                <input type="text"  id="bCosto" onkeyup="numberRestric('bCosto');" style="width:70px;padding: 0px;" />
+
+                <input type="text"  id="bCantidad" onkeyup="numberRestric('bCantidad');" style="width:70px;padding: 0px" onchange="seleccionarCantidad();"/>
+
+                <button id="Enter" class="btnS" onclick="commit_p();"><i class="icon-enter-2"></i></button>
+                <button id="btnAnexo"  onclick="anexar();" disabled="disabled">Anexar</button>
+            </div>
+            <div id="info-titles">
+                <p style="padding-right:130px;">Linea</p> 
+                <p>Estilo</p> 
+                <p>Color</p> 
+                <p>Talla</p>
+                <p>Costo u.</p>
+                <p>Cantidad</p> 
+            </div>
+        </div>
+
+
+        <div style="margin-left:35px;margin-top:20px;float:left;">
+            (<i class="icon-flag"></i>: Anexos)
+            <table id="oc_detalle" class="table">
+                <thead>
+                    <tr>
+                        <th>Linea</th>
+                        <th>Estilo</th>
+                        <th>Código de origen</th>
+                        <th>Color</th>
+                        <th>Talla</th>
+                        <th>Pares</th>
+                        <th>Costo u.</th>
+                        <th>Total costo</th>
+                    </tr>
+                </thead>
+            </table>
+            <br/>
+            <button class="btnS" onclick="bloquear_orden();">Confirmar Orden</button>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" value="ENTREGADO" checked="checked" name="est"/>
+                    <span class="check" ></span>
+                    Recibir orden
+                </label>
+            </div>
+            <div class="input-control radio">
+                <label>
+                    <input type="radio" id="rdRec" value="RECHAZADO" name="est"/>
+                    <span class="check" ></span>
+                    Rechazar orden
+                </label>
+            </div>
+             - 
+            <button id="btnAct" class="success" onclick="actualizar_estado();">Actualizar estado</button>
+        </div>
+    </div>	
+</div>
+<script type="text/javascript">
+    
+    function numberRestric(id){
+        var val = $('#'+id).val();
+        if(isNaN(val) || (val < 0) ){
+            $('#'+id).val("");
+        }
+    } 
+
+    function delDet(linea, estilo, color, talla){
+        if(window.data_oc.editable){
+            var con = confirm("Esta seguro que desea eliminar este producto?");
+
+            if(con){
+                $('.linea').each(function(){
+                    if (parseInt($(this).html()) == parseInt(linea)){
+                        estilo_ = $(this).next();
+                        if ($(estilo_).html() == estilo){
+                            color_ = $(estilo_).next();
+                            if (parseInt($(color_).html()) == parseInt(color)){
+                                talla_ = $(color_).next();
+                                if (parseFloat($(talla_).html()) == parseFloat(talla)){
+                                    pares_ = $(talla_).next();
+                                    $(pares_).parent().remove();
+                                    del_uri = "/nymsa/inventario/del_detalle";
+                                    del_dat = {
+                                        "estilo":estilo,
+                                        "linea":linea,
+                                        "color":color,
+                                        "talla":talla,
+                                        "id_orden":window.data_oc.id
+                                    };
+                                    
+                                    $.post(del_uri, del_dat, function(data){}, "json");
+                                }
+                            }
+                        }
+                    }       
+                });
+
+                $('.pares').each(function(){
+                    window.total_pares += parseInt($(this).html());
+                });
+                    
+                $('.totales').each(function(){
+                    window.total_costo += parseFloat($(this).html());
+                });
+                    
+                $('#cantP').html(window.total_pares);
+                $('#totalC').html(parseFloat(window.total_costo).toFixed(2));
+                uri_g = '/nymsa/inventario/actualizar_oc';
+                u_oc = {
+                    "id":window.data_oc.id,
+                    "total": parseInt(window.total_pares),
+                    "total_costo": parseFloat(window.total_costo)
+                };
+                    
+                fga = $.post(uri_g, u_oc, function(data){}, "json");
+            }
+        }
+    }
+
+    function resetInputs(){
+        $('#bEstilo').val("");
+        $('#bCosto').val("");
+        $('#bCantidad').val("");
+        $('#bColor option').remove();
+        $('#bTalla option').remove();
+    }
+
+    function requestColors(){
+        var linea  = $('#bLinea').val();
+        var estilo = $('#bEstilo').val();
+
+        var uri    = "/nymsa/inventario/requestColors";
+        var data   = {
+            "linea" : linea,
+            "estilo": estilo
+        };
+
+
+        $.post(uri, data, function(response){
+            
+            if(response.length>0){
+                $('#bColor option').remove();
+                for(var i = 0; i < response.length; i++){
+                    $('#bColor').append('<option value="'+response[i].id+'">'+response[i].nombre+'</option')
+                }
+                $('#bColor').change();
+            }else{
+                resetInputs();
+            }
+
+        }, "json");
+    }
+
+    function requestRun(){
+        var linea  = $('#bLinea').val();
+        var estilo = $('#bEstilo').val();
+        var color  = $('#bColor').val();
+
+        var uri    = "/nymsa/inventario/requestRun";
+        var data   = {
+            "linea" : linea,
+            "estilo": estilo,
+            "color": color
+        };
+
+
+        $.post(uri, data, function(response){
+            
+            $('#bTalla option').remove();
+            for(var i = 0; i < response.length; i++){
+                $('#bTalla').append('<option value="'+response[i].talla+'">'+response[i].talla+'</option')
+            }
+        }, "json");
+    }
+
+</script>

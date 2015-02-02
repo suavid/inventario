@@ -1,0 +1,56 @@
+<h3> Cambio masivo de linea </h3>
+
+<div class="input-control select span4">
+    <p>Linea actual</p>
+    <select id="lineaActual">
+        <!-- START linea01 -->
+            <option value="{id}">[{id}] - {nombre}</option>
+        <!-- END linea01 -->
+    <select/>
+</div> 
+
+<div class="input-control text span4">
+    <p>Estilo actual</p>
+    <input type="text" id="estilo"/>
+</div>
+<div style="clear: both;"></div>
+<div class="input-control select span4">  
+    <p>Nueva linea</p> 
+    <select id="nuevaLinea">
+        <!-- START linea02 -->
+        <option value="{id}">[{id}] - {nombre}</option>
+        <!-- END linea02 -->
+    <select/>  
+</div>
+
+<button id="procesar" type="button"> Realizar cambio </button>
+        
+<script>
+            $(document).ready(function() {
+                $('#procesar').bind('click', cambioLinea);
+            });
+
+            function cambioLinea() {
+                this.disabled = "disabled";
+                var _lineaActual = $('#lineaActual').val();
+                var _nuevaLinea = $('#nuevaLinea').val();
+                var _estilo = $('#estilo').val().trim();
+                if (_estilo == "") {
+                    alert("Especifique un estilo");
+                    $('#procesar').removeAttr("disabled");
+                }
+                else {
+                    var uri = '/nymsa/inventario/s_cambio_linea';
+                    var data = {
+                        lineaActual: _lineaActual,
+                        nuevaLinea: _nuevaLinea,
+                        estilo: _estilo
+                    };
+
+                    var post_r = $.post(uri, data, function(d) {
+                        alert(d.message);
+                        $('#procesar').removeAttr("disabled");
+                    }, "json");
+                }
+            }
+        </script>

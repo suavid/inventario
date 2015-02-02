@@ -1,0 +1,261 @@
+<style type="text/css">
+	table td{
+		font-size: 16px;
+		padding-left: 20px;
+	}
+
+	table td input{
+		font-size: 12px;
+		padding: 5px;
+		color: #636363;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		window.pendientes = [];
+		if("{orden_estado}"!="PENDIENTE"){
+			$('#btnProcesar').attr("disabled", "disabled");
+		}else{
+			$('#btnImp').attr("href","javascript: void(0)");
+			$('#btnImp').attr("target","");
+			$('#btnImp').bind("click", function(){
+				alert("IMPOSIBLE IMPRIMIR");
+			});
+		}
+
+		cargar_operaciones({norden});
+		$('.item').bind('mouseover', function(){
+			$(this).addClass()
+			var tds    = $(this).children('td');
+			var linea  = $(tds[0]).html();
+			var estilo = $(tds[1]).html();
+			var uri  = "/nymsa/inventario/datos_producto";
+			var data = {"linea": linea, "estilo": estilo};
+			
+			$.post(uri, data, function(resp){
+				$('#producto_descripcion').val(resp.descripcion);
+				$('#producto_catalogo').val(resp.catalogo);
+				$('#producto_pagina').val(resp.pagina);
+			}, "json");
+
+			$('#foto').html("");
+			$('#foto').append('<img style="width: 150px; padding: 10px;" src="../static/img/productos/thumbnail_'+linea+'_'+estilo+'.jpg" alt="Sin asignar"/>')
+			});
+	});
+
+	function cargar_operaciones(id_orden){
+		var uri  = "/nymsa/inventario/cargar_operaciones_oc";
+		var data = {"id_orden": id_orden};
+
+		$.post(uri, data, function(resp){
+			$('#operaciones').html(resp.html);
+		}, "json");
+	}
+
+	function recibir(id, id_detalle, tot, descripcion1, descripcion2){
+		var cant = $(id).val();
+		if(cant > tot){
+			alert("La cantidad ingresada es demasiado alta");
+		}else{
+			var descripcion = descripcion1+cant+descripcion2;
+			var uri  = "/nymsa/inventario/recibir_item";
+			var data = {"id_detalle": id_detalle, "id_orden": {norden}, "cantidad": cant, "descripcion":descripcion};
+
+			$.post(uri, data, function(resp){
+				cargar_operaciones({norden});
+				calcular_pendientes(id_detalle);
+			}, "json");
+		}
+	}
+
+	function calcular_pendientes(id_detalle){
+		$('#pen'+id_detalle).html($('#ct'+id_detalle).html() - $('#inpt'+id_detalle).val() - $('#can'+id_detalle).html());
+		if($('#pen'+id_detalle).html()==0){
+			$('#btnPen'+id_detalle).attr("disabled", "disabled");
+		}
+
+		actualizarPendientes(id_detalle, $('#pen'+id_detalle).html());
+	}
+
+	function baja(id_detalle){
+		var uri  = "/nymsa/inventario/dar_baja_item_oc";
+		var data = {"id_detalle": id_detalle, "id_orden": {norden}};
+
+		$.post(uri, data, function(resp){
+			cargar_operaciones({norden});
+			$('#can'+resp.id).html(resp.cancelados);
+			calcular_pendientes(resp.id);
+		}, "json");	
+	}
+
+	function deshacer(id_detalle){
+		if("{orden_estado}"=="PENDIENTE"){
+			var uri  = "/nymsa/inventario/deshacer_operacion_oc";
+			var data = {"id_detalle": id_detalle};
+
+			$.post(uri, data, function(resp){
+				cargar_operaciones({norden});
+				$('#can'+resp.id).html("0");
+				$('#inpt'+resp.id).val("0");
+				calcular_pendientes(resp.id);
+				desbloquear(resp.id);
+			}, "json");	
+		}else{
+			alert("Esta orden ya no se puede modificar")
+		}
+	}
+
+	function desbloquear(id){
+		$('#inpt'+id).removeAttr("disabled");
+		$('#btn'+id).removeAttr("disabled");
+		$('#btnPen'+id).removeAttr("disabled");
+	}
+
+	function actualizarPendientes(id, pendientes){
+		for(var i = 0; i < window.pendientes.length; i++){
+			if(window.pendientes[i].id == id)  window.pendientes[i].pendientes = pendientes;  
+		}
+	}
+
+	function procesarOrden(){
+		var pendientes = 0;
+		for(var i = 0; i < window.pendientes.length; i++){
+			pendientes +=  parseInt(window.pendientes[i].pendientes);  
+		}
+
+		if(pendientes > 0){
+			alert("No se puede procesar una orden con elementos pendientes");
+		}else{
+			var con = confirm("Esta seguro de ingresar estos productos? No se puede deshacer");
+			if(con){
+				location.href = "/nymsa/inventario/procesarOrdenCompra?id="+{norden};
+			}
+		}
+	}
+
+</script>
+<h2>Recepción de producto</h2>
+<button type="button" class="success" id="btnProcesar" onclick="procesarOrden();">Confirmar entrada de producto</button>
+<a href="/nymsa/report/imprimirOrdenCompra?id={norden}" id="btnImp" onclick="imprimir();" class="button" disabled="disabled" target="_blank"><i class="icon-printer"></i> Imprimir</a>
+<hr/>
+<div>
+	<div style="float: left; width: 300px; margin-right: 20px;">
+		<h3>Orden de compra No.{norden}</h3>
+		<table>
+			<tr><td> <strong>Estado:</strong> </td><td> <input type="text" readonly value="{orden_estado}" /> </td></tr> 
+			<tr><td> <strong>Proveedor:</strong> </td><td> <input type="text" readonly value="{orden_proveedor}" /> </td></tr>
+			<tr><td> <strong>Pares:</strong> </td><td> <input type="text" readonly value="{orden_total}" /> </td></tr>
+			<tr><td> <strong>Importe:</strong> </td><td> <input type="text" readonly value="{orden_total_costo}" /> </td></tr>
+			<tr><td> <strong>Concepto:</strong> </td><td> <input type="text" readonly value="{orden_concepto}" /> </td></tr>
+		</table>
+	</div>
+	<div style="float: left; width: 300px; margin-right: 20px;">
+		<h3>Proveedor No.{codprov}</h3>
+		<table>
+			<tr><td> <strong>Nombre:</strong> </td><td> <input type="text" readonly value="{proveedor_nombre}" /> </td></tr> 
+			<tr><td> <strong>Teléfono:</strong> </td><td> <input type="text" readonly value="{proveedor_telefono}" /> </td></tr>
+			<tr><td> <strong>Contacto:</strong> </td><td> <input type="text" readonly value="{proveedor_contacto}" /> </td></tr>
+			<tr><td> <strong>Dirección:</strong> </td><td> <input type="text" readonly value="{proveedor_direccion}" /> </td></tr>
+			<tr><td> <strong>Tel. Con:</strong> </td><td> <input type="text" readonly value="{proveedor_telefono_contacto}" /> </td></tr>
+		</table>
+	</div>
+	<div style="float: left; width: 500px; margin-right: 20px;">
+		<div style="float: left; width: 150px;">
+			<h3>Producto</h3>
+			<div id="foto" style="with: 150px; height: 120px; overflow: hidden; border: solid 1px #d3d3d3;">
+		
+			</div>
+		</div>
+		<div style="float: left; width: 350px; margin-top: 50px;">
+			<table>
+				<tr><td> <strong>Descripción:</strong> </td><td> <input id="producto_descripcion" type="text" readonly value="" />  </td></tr> 
+				<tr><td> <strong>Catálogo:</strong> </td><td> <input id="producto_catalogo" type="text" readonly value="" />  </td></tr>
+				<tr><td> <strong>No.Página:</strong> </td><td> <input id="producto_pagina" type="text" readonly value="" />  </td></tr>
+			</table>	
+		</div>
+		<div style="clear: both;"></div>
+	</div>
+</div>
+<div style="clear: both;"></div>
+<hr/>
+<h4>Detalle</h4>
+<table class="table hovered" style="text-align: center;">
+	<tr>
+		<th>Linea</th>
+		<th>Estilo</th>
+		<th>Talla</th>
+		<th>Color</th>
+		<th>Cantidad</th>
+		<th>Costo</th>
+		<th>Recibidos</th>
+		<th>Cancelados</th>
+		<th>Pendientes</th>
+		<th>Bodega</th>
+		<th></th>
+	</tr>
+	<!-- START detalle -->
+		<tr class="item">
+			<td>{linea}</td>
+			<td>{estilo}</td>
+			<td>{talla}</td>
+			<td>{color}</td>
+			<td><span id="ct{id}">{cantidad}</span></td>
+			<td>{costo}</td>
+			<td><input type="text" id="inpt{id}" value="{recibidos}" style="width: 50px;" /><button  id="btn{id}" type="button" onclick="recibir('#inpt{id}', {id}, {cantidad},'Se reciben ', ' unidades del producto {linea}-{estilo}-{color}-{talla} [Orden No.{norden}]');">Confirmar</button></td>
+			<td><span id="can{id}">{cancelados}</span></td>
+			<td><span id="pen{id}">0</span></td>
+			<td>{bodega}</td>
+			<td><button id="btnPen{id}" type="button" onclick="baja({id});">Dar de baja al producto pendiente</button></td>
+		</tr>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			calcular_pendientes({id});
+			window.pendientes.push({"id":{id}, "pendientes": $('#pen{id}').html()});
+		});
+		</script>
+	<!-- END detalle -->
+</table>
+
+<hr/>
+<h4>Anexos</h4>
+<table class="table hovered" style="text-align: center;">
+	<tr>
+		<th>Linea</th>
+		<th>Estilo</th>
+		<th>Talla</th>
+		<th>Color</th>
+		<th>Cantidad</th>
+		<th>Costo</th>
+		<th>Recibidos</th>
+		<th>Cancelados</th>
+		<th>Pendientes</th>
+		<th>Bodega</th>
+		<th></th>
+	</tr>
+	<!-- START anexos -->
+		<tr class="item">
+			<td>{linea}</td>
+			<td>{estilo}</td>
+			<td>{talla}</td>
+			<td>{color}</td>
+			<td><span id="ct{id}">{cantidad}</span></td>
+			<td>{costo}</td>
+			<td><input type="text" id="inpt{id}" value="{recibidos}" style="width: 50px;" /><button  id="btn{id}" type="button" onclick="recibir('#inpt{id}', {id}, {cantidad},'Se reciben ', ' unidades del producto {linea}-{estilo}-{color}-{talla} [Orden No.{norden}]');">Confirmar</button></td>
+			<td><span id="can{id}">{cancelados}</span></td>
+			<td><span id="pen{id}">0</span></td>
+			<td>{bodega}</td>
+			<td><button id="btnPen{id}" type="button" onclick="baja({id});">Dar de baja al producto pendiente</button></td>
+		</tr>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			calcular_pendientes({id});
+			window.pendientes.push({"id":{id}, "pendientes": $('#pen{id}').html()});
+		});
+		</script>
+	<!-- END anexos -->
+</table>
+<hr/>
+<h4>Operaciones</h4>
+<div id="operaciones">
+	
+</div>

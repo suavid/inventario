@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body> 
+        <style type="text/css">
+            #hor-minimalist-a
+            {
+                font-size: 12px;
+                background: #fff;
+                margin: 45px;
+                width: 480px;
+                border-collapse: collapse;
+                text-align: left;
+            }
+            #hor-minimalist-a th
+            {
+                font-size: 14px;
+                font-weight: normal;
+                color: #333;
+                padding: 10px 8px;
+                border-bottom: 2px solid #6678b1;
+            }
+            #hor-minimalist-a td
+            {
+                color: #333;
+                padding: 9px 8px 0px 8px;
+            }
+            #hor-minimalist-a tbody tr:hover td
+            {
+                color: #333;
+            }
+
+
+            #hor-minimalist-b
+            {
+                font-size: 12px;
+                background: #fff;
+                margin: 45px;
+                width: 480px;
+                border-collapse: collapse;
+                text-align: left;
+            }
+            #hor-minimalist-b th
+            {
+                font-size: 14px;
+                font-weight: normal;
+                color: #333;
+                padding: 10px 8px;
+                border-bottom: 2px solid #6678b1;
+            }
+            #hor-minimalist-b td
+            {
+                border-bottom: 1px solid #ccc;
+                color: #333;
+                padding: 10px 12px;
+            }
+            #hor-minimalist-b tbody tr:hover td
+            {
+                color: #009;
+            }
+        </style>
+        <div style="text-align:right;">
+            <h2>Negocios y m&aacute;s s.a de c.v</h2>
+        </div>
+        <h4 style="margin-bottom: 3px;">Reporte administrativo</h4>
+        <p>
+            Generado por {usuario} - Fecha: {fecha}
+            <br />
+            <br/>
+            <strong>Descripci&oacute;n:</strong> Historial de eventos
+        </p>
+        <div>
+            <table id="hor-minimalist-b">
+                <thead>
+                    <tr>
+                        <th>
+                            Usuario
+                        </th>
+                        <th>
+                            Accion
+                        </th>
+                        <th>
+                            Fecha - Hora
+                        </th>
+                        <th>
+                            Modulo
+                        </th>
+                    </tr>
+                </thead>
+                <!-- START historial -->
+                <tr>
+                    <td>
+                        {usuario}
+                    </td>
+                    <td>
+                        {descripcion}
+                    </td>
+                    <td>
+                        {fecha_hora}
+                    </td>
+                    <td>
+                        {modulo}
+                    </td>
+                </tr>
+                <!-- END historial -->
+            </table>
+        </div>
+    </body>
+</html>

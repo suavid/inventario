@@ -1,0 +1,500 @@
+<script>
+
+    function oferta(value, record, columnObj, grid, colNo, rowNo)
+    {
+            linea = record['linea'];
+            estilo = record['estilo'];
+            color = record['color'];
+            talla = record['talla'];
+            return '<a href="javascript: void(0);" onclick="asignarOferta(' + linea + ',\'' + estilo + '\',' + color + ',' + talla + ');"> Agregar oferta </a>';
+    }
+
+    function cancelacion(value, record, columnObj, grid, colNo, rowNo)
+    {
+            linea = record['linea'];
+            estilo = record['estilo'];
+            color = record['color'];
+            talla = record['talla'];
+            return  '<a href="javascript: void(0);" onclick="cancelarOferta(' + linea + ',\'' + estilo + '\',' + color + ',' + talla + ');">Cancelar oferta </a>';
+    }
+
+    function  cancelarOferta(linea, estilo, color, talla){
+        if (confirm("Seguro que quiere cancelar esta oferta?  "))
+        {
+            data = {
+                "estilo": estilo, 
+                "linea": linea,
+                "color": color,
+                "talla": talla
+            };
+            uri = "/nymsa/inventario/borrarOferta";
+            rt = $.post(uri, data, function(data){
+                var grid = Sigma.$grid("oferta_producto_grid");
+                grid.reload(); 
+                var grid2 = Sigma.$grid("detalle_grid");
+                grid2.reload();
+            }, "json");
+        }
+    }
+
+    function enviarForm()
+    {
+        $('#frmEnv').submit();
+    }
+
+    function asignarOferta(linea, estilo, color, talla)
+    {
+
+        htmlContent = [                     "<h3>Seleccione la oferta que desea aplicar:</h3>",
+            "<form id='frmEnv' action='/nymsa/inventario/guardarProductoOferta ' method='post'>",
+            "<br/>",
+            "<input type='hidden' name='linea' value='" + linea + "'/> ",
+            "<input type='hidden' name='estilo' value='" + estilo + "'/> ",
+            "<input type='hidden' name='color' value='" + color + "'/ >  ",
+            "<input type='hidden' name='talla' value=' " + talla + "'/> ",
+            "<div class='input-control select'>",
+            "<select name='id_oferta'>", 
+            <!-- START ofertas -->
+            "<option value='{id}'>{nombre}</option>",
+            <!-- END ofertas -->
+            "</select>",
+            "</div>",
+            "<input type='button' onclick='enviarForm()' value='Agregar oferta'>",
+            "</form>"
+        ].join("");
+            $.Dialog({
+                shadow: true,
+                overlay: false,
+                icon: '<span class="icon-tag"></span>',
+                title: "Linea: " + linea + " - Estilo: " + estilo + " - Color: " + color + " - Talla: " + talla,
+                width: 500,
+                padding: 10,
+                content: htmlContent
+            });
+    }
+
+    var grid_catalogo_id = "oferta_grid";
+    var grid_detalle_id = "detalle_grid";
+    var grid_op_id = "oferta_producto_grid";
+    
+    var dsOption_catalogo = {
+        fields :[
+            {name : 'id'  },
+            {name : 'nombre'},
+            {name : 'descripcion'},
+            {name : 'inicio'},
+            {name : 'fin'},
+            {name : 'estado'},
+            {name : 'descuento'}
+            ],
+        recordType : 'object'
+    };
+    
+    var dsOption_detalle = {
+        fields :[
+            {name : 'estilo'  },
+            {name : 'color'  },
+            {name : 'talla'  },
+            {name: 'linea'},
+            {name: 'stock'}
+        ],
+        recordType : 'object'
+    }
+
+    var dsOption_op = {
+        fields :[
+            {name : 'estilo'  },
+            {name : 'color'  },
+            {name : 'talla'  },
+            {name: 'linea'},
+            {name: 'stock'}
+        ],
+        recordType : 'object'
+    }
+
+
+    var colsOption_catalogo = [
+        {id: 'id', header: "Id", width :30 },
+        {id: 'nombre', header: "Nombre", width :250 },
+        {id: 'inicio', header: "Fecha de inicio", width :150  },
+        {id: 'fin', header: "Fecha de final", width :150 },
+        {id: 'descuento', header: "Descuento", width :70 }
+    ];
+            
+    var colsOption_detalle = [
+        {id: 'estilo', header: "Estilo", width :80 },
+        {id: 'color', header: "Color", width :100},
+        {id: 'talla', header: "Talla", width :100},
+        {id: 'linea', header: "Linea", width :100},
+        {id: 'stock', header: "Stock", width :100},
+        {id: 'ofertar', header: "Ofertar", width:100, renderer:oferta}
+    ];
+    
+    var colsOption_op = [
+        {id: 'estilo', header: "Estilo", width :80 },
+        {id: 'color', header: "Color", width :100},
+        {id: 'talla', header: "Talla", width :100},
+        {id: 'linea', header: "Linea", width :100},
+        {id: 'opciones', header: "Opciones", width :100, renderer:cancelacion}
+    ];
+            
+    var gridOption_catalogo = {
+        id : grid_catalogo_id,
+        loadURL : '/nymsa/grid_tables/oferta_grid_1',
+        saveURL : '',
+        width: "656", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption_catalogo,
+        columns : colsOption_catalogo,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00", 'nombre':""},
+        pageSize:10,
+        toolbarContent : 'reload | nav state'
+    };
+    
+    var gridOption_detalle = {
+        id : grid_detalle_id,
+        loadURL : '/nymsa/inventario/cargarNoOfer',
+        saveURL : '',
+        width: "580", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox2',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption_detalle,
+        columns : colsOption_detalle,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00", 'nombre':""},
+        pageSize:10,
+        toolbarContent : 'reload filter nav state'
+    };
+     
+    var gridOption_op = {
+        id : grid_op_id,
+        loadURL : '/nymsa/grid_tables/ofertados_grid_1',
+        saveURL : '',
+        width: "480", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox3',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption_op,
+        columns : colsOption_op,
+        clickStartEdit : true,
+        defaultRecord :{'id':"00", 'nombre':""},
+        pageSize:10,
+        toolbarContent : 'reload filter nav state'
+    };
+    
+    var mygrid = new Sigma.Grid(gridOption_catalogo);
+        Sigma.Util.onLoad(function(){
+        mygrid.render();
+    });
+        
+    var mygrid2 = new Sigma.Grid(gridOption_detalle);
+    Sigma.Util.onLoad(function(){
+        mygrid2.render();
+    });
+    
+    var mygrid3 = new Sigma.Grid(gridOption_op);
+    Sigma.Util.onLoad(function(){
+        mygrid3.render();
+    });
+            
+    function parseDate(String_){
+        date = String_.split('-');
+        return date[2] + "." + date[1] + "." + date[0];
+    }
+
+    $(function(){
+        $('#idNOferta').bind('change', function(){
+            id_oferta = $(this).val();
+            uri = "/nymsa/inventario/datos_oferta";
+            data = {"id": id_oferta };
+            rest = $.post(uri, data, function(data){
+                if (data.status){
+                    $('#nombre').val(data.nombre);
+                    $('#descripcion').val(data.descripcion);
+                    $('#inicio').val(parseDate(data.inicio));
+                    $('#fin').val(parseDate(data.fin));
+                    $('#descuento').val(parseFloat(data.descuento) * 100);
+                } else{
+                    $('#nombre').val("");
+                    $('#descripcion').val("");
+                    $('#inicio').val("");
+                    $('#fin').val("");
+                    $('#descuento').val("");
+                }
+            }, "json");
+        });
+        
+        $('#frmNuevaOferta').on('submit', function(event){
+            f = confirm("Esta seguro?");
+            if (f){
+                descuento = parseFloat($('#descuento').val().trim());
+                if (descuento < 0 || descuento > 70 || isNaN(descuento)){
+                    alert("Descuento no valido");
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        });
+    });
+            
+    function eliminar_oferta()
+    {
+        id_oferta = $('#idNOferta').val().trim();
+        if (isNaN(id_oferta))
+        {
+            alert("Datos no validos");
+        }
+        else
+        {
+            if (confirm("Esta seguro?")){
+                location.href = "/nymsa/inventario/eliminar_oferta/" + id_oferta;
+            }
+        }
+    }
+
+</script>
+<div style="display:table;">
+    <div  class="panel" style="width:300px;float:left;">
+        <div class="panel-header">Nueva Oferta</div>
+        <div class="panel-content">
+            <form id="frmNuevaOferta" action="/nymsa/inventario/salvar_oferta" method="post">
+                Id (0 = Nueva oferta) : 
+                <div class="input-control text">
+                    <input id="idNOferta" name="id" type="text" value="0" />
+                </div>
+                Nombre:
+                <div class="input-control text"> 
+                    <input id="nombre" name="nombre" type="text" required />
+                </div>
+                Descripcion:
+                <div class="input-control textarea">
+                    <textarea id="descripcion" name="descripcion" required></textarea>
+                </div>
+                Fecha de inicio:
+                <div id="picker2" class="input-control text datepicker" data-role="datepicker"/> 
+                    <input id="inicio" name="inicio" type="text" name="inicio" required />
+                    <button type="button" class="btn-date"></button>
+                </div>
+                Fecha de finalización:
+                <div id="picker2" class="input-control text datepicker" data-role="datepicker"/> 
+                    <input id="fin" name="fin" type="text" name="fin" required/>
+                    <button type="button" class="btn-date"></button>
+                </div>
+                Descuento (%):
+                <div class="input-control text">
+                    <input id="descuento" name="descuento" type="text" required />
+                </div>
+                <button type="submit">Crear</button>
+                <button type="button" onclick="eliminar_oferta();"><i class="icon-cancel"></i> Eliminar</button>
+            </form>
+        </div>
+    </div>
+    <div style="width:600px;float:left;margin-left:50px;">
+        <h3>Listado de ofertas</h3>
+        <div id="bigbox" style="margin:15px;display:!none;">
+            <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+        <div style="border:solid 1px #D3D3D3;padding:50px; margin-left: 15px; width: 655px;">
+            <h3>Ofertado masivo</h3>
+
+            Género: 
+            <div class="input-control select span2">
+                <select id="sGenero">
+                    <!-- START genero -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END genero -->
+                </select>
+            </div>  
+            Oferta: 
+            <div class="input-control select span3">
+                <select id="sOferta">
+                    <!-- START aOferta -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END aOferta -->
+                </select>
+            </div> 
+            <button type="button" onclick="g_aplicar_oferta()">Aplicar</button>
+            <br/>
+            <br/>
+            <hr/>
+            <div class="input-control select">
+                Oferta: <select id="voferta">
+                    <!-- START vOferta -->
+                    <option value="{id}">
+                        {nombre}
+                    </option>
+                    <!-- END vOferta -->
+                </select>
+            </div> 
+            <br/>
+            <br/>
+            Linea: <div class="input-control text span1"><input type="text" id="vlinea" onchange="f_linea();"  /> </div>
+            Estilo: <div class="input-control text span1"><input type="text" id="vestilo" onchange="f_estilo();"  /> </div>
+            Color: <div class="input-control text span1"><input type="text" id="vcolor" onchange="f_color();"  /> </div>
+            Talla:  <div class="input-control text span1"><input type="text" id="vtalla" onchange="f_talla();"  /> </div>
+            <button type="button" onclick="d_aplicar_oferta();" onblur="d_aplicar_oferta();">Aplicar</button>
+        </div>
+    </div>
+</div>
+
+<div class="panel" style="margin: 30px;">
+    <div class="panel-header"> Estado </div>
+    <div class="panel-content">
+        <div id="bigbox2" style="margin:15px;display:!none; float: left;">
+            <h3>Productos no ofertados</h3>
+            <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+
+        <div id="bigbox3" style="margin:15px;display:!none; float: left;">
+            <h3>Ofertas asignadas</h3>
+            <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+<div>
+
+<script type="text/javascript">
+    function g_aplicar_oferta()
+    {
+        i_genero = $('#sGenero').val();
+        i_oferta = $('#sOferta').val();
+        s_uri = "/nymsa/inventario/oferta_x_genero";
+        o_data = {
+            "genero": i_genero,
+            "oferta": i_oferta
+        };
+        
+        o_response = $.post(s_uri, o_data, function(d){
+            var grid = Sigma.$grid("oferta_producto_grid");
+            grid.reload();
+        }, "json");
+    }
+
+    function d_aplicar_oferta()
+    {
+        i_linea = $('#vlinea').val();
+        i_estilo = $('#vestilo').val();
+        i_color = $('#vcolor').val();
+        i_talla = $('#vtalla').val();
+        i_oferta = $('#voferta').val();
+        s_uri = "/nymsa/inventario/oferta_x_detalle";
+        o_data = {
+            "linea": i_linea,
+            "estilo": i_estilo,
+            "color": i_color,
+            "talla": i_talla,
+            "oferta": i_oferta
+        };
+        
+        o_response = $.post(s_uri, o_data, function(d){
+            var grid = Sigma.$grid("oferta_producto_grid");
+            grid.reload();
+            var grid2 = Sigma.$grid("detalle_grid");
+            grid2.reload();
+        }, "json");
+    }
+
+    function f_linea()
+    {
+    var filterInfo = [
+    {
+    fieldName : "linea",
+            logic : "equal",
+            value :$('#vlinea').val()
+    }
+    ]
+
+            var grid = Sigma.$grid("detalle_grid");
+            var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    function f_estilo()
+    {
+    var filterInfo = [
+    {
+    fieldName : "linea",
+            logic : "equal",
+            value :$('#vlinea').val()
+    },
+    {
+    fieldName : "estilo",
+            logic : "equal",
+            value :$('#vestilo').val()
+    }
+    ]
+
+            var grid = Sigma.$grid("detalle_grid");
+            var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    function f_color()
+    {
+    var filterInfo = [
+    {
+    fieldName : "linea",
+            logic : "equal",
+            value :$('#vlinea').val()
+    },
+    {
+    fieldName : "estilo",
+            logic : "equal",
+            value :$('#vestilo').val()
+    },
+    {
+    fieldName : "color",
+            logic : "equal",
+            value :$('#vcolor').val()
+    }
+    ]
+
+            var grid = Sigma.$grid("detalle_grid");
+            var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    function f_talla()
+    {
+    var filterInfo = [
+    {
+    fieldName : "linea",
+            logic : "equal",
+            value :$('#vlinea').val()
+    },
+    {
+    fieldName : "estilo",
+            logic : "equal",
+            value :$('#vestilo').val()
+    },
+    {
+    fieldName : "color",
+            logic : "equal",
+            value :$('#vcolor').val()
+    },
+    {
+    fieldName : "talla",
+            logic : "equal",
+            value :$('#vtalla').val()
+    }
+    ]
+
+            var grid = Sigma.$grid("detalle_grid");
+            var rowNOs = grid.applyFilter(filterInfo);
+    }
+</script>

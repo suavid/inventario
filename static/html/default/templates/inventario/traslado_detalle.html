@@ -1,0 +1,716 @@
+<script type="text/javascript" >
+
+    /* Procesos ejecutados cuando se carga el documento */
+    $(document).ready(function(){
+
+        /* Inicializacion de la interfaz */
+        if ({consigna} == 1)
+        {
+            // para consgina muestra creditos y para traslados costos y pares
+            
+            $('#div1').css('display', 'none');  
+            
+            $('#div2').css('display', 'block');
+                
+            $('#iConsigna').attr("checked", "checked");
+        }
+
+
+        // variable par controlar si el traslado se puede editar
+        window.editable = false;
+
+        // filtrado para el cambio de linea
+        $('#slinea').bind('change', function(){
+
+            linea = $('#slinea').val().trim(); // obtiene linea del combo
+            
+            var filtros = [];   // arreglo de filtros a ser aplicados
+
+            if (linea != "") filtros.push(['estado_bodega.linea', linea].join(":")); // si la linea no esta vacia se agrega a los filtros
+
+            
+            /* se vuelve a cargar el detalle con el filtro */
+            var grid = Sigma.$grid("genero_grid");
+            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.reload();
+
+            /* limpiar alguno elementos de la interfaz */
+            $('#scatalogo option').remove();
+            $('#sproveedor option').remove();
+            $('#smargen').val("");
+            $('#spagina').val("");
+
+            /* envia el estilo y la linea seleccionados al servidor para obtener datos de proveedor, catalogo ... */
+            send_dat = {
+
+                "estilo": $('#sestilo').val(),
+                "linea" : $('#slinea').val()
+            };
+
+            uri = '/nymsa/inventario/get_detalle_data_traslado';
+
+            fr = $.post(uri, send_dat, function(data){
+                
+                $('#sproveedor').append('<option value="' + data.id_proveedor + '">' + data.nombre_proveedor + '</option>');
+                $('#scatalogo').append('<option value="' + data.id_catalogo + '">' + data.nombre_catalogo + '</option>');
+                $('#smargen').val("% " + data.margen_usual);
+                $('#spagina').val(data.n_pagina);
+
+            }, "json");
+        }); // fin de filtrado para el cambio de linea
+        // ########################################################################################
+
+
+        en_uri = '/nymsa/inventario/trasladoEditable'; // uri que verifica si se puede editar el documento
+
+        data_ = { "ref":{idencabezado} }; // codigo de traslado
+            
+        // inicio de verificacion de edicion
+        set_rq = $.post(en_uri, data_, function(data){
+
+            window.editable = data.status; // variable global que controla si se puede editar el documento
+            
+            /* deshabilida botones */
+            if (!data.status)
+            {
+                $('#btnAplicar').attr("disabled", "disabled");
+                $('#btnGuardar').attr("disabled", "disabled");
+                $('#btnGuardar').removeClass("success");
+                $('#btnGuardar').addClass("disabled");
+                $('#btnAplicar').removeClass("primary");
+                $('#btnAplicar').addClass("disabled");
+            }
+
+        }, "json"); // fin de verificacion de edicion
+
+        // carga datos de traslado (total pares, total costo) actuales
+        cargar_totales();
+            
+        // filtrado para el cambio de estilo
+        $('#sestilo').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            linea = $('#slinea').val().trim();
+            estilo = $('#sestilo').val().trim();
+            
+            var filtros = [];
+
+            if (linea != "") filtros.push(['estado_bodega.linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estado_bodega.estilo', estilo].join(":"));
+            
+            /* Para una compra (entrada) no es necesario filtrar por bodega de origen */
+            if ('{tipoTransaccion}' != '1B'){
+                
+                bodega = $('#bOrigen').val();
+
+                if (bodega != "") filtros.push(['bodega', bodega].join(":"));
+            }
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("genero_grid");
+            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.reload();
+
+            // datos para cargar catalogo y proveedor para linea y estilo
+            send_dat = {
+                "estilo": $('#sestilo').val(),
+                "linea": $('#slinea').val()
+            };
+
+            $('#scatalogo option').remove();
+            $('#sproveedor option').remove();
+            $('#smargen').val("");
+            $('#spagina').val("");
+
+            uri = '/nymsa/inventario/get_detalle_data_traslado';
+            
+            fr = $.post(uri, send_dat, function(data){
+                // estableciendo los datos
+                $('#sproveedor').append('<option value="' + data.id_proveedor + '">' + data.nombre_proveedor + '</option>');
+                $('#scatalogo').append('<option value="' + data.id_catalogo + '">' + data.nombre_catalogo + '</option>');
+                $('#smargen').val("% " + data.margen_usual);
+                $('#spagina').val(data.n_pagina);
+            }, "json");
+    
+        }); // fin de filtrado para el cambio de estilo
+        //####################################################
+
+        // filtrado para cambio de color
+        $('#scolor').bind('change', function(){
+            
+            linea = $('#slinea').val().trim();
+            estilo = $('#sestilo').val().trim();
+            color = $('#scolor').val().trim();
+            
+            var filtros = [];
+                
+            if (linea != "") filtros.push(['estado_bodega.linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estado_bodega.estilo', estilo].join(":"));
+            if (color != "") filtros.push(['estado_bodega.color', color].join(":"));
+                
+            if ('{tipoTransaccion}' != '1B'){
+    
+                bodega = $('#bOrigen').val();
+                if (bodega != "") filtros.push(['bodega', bodega].join(":"));
+            }
+                
+            var grid = Sigma.$grid("genero_grid");
+            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.reload();
+            
+        }); // fin de filtrado para cambio de color
+
+        // filtrado para cambio de talla
+        $('#stalla').bind('change', function(){
+            
+            linea = $('#slinea').val().trim();
+            estilo = $('#sestilo').val().trim();
+            color = $('#scolor').val().trim();
+            talla = $('#stalla').val().trim();
+            
+            var filtros = [];
+            
+            if (linea != "") filtros.push(['estado_bodega.linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estado_bodega.estilo', estilo].join(":"));
+            if (color != "") filtros.push(['estado_bodega.color', color].join(":"));
+            if (talla != "") filtros.push(['estado_bodega.talla', talla].join(":"));
+            
+            if ('{tipoTransaccion}' != '1B'){
+                bodega = $('#bOrigen').val();
+                if (bodega != "") filtros.push(['bodega', bodega].join(":"));
+            }
+
+            var grid = Sigma.$grid("genero_grid");
+            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.reload();
+        
+        }); // fin de filtrado para cambbio de talla
+
+        var miSetOut = setTimeout(func, 100); // aplicamos filtro de linea despues de 3.5 seg
+        
+    });
+            
+    function cargar_totales()
+    {
+        if ({consigna} == 0)
+        {
+            data_ = { "ref":{idencabezado} };
+            
+            set_uri = '/nymsa/inventario/establecer_datos_traslado'; // uri que carga los datos total_pares y total_costo
+                    
+            // inicio de carga de datos total_pares y total_costo
+            set_rq = $.post(set_uri, data_, function(data)
+            {
+                    $('#t_costo').val(data.costo);
+                    $('#t_pares').val(data.pares);
+
+            }, "json"); // fin del establecimiento de los datos
+        
+        }
+        else
+        {
+            data_ = { "cliente":{idcliente} };
+                    
+            set_uri = '/nymsa/inventario/establecer_datos_consigna';
+            set_rq = $.post(set_uri, data_, function(data)
+            {
+                    $('#t_credito').val(parseFloat(data.credito).toFixed(2));
+                    $('#t_usado').val(parseFloat(data.credito_usado).toFixed(2));
+                    $('#t_saldo').val(parseFloat(parseFloat(data.credito).toFixed(2) - parseFloat(data.credito_usado).toFixed(2)).toFixed(2));
+            }, "json"); // fin del establecimiento de los datos
+        }
+    }
+
+
+    /* funcion para imprimir el documento */
+    // NOTA: LLEVA CONTROL CONSIGNA-TRASLADO
+    function imprimir()
+    {
+        if (window.editable)
+        {
+            alert("Aun no se han aplicado los cambios");
+        }
+        else
+        {
+            if ({consigna} == 0)
+            {
+                 var vurl = window.open('/nymsa/inventario/imprimirTraslado/' + {idencabezado}, '_blank');
+            }
+            else
+            {
+                var vurl = window.open('/nymsa/inventario/imprimirConsigna/' + {idencabezado} + '/1', '_blank');
+                var vurl2 = window.open('/nymsa/inventario/imprimirConsigna/' + {idencabezado} + '/2', '_blank');
+            }
+        }
+    }
+
+    /* funcion que aplica el filtro de linea */
+    function func()
+    {
+        $('#slinea').change();
+    }
+
+
+    // Id grid
+
+    var grid_demo_id = "genero_grid";
+    
+    // verifica valores en blanco y los pone a cero
+    function stock_render(value, record, columnObj, grid, colNo, rowNo)
+    {
+        if (value == "" || value == " " || value == null){
+            return "0";
+        } 
+        else
+        {
+            return value;
+        }
+    }
+
+    // enlace de eliminado para los grid
+    function eliminar_render(value, record, columnObj, grid, colNo, rowNo)
+    {
+        data = {
+
+            "estilo": record['estilo'],
+            "linea": record['linea'],
+            "color": record['color'],
+            "talla": record['talla'],
+            "cantidad": record['cantidad'],
+            "total": record['total'],
+            "id_ref": {idencabezado}
+        };
+            
+        return '<a href="javascript: void(0);" onclick="del_detalle(\'' + data.estilo + '\',' + data.linea + ',' + data.color + ',' + data.talla + ',' + data.cantidad + ',' + data.total + ')">Eliminar</a>';
+    }
+
+
+    // funcion para eliminar del detalle un item
+    function del_detalle (estilo, linea, color, talla, cantidad, total)
+    {
+        if(window.editable)
+        {
+            id_ref = {idencabezado};
+            
+            data = {
+                "estilo": estilo,
+                "linea": linea,
+                "color": color,
+                "talla": talla,
+                "cantidad": cantidad,
+                "total": total,
+                "id_ref": id_ref,
+                "consigna": {consigna}
+            };
+                
+            uri = "/nymsa/inventario/borrar_traslado_detalle";
+            
+            if (confirm("Quiere eliminar el registro?"))
+            {
+                jqr = $.post(uri, data, function(data)
+                {
+                    cargar_totales();
+                    var grid = Sigma.$grid("genero2_grid");
+                    grid.reload();
+
+                }, "json");
+            }
+        }
+    }
+
+
+    // genera input para ingreso de cantidades
+    function input_render(value, record, columnObj, grid, colNo, rowNo)
+    {
+        string_ = record['linea'] + '_' + record['estilo'] + '_' + record['color'] + '_' + record['talla'] + '_' + record['costo'];
+            
+        return '<input type="text" value="0" class="items" id="' + string_ + '"/>';
+    }
+
+    /* GRID PRINCIPAL */
+    var dsOption = {
+
+        fields :[
+            {name : 'linea'  },
+            {name : 'estilo'  },
+            {name : 'color'  },
+            {name : 'talla'  },
+            {name : 'bodega'  },
+            {name : 'costo'  }
+        ],
+        
+        recordType : 'object'
+    }
+
+    var colsOption = [
+        {id: 'linea', header: "Linea", width :40 },
+        {id: 'estilo', header: "Estilo", width :100},
+        {id: 'color', header: "Color", width :45},
+        {id: 'talla', header: "Talla", width :50},
+        {id: 'ingresan', header: "Ingresan", width :60, renderer:input_render},
+        {id: 'stock', header: "Stock", width :50, renderer:stock_render},
+        {id: 'costo', header: "Costo", width :100, editor:"text"},
+        {id: 'precio', header: "Precio", width :100},
+        {id: 'bodega', header: "Bodega", width :50}
+    ];
+            
+    var gridOption = {
+        id : grid_demo_id,
+        loadURL : '',
+        saveURL : '',
+        width: "100%", //"100%", // 700,
+        height: "320", //"100%", // 330,
+        container : 'gridbox',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption,
+        columns : colsOption,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00", 'nombre':""},
+        pageSize:10,
+        toolbarContent : 'reload | filter | nav state'
+    };
+            
+    var mygrid = new Sigma.Grid(gridOption);
+    
+    Sigma.Util.onLoad(function()
+    {
+            mygrid.render();
+    });
+            
+    /* GRID DETALLE */
+            
+    var grid_demo2_id = "genero2_grid";
+    
+    var dsOption2 = {
+        fields :[
+            {name : 'id'  },
+            {name : 'nombre'  }
+        ],
+        
+        recordType : 'object'
+    }
+
+    var colsOption2 = [
+        {id: 'linea', header: "Linea", width :80 },
+        {id: 'estilo', header: "Estilo", width :80},
+        {id: 'color', header: "Color", width :80},
+        {id: 'talla', header: "Talla", width :80},
+        {id: 'costo', header: "Costo", width :80},
+        {id: 'cantidad', header: "Cantidad", width :80},
+        {id: 'total', header: "Total", width :80},
+        {id: 'accion', header: "Opciones", width :80, renderer:eliminar_render }
+    ];
+            
+    var gridOption2 = {
+        id : grid_demo2_id,
+        loadURL : '/nymsa/inventario/cargar_cfd?tblname=detalle_traslado&field=id_ref&value={idencabezado}',
+        saveURL : '',
+        width: "100%", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox2',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption2,
+        columns : colsOption2,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00", 'nombre':""},
+        pageSize:10,
+        toolbarContent : 'reload | filter | nav state'
+    };
+
+    var mygrid2 = new Sigma.Grid(gridOption2);
+    
+    Sigma.Util.onLoad(function(){
+        mygrid2.render();
+    });
+            
+    function filtrar(field, val) {
+        var filterInfo = [
+            {
+                fieldName : field,
+                logic : "equal",
+                value : val
+            }
+        ]
+
+        if ('{tipoTransaccion}' != '1B'){
+
+            fb = {
+
+                fieldName : "bodega",
+                logic : "equal",
+                value : $('#bOrigen').val()
+            }
+
+            filterInfo.push(fb);
+        }
+
+        var grid = Sigma.$grid("genero_grid");
+        var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    // Aplica los cambios al documento y baja al segundo grid
+    function commit()
+    {
+        info = [ ];
+        $('.items').each(function(){
+            if ($(this).val().trim() != "" && $(this).val() > 0){
+                data = $(this).attr('id').split('_');
+                data_send = {
+                    "id_ref":   {idencabezado},
+                    "linea":  	data[0],
+                    "estilo": 	data[1],
+                    "color": 	data[2],
+                    "talla": 	data[3],
+                    "costo":   	data[4],
+                    "cantidad": $(this).val(),
+                    "total": 	parseInt($(this).val()) * parseFloat(data[4]).toFixed(2),
+                    "consigna": {consigna}
+                };
+                info.push(data_send);
+                $(this).val(0);
+            }
+        });
+            
+        send = { "productos": JSON.stringify(info) };
+        df = $.post('/nymsa/inventario/salvar_traslado_detalle', send, function(dC){
+            var grid = Sigma.$grid("genero2_grid");
+            grid.reload();
+            cargar_totales();
+            if (dC.error){ alert("Aviso: Se ignoraron algunos productos!"); }
+        }, "json");
+    }
+
+
+    // envía los datos a las bodegas correspondientes
+    var commit_tran = function()
+    {
+        total_p_actual = parseInt($('#t_pares').val());
+        total_p_def    = parseInt($('#valpares').html().trim());
+        total_c_actual = parseFloat($('#t_costo').val());
+        total_c_def    = parseFloat($('#valcosto').html().trim());
+        flag           = true;
+        
+        if ((total_p_actual != total_p_def) || !(total_c_actual >= (total_c_def - 0.05) && total_c_actual <= (total_c_def + 0.05)))
+        {
+            flag = false;
+        }
+
+        if (({consigna} == 1) || ("{tolerancia}" == "1")) flag = true;
+        if (confirm("Los cambios no podrán deshacerse, esta seguro?"))
+        {
+            if (flag){
+                id = {idencabezado};
+                transaccion = "{tipoTransaccion}";
+                bodegaOrigen = $('#bOrigen').val();
+                bodegaDestino = $('#bDestino').val();
+                uri = "";
+                data_request = {
+                    "id_ref": id,
+                    "transaccion": transaccion,
+                    "bodega_origen": bodegaOrigen,
+                    "bodega_destino": bodegaDestino
+                };
+                /* seleccion del recurso que procesa la informacion */
+                switch (transaccion)
+                {
+                    case "1B":
+                        /* compras */
+                        uri = "/nymsa/inventario/transaccionCompra";
+                    break;
+                    case "1C":
+                        /* Ingreso por traslado */
+                        uri = "/nymsa/inventario/transaccionLibre";
+                    break;
+                    case "2B":
+                        /* Salida por traslado */
+                        uri = "/nymsa/inventario/transaccionLibre";
+                    break;
+                    case "2D":
+                        /* Salida por ajuste */
+                        uri = "/nymsa/inventario/salidas";
+                    break;
+                    case "2E":
+                        /* Otras salidas */
+                        uri = "/nymsa/inventario/salidas";
+                    break;
+                    case "1D":
+                        /* Ingreso por ajuste */
+                        uri = "/nymsa/inventario/ingresos";
+                    break;
+                    case "1E":
+                        /* Otros ingresos */
+                        uri = "/nymsa/inventario/ingresos";
+                    break;
+                }
+                /* ejecucion del recurso */
+                cmt = $.post(uri, data_request, function(data){
+                    /* Accion de respuesta */
+                    if (transaccion == "1B")
+                    {
+                        if (data.of){
+                            alert("Se compraron productos en oferta, no se puede realizar el ingreso");
+                        }else{
+                            location.href = "/nymsa/inventario/traslados";
+                        }
+                    }
+
+                    if (transaccion == "2B" || transaccion == "1C")
+                    {
+                        if (data.out){
+                            alert("No hay suficiente producto en bodega");
+                        }else{
+                            location.href = "/nymsa/inventario/traslados";
+                        }
+                    }
+
+                    if (transaccion == "2D" || transaccion == "2E")
+                    {
+                        if (data.out){
+                            alert("No hay suficiente producto en bodega");
+                        } else{
+                            location.href = "/nymsa/inventario/traslados";
+                        }
+                    }
+
+                    if (transaccion == "1D" || transaccion == "1E")
+                    {
+                        if (data.out){
+                            alert("No hay suficiente producto en bodega");
+                        } else{
+                            location.href = "/nymsa/inventario/traslados";
+                        }
+                    }
+                }, "json");
+            } else{
+                alert("Debe completar el costo y el total de pares indicado");
+            }
+        }
+    }
+
+</script>
+
+<div style="text-align:right;">
+    Consigna <input type="checkbox" id="iConsigna" disabled="disabled" />
+    <button type="button" onclick="imprimir();" ><i class="icon-printer"></i> Imprimir </button>
+</div>
+
+<div style="display:table;">
+    <div style="float:left;">
+        <div style="width:150px;text-align:right;">
+            Costo
+            <div class="input-control text" style="width:100px">
+                <input type="text" value="" disabled="disabled"/>
+            </div>
+            Precio
+            <div class="input-control text" style="width:100px">
+                <input type="text" value="" disabled="disabled"/>
+            </div>
+            Margen
+            <div class="input-control text" style="width:100px">
+                <input type="text" value="" id="smargen" disabled="disabled"/>
+            </div>
+        </div>
+        <div style="width:200px;height:200px;overflow:hidden;border:solid 1px #D3D3D3;">
+
+        </div>
+    </div>
+    <div style="float:left;text-align:right;margin-left:15px;">
+        Origen
+        <div class="input-control select disabled"  style="width:150px">
+            <select disabled="disabled" id="bOrigen">
+                <option value="{idb_}">{nb_}</option>
+            </select>
+        </div>
+        <br/>
+        Destino
+        <div class="input-control select disabled"  style="width:150px">
+            <select disabled="disabled" id="bDestino">
+                <option value="{idb}">{nb}</option>
+            </select>
+        </div>
+        <br/>
+        Linea
+        <div class="input-control select" style="width:150px">
+            <select id="slinea">
+                <!-- START lineas -->
+                <option value="{id}">
+                    {nombre}
+                </option>
+                <!-- END lineas -->
+            </select>
+        </div>
+        <br/>
+        Estilo
+        <div class="input-control text" style="width:150px">
+            <input type="text" id="sestilo" value=""/>
+        </div>
+        <br/>
+        Color
+        <div class="input-control text" style="width:150px">
+            <input type="text" id="scolor" value=""/>
+        </div>
+        <br/>
+        Talla
+        <div class="input-control text" style="width:150px">
+            <input type="text" id="stalla" value=""/>
+        </div>
+        <br/>
+        <button class="large primary" id="btnAplicar" onclick="commit();">Aplicar</button>
+        <br/>
+        <br/>
+        Proveedor
+        <div class="input-control select disabled" style="width:150px">
+            <select disabled="disabled" id="sproveedor">
+            </select>
+        </div> 
+        <br/>
+        Catálogo
+        <div class="input-control select disabled" style="width:150px">
+            <select disabled="disabled" id="scatalogo"></select>
+        </div>
+        <div class="input-control text" style="width:50px">
+            <input type="text" value="" id="spagina" disabled="disabled" />
+        </div>
+    </div>
+
+    <div style="float:left;width:630px;">
+
+    <!-- GRID PRINCIPAL -->
+        &nbsp;&nbsp;&nbsp;&nbsp;Transaccion: {tipoTransaccion}
+        <div id="bigbox" style="margin:15px;display:!none;">
+            <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+
+        <!-- DIV TOTALES TRASLADO -->
+        <div id="div1">
+            &nbsp;&nbsp;&nbsp;&nbsp;Total Costo: <input type="text" id="t_costo" value="0.0" style="width:100px;" readonly="readonly" /> / <span id="valcosto">{totalcosto}</span>
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Total Pares:&nbsp; <input type="text" id="t_pares" value="0" style="width:100px;" readonly="readonly" /> / <span id="valpares">{totalpares}</span>
+            <br/>
+        </div>
+
+        <!-- DIV TOTALES CONSIGNA -->
+        <div id="div2" style="display:none;padding:10px; background:#D3D3D3;width:250px;text-align:right;margin-left:30px;">
+            Cliente: {idcliente}
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Credito: <input type="text" id="t_credito" value="0.0" readonly="readonly" />
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Usado: <input type="text" id="t_usado" value="0.0"	readonly="readonly" />
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;Saldo: <input type="text" id="t_saldo" value="0.0"	readonly="readonly" />
+        </div>
+
+    </div>
+</div>
+
+<!-- DETALLE -->
+<div id="bigbox2" style="margin:15px;display:!none;">
+    <button class="success" id="btnGuardar" onclick="commit_tran();">Guardar</button>
+    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+    </div>
+</div>

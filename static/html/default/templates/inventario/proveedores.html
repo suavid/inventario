@@ -1,0 +1,246 @@
+<script type="text/javascript" >
+
+    var patron_telefono = new Array(4, 4);
+    var patron_registro = new Array(3, 2, 3);
+    var patron_nit = new Array(4, 6, 3, 1);
+
+    function mascara(d, sep, pat, nums) {
+        if (d.valant != d.value) {
+            val = d.value
+            largo = val.length
+            val = val.split(sep)
+            val2 = ''
+            for (r = 0; r < val.length; r++) {
+                val2 += val[r]
+            }
+            if (nums) {
+                for (z = 0; z < val2.length; z++) {
+                    if (isNaN(val2.charAt(z))) {
+                        letra = new RegExp(val2.charAt(z), "g")
+                        val2 = val2.replace(letra, "")
+                    }
+                }
+            }
+            val = ''
+            val3 = new Array()
+            for (s = 0; s < pat.length; s++) {
+                val3[s] = val2.substring(0, pat[s])
+                val2 = val2.substr(pat[s])
+            }
+            for (q = 0; q < val3.length; q++) {
+                if (q == 0) {
+                    val = val3[q]
+                }
+                else {
+                    if (val3[q] != "") {
+                        val += sep + val3[q]
+                    }
+                }
+            }
+            d.value = val
+            d.valant = val
+        }
+    }
+
+    var grid_demo_id = "proveedor_grid";
+
+
+    var dsOption = {
+        fields: [
+            {name: 'id'},
+            {name: 'nombre'},
+            {name: 'direccion'},
+            {name: 'telefono'},
+            {name: 'fax'},
+            {name: 'correo'},
+            {name: 'nombre_contacto'},
+            {name: 'telefono_contacto'},
+            {name: 'correo_contacto'},
+            {name: 'dias_credito'},
+            {name: 'dias_entrega'},
+            {name: 'pais_origen'},
+            {name: 'nacionalidad'},
+            {name: 'nit'},
+            {name: 'registro'},
+            {name: 'margen_usual'},
+            {name: 'descuento_aplicable'}
+        ],
+        recordType: 'object'
+    }
+
+    var colsOption = [
+        {id: 'id', header: "Codigo", width: 55},
+        {id: 'nombre', header: "Nombre", width: 190, editor: {type: 'text',
+                validator: function(value, record, colObj, grid) {
+                    if (value == null || value.length == 0 || /^\s+$/.test(value)) {
+                        return "Este campo no puede estar vacio";
+                    } else {
+                        return true;
+                    }
+                }
+            }},
+        {id: 'direccion', header: "Direccion", width: 150, editor: {type: 'text'}},
+        {id: 'telefono', header: "Telefono", width: 100, editor: {type: 'text'}},
+        {id: 'fax', header: "Fax", width: 100, editor: {type: 'text'}},
+        {id: 'correo', header: "Correo", width: 100, editor: {type: 'text',
+                validator: function(value, record, colObj, grid) {
+                    var re = new RegExp(/^[A-Za-z][A-Za-z0-9_]*@[A-Za-z0-9_]+\.[A-Za-z0-9_.]+[A-za-z]$/);
+                    if (re.test(value)) {
+                        return true;
+                    } else {
+                        return "Ingrese una email valido";
+                    }
+                }
+            }},
+        {id: 'nombre_contacto', header: "Contacto", width: 100, editor: {type: 'text'}},
+        {id: 'telefono_contacto', header: "Telefono de contacto", width: 100, editor: {type: 'text'}},
+        {id: 'correo_contacto', header: "Correo de contacto", width: 100, editor: {type: 'text',
+                validator: function(value, record, colObj, grid) {
+                    var re = new RegExp(/^[A-Za-z][A-Za-z0-9_]*@[A-Za-z0-9_]+\.[A-Za-z0-9_.]+[A-za-z]$/);
+                    if (re.test(value)) {
+                        return true;
+                    } else {
+                        return "Ingrese un email valido";
+                    }
+                }
+            }}
+
+    ];
+
+
+    var gridOption = {
+        id: grid_demo_id,
+        loadURL: '/nymsa/grid_tables/proveedor_grid_1',
+        saveURL: '/nymsa/inventario/actualizar?tblname=proveedor',
+        exportURL: '/nymsa/inventario/proveedorList?export=true',
+        exportFileName: 'proveedor_reporte_',
+        width: "1005", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption,
+        allowFreeze: true,
+        allowHide: true,
+        allowGroup: true,
+        columns: colsOption,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        allowCustomSkin: true,
+        skin: "mac",
+        pageSizeList: [5, 10, 15, 20, 30, 50],
+        remotePaging: true,
+        toolbarContent: 'reload | del save | filter | nav pageSize state'
+    };
+
+
+    var mygrid = new Sigma.Grid(gridOption);
+    Sigma.Util.onLoad(function() {
+        mygrid.render();
+    });
+</script>
+
+<div id="page-container">
+    <div id="content">
+        <h3>Nuevo proveedor</h3>
+        <hr/>
+        <div style="border:solid 1px #D3D3D3; margin-right:20px;padding:20px;" class="span12">
+            <form action="/nymsa/inventario/guardar_proveedor" method="post">
+                <div style="text-align:left;float: left;margin-right: 30px;" class="span3">
+                    <h4>Datos del proveedor</h4>
+                    * Nombre: 
+                    <div class="input-control text">
+                        <input type="text" name="nombre" required/>
+                        <br/> 
+                    </div>
+                    * Direcci&oacute;n: 
+                    <div class="input-control text">
+                        <input type="text" name="direccion" required/>
+                        <br/>
+                    </div>
+                    * Teléfono: 
+                    <div class="input-control text">
+                        <input type="text" name="telefono" required onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9"/>
+                        <br/>
+                    </div> 
+                    Fax: 
+                    <div class="input-control text">
+                        <input type="text" onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9" name="fax"/>
+                        <br/>
+                    </div>
+                    Correo electrónico:
+                    <div class="input-control text"> 
+                        <input type="email" name="correo"/>
+                    </div> 
+                    Pa&iacute;s de origen: 
+                    <div class="input-control select">
+                        <select name="pais_origen">
+                            <!-- START paises -->
+                                <option value="{nombre}">{nombre}</option>
+                            <!-- END paises -->
+                        </select>
+                        <br/>
+                    </div>
+                    Nacionalidad:
+                    <div class="input-control text"> 
+                        <input type="text" name="nacionalidad"/>
+                        <br/>
+                    </div>
+                </div>
+                <div style="float: left;margin-right: 30px;" class="span3">
+                    <h4>&nbsp;</h4>
+                     D&iacute;as de cr&eacute;dito: 
+                    <div class="input-control text"> 
+                        <input type="text" name="dias_credito"/>
+                        <br/>
+                    </div>
+                    D&iacute;as para entrega:
+                    <div class="input-control text"> 
+                        <input type="text" name="dias_entrega"/>
+                        <br/>
+                    </div>
+                    Nit: 
+                    <div class="input-control text">
+                        <input type="text" name="nit" onkeyup="mascara(this, '-', patron_nit, true)" maxlength="17"/>
+                        <br/>
+                    </div>
+                    Registro:
+                    <div class="input-control text">  
+                        <input type="text" name="registro" onkeyup="mascara(this, '-', patron_registro, true)" maxlength="10"/>
+                        <br/>
+                    </div>
+                </div>
+                <div style="float: left;" class="span3">
+                    <h4>Datos del contacto</h4>
+                    Nombre: 
+                    <div class="input-control text">
+                        <input type="text" name="nombre_contacto"/>
+                        <br/>
+                    </div> 
+                    Teléfono:
+                    <div class="input-control text" > 
+                        <input type="text" name="telefono_contacto" onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9"/>
+                        <br/>
+                    </div>
+                    Correo electrónico:  
+                    <div class="input-control text">
+                        <input type="email" name="correo_contacto"/>
+                        <br/>
+                    </div> 
+                </div>
+                <div style="clear: both;"></div>
+                <input type="reset"  value="Reset"/>
+                <button type="submit" class="primary">
+                    Agregar
+                </button>
+            </form>
+        </div>
+        
+    </div>
+</div>
+<div id="bigbox" style="margin:15px;display:!none;">
+    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+    </div>
+</div>

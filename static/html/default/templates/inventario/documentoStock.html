@@ -1,0 +1,62 @@
+<script>
+    function NuevoDocumento(event) {
+        event.preventDefault();
+        var s = confirm('Quiere crear un nuevo documento?');
+        if (s) {
+            location.href = "/nymsa/inventario/salvarDocumentoStock";
+        }
+    }
+
+    function Historia(event) {
+        event.preventDefault();
+        location.href = "/nymsa/inventario/stockHistorial";
+    }
+</script>
+<section>
+    <div class="toolbar">
+        <button class="big" onclick="NuevoDocumento(event);">
+            <i class="icon-new"></i>
+        </button>
+        <button class="big" onclick="Historia(event);">
+            <i class="icon-history"></i>
+        </button>
+        <button class="big" onclick="location.href = '/nymsa/inventario/resumenGeneralStock';">
+            <i class="icon-clipboard-2"></i>
+        </button>
+    </div>
+    <h3>Documentos recientes</h3>
+    <table class="table bordered " style="max-width:700px;">
+        <thead>
+            <tr class="info fg-white">
+                <th>
+                    Id
+                </th>
+                <th>
+                    Fecha de creaci&oacute;n
+                </th>
+                <th>
+                    Propietario
+                </th>
+                <th>
+                    Acciones
+                </th>
+            </tr>
+        </thead>
+        <!-- START documentos -->
+        <tr>
+            <td>{id_documento}</td>
+            <td>{fecha_creacion}</td>
+            <td>{propietario}</td>
+            <td>
+                <a href="/nymsa/inventario/stock?doc={id_documento}">
+                    <i class="icon-folder"></i> Abrir  
+                </a> 
+                |
+                <a href="/nymsa/inventario/salvarCambiosStock?doc={id_documento}">
+                    <i class="icon-upload"></i> Salvar cambios  
+                </a> 
+            </td>
+        </tr>
+        <!-- END documentos -->
+    </table>
+</section>

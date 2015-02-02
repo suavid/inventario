@@ -1,0 +1,197 @@
+<script type="text/javascript" >
+
+    function url_render(value, record, columnObj, grid, colNo, rowNo){
+    var estilo = $("#prod").html().trim();
+            var color = record['color'];
+            $('#estilo').val(estilo);
+            $('#color').v al(colo r); retur n "<a href=\"javascript: void(0);\" onclick=\"show _hidden _form(even t,'co rrida' );\">Agregar corrida</a>";
+            }
+
+                            var grid_demo_id = "producto_grid";
+                            var grid_color_id = "color_grid";
+            var dsOption = {
+
+                                    fields :[             {name : 'id'  },
+                                    {name : 'estilo'  },
+            {name : 'linea'  },
+                    {name : 'codigo_origen'  },
+                    {name : 'descripcion'  },
+    {name : 'proveedor'  },
+                            {name : 'catalogo'  },
+                                    {name : 'n_pagina'  },
+                                    {name : 'genero'  },
+                                    {name : 'marca'  },
+                            {name : 'propiedad'  },
+                                    {name : 'observacion'  },
+                                    {name : 'fecha_ingreso'},
+                                    {name :'nota'  }
+                                    ], uniqueField: 1,
+                            recordType : 'object'
+                                    }
+                    var dsOption_color = {
+                    fields :[
+                            {name : 'color_estilo_producto'  },
+                            {name: 'color'},
+                            {name: 'talla'}     ], recordType : 'object'
+            }
+
+    var colsOption = [
+                            {id: 'estilo', header: "Estilo", width :100, editor:{type:'tex t'}},
+                                    {id: 'linea',  h eader: "Linea", wi dth :100, editor:{     type:'s elect', opti ons: {
+                            <!-- START  lin ea -->
+                    '{id}':'{nombre}', < !-- END linea -- > 'Nd':'Nd'
+            }
+            }
+            },
+                    {id: 'codigo_origen', header: "Codigo de origen", width :100, editor:{type:'text'}},
+                            {id: 'descripcion', header: "Descripcion", width :100, editor:{type:'text'}}, { id: 'proveedor', hea der: "Proveedor", width  :100, editor:{             type :'select', options:{
+                            < !-- START proveedor -- >
+                    ' {id}':'{nombre}',
+                    < !-- END proveedor -- >
+            'Nd':'Nd'
+    }
+    }
+    },
+    {id: 'catalogo', header: "Catalogo", width :100, editor: {type:'text'}},
+    {id: 'n_pagina', header: "N. Pagina", width :100, editor:{type:'text'}},
+    {id: 'genero', header: "Genero", width :100, editor:{
+    type:'select', options:{
+<!-- START genero -->             '{id}':'{nombre}',<!-- END genero -->
+}
+}
+},
+{id: 'marca', header: "Marca", width :100, editor:{
+type:'select', options:{
+<!-- START marca -->
+'{id}':'{nombre}',
+<!-- END marca -->
+'Nd':'Nd'
+}
+}
+},
+{id: 'propiedad' , header: "Propiedad" , width :100 , editor:{type:'text'}},
+{id: 'observacion' , header: "Observacion" , width :100 , editor:{type:'text'}},
+{id: 'fecha_ingreso' , header: "Fecha que ingresa" , width :100 , editor:{type:"text"}},
+{id: 'nota' , header: "Nota" , width :100 , editor:{type:'text'}}
+       
+];
+
+var colsOption_color = [
+{id: 'color' , header: "Color" , width :250 , editor:{
+type:'select',options:{
+<!-- START color -->
+'{id}':'{nombre}',
+<!-- END color -->
+'Nd':'Nd'
+}
+}
+},
+{id:'enlace',header: "Corrida", width:250, renderer: url_render}
+       
+];
+
+var gridOption={
+id : grid_demo_id,
+loadURL : '/nymsa/inventario/cargar?tblname=producto',
+saveURL : '/nymsa/inventario/actualizar?tblname=producto',
+width: "100%",  //"100%", // 700,
+height: "260",  //"100%", // 330,
+container : 'gridbox', 
+onCellClick  : function(value, record , cell, row,  colNO, rowNO,columnObj,grid){
+if(record['id']!="00" && colNO!=11){
+var producto = record['estilo'];
+var grid = Sigma.$grid(grid_color_id);
+grid.loadURL = '/nymsa/inventario/cargar_color_producto?producto='+producto;
+grid.saveURL = '/nymsa/inventario/guardar_color_producto?producto='+producto;
+grid.reload();
+Sigma.$("bigbox2").style.display = "block";
+$("#prod").html(producto);
+}
+},
+replaceContainer : true,
+encoding : 'UTF-8', // Sigma.$encoding(), 
+dataset : dsOption ,
+columns : colsOption ,
+clickStartEdit : true ,
+defaultRecord : {'id':"00"},
+pageSize:10,
+toolbarContent : 'reload | add del save | filter | nav state'
+};
+
+var gridOption_color={
+id : grid_color_id,
+loadURL : '',
+saveURL : '',
+width: "100%",  //"100%", // 700,
+height: "260",  //"100%", // 330,
+container : 'gridbox2', 
+replaceContainer : true,
+encoding : 'UTF-8', // Sigma.$encoding(), 
+dataset : dsOption_color ,
+columns : colsOption_color,
+clickStartEdit : true ,
+defaultRecord : {'id':"00",'nombre':""},
+pageSize:10,
+toolbarContent : 'reload | add del save | filter | nav state'
+};
+
+
+var mygrid=new Sigma.Grid( gridOption );
+Sigma.Util.onLoad(function(){mygrid.render()});
+
+var mygrid_color=new Sigma.Grid( gridOption_color );
+Sigma.Util.onLoad(function(){mygrid_color.render()});
+
+$(document).ready(function(){
+Sigma.$("bigbox2").style.display = "none";
+}
+);
+</script>
+<nav id="options">
+    <img src="../static/img/atras.png" />
+    <a href="/nymsa/inventario/principal">Atr&aacute;s</a>
+</nav>
+<p>
+    <br/>
+</p>
+<div class="tbl_style">
+    <h1> Productos registrados</h1>
+    <div id="page-container">
+        <div id="content">
+            <div id="bigbox" style="margin:15px;display:!none;">
+                <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+                </div>
+            </div>
+            <div id="bigbox2" style="margin:15px;display:!none;">
+                <h3>Colores disponibles para el producto <span id="prod"></span></h3>
+                <p><br/></p>
+                <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style> 
+    #corrida{
+        background: #fff;
+    }
+</style>
+<div id="corrida" class="hidden_form">
+    <form id="corrida_formulario" action="/nymsa/inventario/agregar_corrida" method="post">
+        <p>
+            <input type="hidden" id="estilo" name="estilo" />
+            <input type="hidden" id="color" name="color" />
+            Corrida: 
+            <input type="text" name="inf_corrida"/>
+            <input type="text" name="sup_corrida"/>
+            - con medios
+            <input type="checkbox" name="medios"/>
+            <br />
+            <br />
+            <input type="button" value="Cancelar" onclick="hidde_form(event, 'corrida');" class="boton">
+            <input type="submit" value="Agregar" class="boton"/>
+        </p>
+    </form>
+</div>

@@ -1,0 +1,43 @@
+<script>
+    function editar(id_) {
+        uri = "/nymsa/inventario/edicion_oc?id=" + id_;
+        pt_s = $.post(uri, {}, function(data) {
+            $('#contenido_dinamico').html(data.html);
+        }, "json");
+    }
+</script>
+<div style="margin-top:30px; text-align: center;">
+    <p>{paginacion}</p>
+    <br/>
+    <br/>
+    <table class="table">
+        <thead>
+            <tr>
+                <th># Orden</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Proveedor</th>
+                <th>Emisión</th>
+                <th>Se espera el</th>
+                <th>Entrega</th>
+                <th>Pares</th>
+                <th>Total costo</th>
+                <th> </th>
+            </tr>
+        </thead>
+        <!-- START listado -->
+        <tr>
+            <td>{id}</td>
+            <td>{tipo}</td>
+            <td>{estado}</td>
+            <td>{proveedor}</td>
+            <td>{fecha}</td>
+            <td>{fecha_espera}</td>
+            <td>{fecha_entrega}</td>
+            <td>{total}</td>
+            <td>{total_costo}</td>
+            <td><a href="javascript: void(0);" onclick="editar({id});">[VER]</a></td>
+        </tr>
+        <!-- END listado -->
+    </table>
+</div>

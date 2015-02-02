@@ -1,0 +1,93 @@
+<style type="text/css">
+	table td{
+		padding: 10px;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		$('#linea').bind('change', cargarEstilos);
+		$('#linea').change();
+		$('#estilo').bind('change', cargarFoto);
+		$('#formArchivo').on('submit', verificarDatos);
+		var urlHandler = new url_handler();
+		urlHandler.initialize();
+		if(urlHandler.isKey('linea') && urlHandler.isKey('estilo')){
+			var l = urlHandler.getValue('linea');
+			var e = urlHandler.getValue('estilo');
+			$("#linea option[value="+ l +"]").attr("selected",true);
+			$('#linea').change();
+		}
+	});
+
+	function verificarDatos(){
+		var linea  = $('#linea').val();
+		var estilo = $('#estilo').val();
+
+		if((linea== null) || (estilo== null)){
+			alert("No se puede actualizar");
+			return false;
+		}
+	}
+
+	function cargarEstilos(){
+		var uri  = "/nymsa/inventario/obtenerEstilos";
+		var data = { "linea": $('#linea').val() };
+
+		$.post(uri, data, function(resp){
+			$('#estilo option').remove();
+			for(var i = 0; i < resp.length; i++){
+				$('#estilo').append('<option value="'+resp[i].estilo+'">'+resp[i].estilo+'</option>');
+			}
+			var urlHandler = new url_handler();
+			urlHandler.initialize();
+			if(urlHandler.isKey('estilo')){
+				$("#estilo option[value="+ urlHandler.getValue('estilo') +"]").attr("selected",true);
+			}
+			$('#estilo').change();
+		}, "json");
+	}
+
+	function cargarFoto(){
+		var linea  = $('#linea').val();
+		var estilo = $('#estilo').val();
+		$('#ilinea').val(linea);
+		$('#iestilo').val(estilo);
+		$('#foto').html("");
+		$('#foto').append('<img style="width: 400px; border: solid 1px #d3d3d3; padding: 10px;" src="../static/img/productos/thumbnail_'+linea+'_'+estilo+'.jpg" alt="Sin asignar"/>')
+	}
+</script>
+<table style="text-align: center;">
+	<tr>
+		<td>Seleccione una linea</td>
+		<td>Seleccione un estilo</td>
+	</tr>
+	<tr>
+		<td>
+			<select id="linea">
+				<!-- START lineas -->
+				<option value="{id}">{nombre}</option>
+				<!-- END lineas -->
+			</select>
+		</td>
+		<td>
+			<select id="estilo">
+				
+			</select>
+		</td>
+	</tr>
+</table>
+<hr/>
+<h3>Actualizar foto del producto</h3>
+<form id="formArchivo" enctype="multipart/form-data" action="/nymsa/inventario/actualizarFotoProducto" method="post">
+	<input type="file" name="archivo"/>
+	<input type="hidden" id="ilinea" name="linea"/>
+	<input type="hidden" id="iestilo" name="estilo"/>
+	<input type="submit" value="Guardar" />
+</form>
+<hr/>
+<h3>Imagen actual</h3>
+<div id="foto">
+	
+</div>
+

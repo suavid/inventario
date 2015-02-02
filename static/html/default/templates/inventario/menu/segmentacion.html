@@ -1,0 +1,74 @@
+<nav class="sidebar light span3" style="float:left;">
+    <ul>
+        <li class="title">Categorías</li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('linea');"><i class="icon-list"></i>Lineas</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('color');"><i class="icon-droplet"></i>Colores</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('genero');"><i class="icon-accessibility"></i>Géneros</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('marca');"><i class="icon-tag"></i>Marcas</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('grupo');"><i class="icon-puzzle"></i>Grupos</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('concepto');"><i class="icon-comments"></i>Concepto</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('tacon');"><i class="icon-ruler"></i>Tacones</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('suela');"><i class="icon-minus-2"></i>Suelas</a></li>
+        <li class=""><a href="javascript: void(0);" onclick="cargar('material');"><i class="icon-scissors"></i>Materiales</a></li>
+    </ul>
+</nav>
+
+<div id="scontent" class="span10" style="float:left; margin-left: 50px;">
+	<h3>Segmentación de productos</h3>
+	<p>
+		La segmentación de productos le permite clasificar sus productos. Seleccione una de las categorías a la izquierda
+		para editar.
+	</p>
+</div>
+<div style="clear: both;"></div>
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		var urlHandler = new url_handler();
+		urlHandler.initialize();
+
+		if(urlHandler.isKey('tab')){
+			cargar(urlHandler.getValue('tab'));
+		}
+	});
+
+	function cargar(categoria){
+		var uri  = "/{systemModuleName}/inventario/";
+		var data = { };
+
+		switch(categoria){
+			case 'linea':
+				uri += "segmentacionLinea";
+				break;
+			case 'color':
+				uri += "segmentacionColor";
+				break;
+			case 'genero':
+				uri += "segmentacionGenero";
+				break;
+			case 'marca':
+				uri += "segmentacionMarca";
+				break;
+			case 'grupo':
+				uri += "segmentacionGrupo";
+				break;
+			case 'concepto':
+				uri += "segmentacionConcepto";
+				break;
+			case 'tacon':
+				uri += "segmentacionTacon";
+				break;
+			case 'suela':
+				uri += "segmentacionSuela";
+				break;
+			case 'material':
+				uri += "segmentacionMaterial";
+				break;				
+		}
+
+		$.post(uri, data, function(resp){
+			$('#scontent').html(resp.html);
+		}, "json");
+	}
+
+</script>

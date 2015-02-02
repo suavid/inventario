@@ -1,0 +1,89 @@
+<script>
+    function NuevoDocumento(event) {
+        event.preventDefault();
+        var s = confirm('Quiere crear un nuevo documento?');
+        if (s) {
+            location.href = "/nymsa/inventario/salvar_documento";
+        }
+    }
+
+    function Historia(event) {
+        event.preventDefault();
+        location.href = "/nymsa/inventario/inventarioHistorial";
+    }
+
+    function confirmar(id){
+        if(confirm("Esta seguro?"))
+            location.href='/nymsa/inventario/actualizar_productos?documento='+id;
+    }
+</script>
+<section>
+    <div class="toolbar">
+        <button class="big" onclick="NuevoDocumento(event);">
+            <i class="icon-new"></i> Nuevo documento
+        </button>
+        <button class="big" onclick="Historia(event);">
+            <i class="icon-history"></i> Documentos aplicados
+        </button>
+        <button class="big" onclick="location.href = '/nymsa/inventario/resumenGeneralProducto';">
+            <i class="icon-clipboard-2"></i> Catálogo de productos
+        </button>
+        <button class="big" onclick="location.href = '/nymsa/inventario/vericarPermisoPrecio';">
+            <i class="icon-cycle"></i> Actualizar productos
+        </button>
+        <button class="big" onclick="location.href = '/nymsa/inventario/actualizarFoto';">
+            <i class="icon-pictures"></i> Imagen del producto
+        </button>
+        <button class="big" onclick="location.href = '/nymsa/inventario/productosSugeridos';">
+            <i class="icon-bookmark-3"></i> Productos sugeridos
+        </button>
+    </div>
+    <h3>Documentos</h3>
+    <p><br/></p>
+    <div class="balloon bottom span5" style="margin: 10px; padding: 10px;">
+        <p>
+        Los documentos le permiten hacer cambios temporales al catálogo de productos. Una vez se encuentre satisfecho con los cambios
+        que ha realizado los puede volver permamentes. No confirme un documento a menos que se encuentre seguro de los cambios que ha realizado de lo contrario
+        si comente algún error no podrá deshacerlo.
+        </p>
+    </div>
+    <h3>Mis documentos</h3>
+    <table class="table" style="width:700px; text-align:center;">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Fecha de creaci&oacute;n
+                </th>
+                <th>
+                    Propietario
+                </th>
+                <th>
+                    
+                </th>
+                <th>
+                    
+                </th>
+            </tr>
+        </thead>
+        <!-- START documentos -->
+        <tr>
+            <td>{id_documento}</td>
+            <td>{fecha_creacion}</td>
+            <td>{propietario}</td>
+            <td>
+                <a href="/nymsa/inventario/doc_productos?documento={id_documento}">
+                    <i class="icon-pencil"></i> Editar 
+                </a>  
+            </td>
+            <td>
+                <a href="javascript: void(0);" onclick="confirmar({id_documento});">
+                    <i class="icon-upload"></i> Confirmar cambios (CUIDADO!: Son permanentes)  
+                </a>
+            </td>
+        </tr>
+        <!-- END documentos -->
+    </table>
+</section>

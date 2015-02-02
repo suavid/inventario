@@ -1,0 +1,408 @@
+<script type="text/javascript" >
+
+    var grid_demo_id = "stock_grid";
+    var grid_demo2_id = "precio_grid";
+    var grid_detalle_id = "detalle_grid";
+
+    function stock_render(value, record, columnObj, grid, colNo, rowNo) {
+        var producto = record['estilo'];
+        var color = record['color'];
+        var talla = record['talla'];
+        var linea = record['linea'];
+        return '<span class="metrouicss"><a href="javascript: void(0);" class="button fg-color-white bg-color-green" onclick="show_hidden_form(event,\'stock_form\');udt(event,\'' + producto + '\',\'' + color + '\',\'' + talla + '\',\'' + linea + '\');">Agregar stock</a></span>';
+    }
+
+    function img_render(value, record, columnObj, grid, colNo, rowNo) {
+        var producto = record['estilo'];
+        var color = record['color'];
+        return '<img src="../static/img/productos/thumbnail_' + producto + '_' + color + '" alt="No disponible" width="100"/>';
+    }
+
+    function precio_format(value, record, columnObj, grid, colNo, rowNo) {
+        return '$' + record['precio'];
+    }
+
+    function precio_render(value, record, columnObj, grid, colNo, rowNo) {
+        var producto = record['estilo'];
+        var color = record['color'];
+        var talla = record['talla'];
+        var linea = record['linea'];
+        return '<span class="metrouicss"><a href="javascript: void(0);" class="button fg-color-white bg-color-green" onclick="show_hidden_form(event,\'precio_form\');uht(event,\'' + producto + '\',\'' + color + '\',\'' + talla + '\',\'' + linea + '\');">Asignar precio</a></span>';
+    }
+
+    $(document).ready(function() {
+        $('#formulario_stock').on('submit', function(event) {
+            if ($('#stock').val().toString().trim() == "" || ($('#stock').val() + 0.0) <= 0 || isNaN($('#stock').val())) {
+                alert("cantidad no valida");
+                return false;
+            } else {
+                if (!confirm("Esta Seguro de querer realizar esta accion?"))
+                    return false;
+            }
+        });
+
+        $('#formulario_precio').on('submit', function(event) {
+            if ($('#precio').val().toString().trim() == "" || ($('#precio').val() + 0.0) <= 0 || isNaN($('#precio').val())) {
+                alert("cantidad no valida");
+                return false;
+            } else {
+                if (!confirm("Esta Seguro de querer realizar esta accion?"))
+                    return false;
+            }
+        });
+    });
+
+
+    function udt(event, producto, color, talla, linea) {
+        event.preventDefault();
+        $('#det_prod').html(producto);
+        $('#det_color').html(color);
+        $('#det_talla').html(talla);
+        $('#det_linea').html(linea);
+        $('#estilo').val(producto);
+        $('#color').val(color);
+        $('#talla').val(talla);
+        $('#linea').val(linea);
+    }
+
+    function uht(event, producto, color, talla, linea) {
+        event.preventDefault();
+        $('#det_prod2').html(producto);
+        $('#det_color2').html(color);
+        $('#det_talla2').html(talla);
+        $('#det_linea2').html(linea);
+        $('#estilo2').val(producto);
+        $('#color2').val(color);
+        $('#talla2').val(talla);
+        $('#linea2').val(linea);
+    }
+
+    var dsOption = {
+        fields: [
+            {name: 'estilo'},
+            {name: 'proveedor'},
+            {name: 'color'},
+            {name: 'talla'},
+            {name: 'linea'},
+            {name: 'fecha_ingreso'}
+        ],
+        recordType: 'object'
+    }
+
+    var dsOption2 = {
+        fields: [
+            {name: 'estilo'},
+            {name: 'proveedor'},
+            {name: 'color'},
+            {name: 'talla'},
+            {name: 'linea'},
+            {name: 'fecha_ingreso'}
+        ],
+        recordType: 'object'
+    }
+
+    var dsOption_detalle = {
+        fields: [
+            {name: 'estilo'},
+            {name: 'color'},
+            {name: 'talla'},
+            {name: 'linea'},
+            {name: 'stock'}
+        ],
+        recordType: 'object'
+    }
+
+    var colsOption = [
+        {id: 'estilo', header: "Estilo", width: 80},
+        {id: 'proveedor', header: "Proveedor", width: 100},
+        {id: 'color', header: "Color", width: 100},
+        {id: 'talla', header: "Talla", width: 100},
+        {id: 'linea', header: "Linea", width: 100},
+        {id: 'precio', header: "Precio", width: 100, renderer: precio_format},
+        {id: 'img', header: "Foto", width: 100, renderer: img_render},
+        {id: 'cantidad', header: "Stock", width: 150, renderer: stock_render}
+
+    ];
+
+
+    var colsOption2 = [
+        {id: 'estilo', header: "Estilo", width: 80},
+        {id: 'proveedor', header: "Proveedor", width: 100},
+        {id: 'color', header: "Color", width: 100},
+        {id: 'talla', header: "Talla", width: 100},
+        {id: 'linea', header: "Linea", width: 100},
+        {id: 'fecha_ingreso', header: "Fecha_ingreso", width: 100},
+        {id: 'img', header: "Foto", width: 100, renderer: img_render},
+        {id: 'cantidad', header: "Precio", width: 150, renderer: precio_render}
+
+    ];
+
+    var colsOption_detalle = [
+        {id: 'estilo', header: "Estilo", width: 80},
+        {id: 'color', header: "Color", width: 100},
+        {id: 'talla', header: "Talla", width: 100},
+        {id: 'linea', header: "Linea", width: 100},
+        {id: 'stock', header: "Stock", width: 100},
+        {id: 'img', header: "Foto", width: 100, renderer: img_render}
+    ];
+
+
+    var gridOption = {
+        id: grid_demo_id,
+        loadURL: '/nymsa/inventario/cargar_stock',
+        saveURL: '/nymsa/inventario/establecer_stock',
+        width: "100%", //"100%", // 700,
+        height: "460", //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption,
+        columns: colsOption,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        toolbarContent: 'reload filter nav state'
+    };
+
+    var gridOption2 = {
+        id: grid_demo2_id,
+        loadURL: '/nymsa/inventario/cargar_precio',
+        saveURL: '/nymsa/inventario/establecer_precio',
+        width: "100%", //"100%", // 700,
+        height: "460", //"100%", // 330,
+        container: 'gridbox3',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption2,
+        columns: colsOption2,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        toolbarContent: 'reload filter nav state'
+    };
+
+    var gridOption_detalle = {
+        id: grid_detalle_id,
+        loadURL: '/nymsa/inventario/cargar_cfd?tblname=estado_bodega_documento&field=documento&value={documento}',
+        saveURL: '',
+        width: "100%", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container: 'gridbox2',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption_detalle,
+        columns: colsOption_detalle,
+        clickStartEdit: true,
+        defaultRecord: {'id': "00", 'nombre': ""},
+        pageSize: 10,
+        toolbarContent: 'reload filter nav state'
+    };
+
+    function doFilter() {
+        var filterInfo = [
+            {
+                fieldName: "estilo",
+                logic: "startWith",
+                value: Sigma.Util.getValue("f_value1")
+            }
+        ]
+        var grid = Sigma.$grid("stock_grid");
+        var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    function doFilter2() {
+        var filterInfo = [
+            {
+                fieldName: "estilo",
+                logic: "startWith",
+                value: Sigma.Util.getValue("f_value2")
+            }
+        ]
+        var grid = Sigma.$grid("precio_grid");
+        var rowNOs = grid.applyFilter(filterInfo);
+    }
+
+    var mygrid = new Sigma.Grid(gridOption);
+    Sigma.Util.onLoad(
+            function() {
+                mygrid.render();
+                Sigma.$('bigbox4').style.display = "none";
+                Sigma.$('bigbox3').style.display = "none";
+                Sigma.$('bigbox2').style.display = "none";
+                $('#gridbox').css('display', 'none');
+            });
+
+    var mygrid3 = new Sigma.Grid(gridOption2);
+    Sigma.Util.onLoad(function() {
+        mygrid3.render()
+    });
+    var mygrid2 = new Sigma.Grid(gridOption_detalle);
+    Sigma.Util.onLoad(function() {
+        mygrid2.render()
+    });
+</script>
+<div id="page-container">
+    <div id="content">
+
+    </div>
+</div>
+<style>
+
+    .hidden_form form{
+        background:#FFFFFF;
+        padding: 30px;
+        border: solid 5px #fff; 
+        text-align: center;
+        box-shadow: 1px 1px 4px #000;
+    }
+
+    .hidden_form{
+        position:fixed;
+        padding:30px;
+        top:40px;
+        max-height:300px;
+        height:auto;
+        display:none;
+        overflow:auto;
+        text-align:right;
+        margin:0 auto;
+        left:0px;
+        right:0px;
+        z-index:1000001;
+    }
+
+    .black_screen{
+        opacity:0.60;
+        width:100%;
+        height:100%;
+        position:fixed;
+        background:#000;
+        display:none;
+        z-index:1000000;
+        top: 0px;
+        left: 0px;
+    }
+
+    .gt-head-div {
+
+        height:24px;
+
+    }
+    .gt-inner {
+
+        height:40px;
+
+    }
+
+</style>
+<h3 class="nav-bar fg-color-white" style="padding:10px;">
+    Stock
+    - 
+    <strong> Documento actual: {documento}</strong>
+</h3>
+<div id="stock_form" class="hidden_form" >
+    <form id="formulario_stock" action="/nymsa/inventario/salvar_stock" method="post">
+        <p>
+            <input type="hidden" name="estilo" id="estilo"/>
+            <input type="hidden" name="linea" id="linea"/>
+            <input type="hidden" name="talla" id="talla"/>
+            <input type="hidden" name="color" id="color"/>
+            <input type="hidden" name="documento" value="{documento}"/>
+            Producto: <span id="det_prod"></span>
+            -
+            Color: <span id="det_color"></span>
+            -
+            Linea: <span id="det_linea"></span>
+            -
+            Talla: <span id="det_talla"></span>
+            <br/>
+            <br/>
+        </p>
+        <h3>Cantidad que ingresa</h3>
+        <p>
+            <br/>
+            (*) <input type="text" id="stock" name="stock" style="width:50px;"/>
+            <br/>
+            <br/>
+            <input type="submit" value="Registrar" class="boton"/>
+            <input type="button" onclick="hidde_form(event, 'stock_form');" value="Cancelar" class="boton" />
+        </p>
+    </form>
+</div>
+<div id="precio_form" class="hidden_form" >
+    <form id="formulario_precio" action="/nymsa/inventario/salvar_precio" method="post">
+        <p>
+            <input type="hidden" name="estilo" id="estilo2"/>
+            <input type="hidden" name="linea" id="linea2"/>
+            <input type="hidden" name="talla" id="talla2"/>
+            <input type="hidden" name="color" id="color2"/>
+            <input type="hidden" name="documento" value="{documento}"/>
+            Producto: <span id="det_prod2"></span>
+            -
+            Color: <span id="det_color2"></span>
+            -
+            Linea: <span id="det_linea2"></span>
+            -
+            Talla: <span id="det_talla2"></span>
+            <br/>
+            <br/>
+        </p>
+        <h3>Precio</h3>
+        <p>
+            <br/>
+            (*) <input type="text" id="precio" name="precio" style="width:50px;"/>
+            <br/>
+            <br/>
+            <input type="submit" value="Registrar" class="boton"/>
+            <input type="button" onclick="hidde_form(event, 'precio_form');" value="Cancelar" class="boton" />
+        </p>
+    </form>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="bigbox" style="margin:15px;display:!none;">
+    <div class="metro">
+        <h2>Asignaci&oacute;n de precios</h2>
+        Filtro r&aacute;pido:
+        <div class="input-control text"> 
+            <input type="text" id="f_value2" value="" onKeyUp="doFilter2()">
+            <button class="btn-search" onKeyUp="doFilter2();"></button>
+        </div>
+    </div>
+    <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+    </div>
+    <br/>
+    <br/>
+    <div class="metro">
+        <h2>Asignaci&oacute;n de existencia</h2> 
+        Filtro r&aacute;pido:
+        <div class="input-control text"> 
+            <input type="text" id="f_value1" value="" onKeyUp="doFilter()">
+            <button class="btn-search" onKeyUp="doFilter();"></button>
+        </div>
+    </div>
+    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+    </div>
+    <p><br/></p>
+    <div class="metrouicss">
+        <h2>Existencias (s&oacute;lo se muestran cambios aplicados a este documento)</h2>
+    </div>
+    <style>
+        .gt-inner {
+
+            height:80px;
+
+        }
+    </style>
+    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+    </div>
+</div>
+<div>
+    <div>
+        <div>
