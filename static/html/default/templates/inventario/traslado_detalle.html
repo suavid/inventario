@@ -31,7 +31,7 @@
             
             /* se vuelve a cargar el detalle con el filtro */
             var grid = Sigma.$grid("genero_grid");
-            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.loadURL = '/{systemModuleName}/inventario/cargar_detalle_traslado?filtros=' + filtros +'&proveedor='+{proveedor};
             grid.reload();
 
             /* limpiar alguno elementos de la interfaz */
@@ -47,7 +47,7 @@
                 "linea" : $('#slinea').val()
             };
 
-            uri = '/nymsa/inventario/get_detalle_data_traslado';
+            uri = '/{systemModuleName}/inventario/get_detalle_data_traslado';
 
             fr = $.post(uri, send_dat, function(data){
                 
@@ -61,7 +61,7 @@
         // ########################################################################################
 
 
-        en_uri = '/nymsa/inventario/trasladoEditable'; // uri que verifica si se puede editar el documento
+        en_uri = '/{systemModuleName}/inventario/trasladoEditable'; // uri que verifica si se puede editar el documento
 
         data_ = { "ref":{idencabezado} }; // codigo de traslado
             
@@ -108,7 +108,7 @@
 
             // aplicamos el filtro
             var grid = Sigma.$grid("genero_grid");
-            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.loadURL = '/{systemModuleName}/inventario/cargar_detalle_traslado?filtros=' + filtros+'&proveedor='+{proveedor};
             grid.reload();
 
             // datos para cargar catalogo y proveedor para linea y estilo
@@ -122,7 +122,7 @@
             $('#smargen').val("");
             $('#spagina').val("");
 
-            uri = '/nymsa/inventario/get_detalle_data_traslado';
+            uri = '/{systemModuleName}/inventario/get_detalle_data_traslado';
             
             fr = $.post(uri, send_dat, function(data){
                 // estableciendo los datos
@@ -155,7 +155,7 @@
             }
                 
             var grid = Sigma.$grid("genero_grid");
-            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.loadURL = '/{systemModuleName}/inventario/cargar_detalle_traslado?filtros=' + filtros +'&proveedor='+{proveedor};
             grid.reload();
             
         }); // fin de filtrado para cambio de color
@@ -181,7 +181,7 @@
             }
 
             var grid = Sigma.$grid("genero_grid");
-            grid.loadURL = '/nymsa/inventario/cargar_detalle_traslado?filtros=' + filtros;
+            grid.loadURL = '/{systemModuleName}/inventario/cargar_detalle_traslado?filtros=' + filtros +'&proveedor='+{proveedor};
             grid.reload();
         
         }); // fin de filtrado para cambbio de talla
@@ -196,7 +196,7 @@
         {
             data_ = { "ref":{idencabezado} };
             
-            set_uri = '/nymsa/inventario/establecer_datos_traslado'; // uri que carga los datos total_pares y total_costo
+            set_uri = '/{systemModuleName}/inventario/establecer_datos_traslado'; // uri que carga los datos total_pares y total_costo
                     
             // inicio de carga de datos total_pares y total_costo
             set_rq = $.post(set_uri, data_, function(data)
@@ -211,7 +211,7 @@
         {
             data_ = { "cliente":{idcliente} };
                     
-            set_uri = '/nymsa/inventario/establecer_datos_consigna';
+            set_uri = '/{systemModuleName}/inventario/establecer_datos_consigna';
             set_rq = $.post(set_uri, data_, function(data)
             {
                     $('#t_credito').val(parseFloat(data.credito).toFixed(2));
@@ -234,12 +234,12 @@
         {
             if ({consigna} == 0)
             {
-                 var vurl = window.open('/nymsa/inventario/imprimirTraslado/' + {idencabezado}, '_blank');
+                 var vurl = window.open('/{systemModuleName}/inventario/imprimirTraslado/' + {idencabezado}, '_blank');
             }
             else
             {
-                var vurl = window.open('/nymsa/inventario/imprimirConsigna/' + {idencabezado} + '/1', '_blank');
-                var vurl2 = window.open('/nymsa/inventario/imprimirConsigna/' + {idencabezado} + '/2', '_blank');
+                var vurl = window.open('/{systemModuleName}/inventario/imprimirConsigna/' + {idencabezado} + '/1', '_blank');
+                var vurl2 = window.open('/{systemModuleName}/inventario/imprimirConsigna/' + {idencabezado} + '/2', '_blank');
             }
         }
     }
@@ -303,7 +303,7 @@
                 "consigna": {consigna}
             };
                 
-            uri = "/nymsa/inventario/borrar_traslado_detalle";
+            uri = "/{systemModuleName}/inventario/borrar_traslado_detalle";
             
             if (confirm("Quiere eliminar el registro?"))
             {
@@ -365,6 +365,8 @@
         encoding : 'UTF-8', // Sigma.$encoding(), 
         dataset : dsOption,
         columns : colsOption,
+        allowCustomSkin: true,
+        skin: 'mac',
         clickStartEdit : true,
         defaultRecord : {'id':"00", 'nombre':""},
         pageSize:10,
@@ -404,7 +406,7 @@
             
     var gridOption2 = {
         id : grid_demo2_id,
-        loadURL : '/nymsa/inventario/cargar_cfd?tblname=detalle_traslado&field=id_ref&value={idencabezado}',
+        loadURL : '/{systemModuleName}/inventario/cargar_cfd?tblname=detalle_traslado&field=id_ref&value={idencabezado}',
         saveURL : '',
         width: "100%", //"100%", // 700,
         height: "260", //"100%", // 330,
@@ -412,6 +414,8 @@
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
         dataset : dsOption2,
+        allowCustomSkin: true,
+        skin: 'mac',
         columns : colsOption2,
         clickStartEdit : true,
         defaultRecord : {'id':"00", 'nombre':""},
@@ -468,13 +472,16 @@
                     "total": 	parseInt($(this).val()) * parseFloat(data[4]).toFixed(2),
                     "consigna": {consigna}
                 };
-                info.push(data_send);
+                if( (data[4]>0) && ($(this).val() > 0) ){
+
+                    info.push(data_send);
+                }
                 $(this).val(0);
             }
         });
             
         send = { "productos": JSON.stringify(info) };
-        df = $.post('/nymsa/inventario/salvar_traslado_detalle', send, function(dC){
+        df = $.post('/{systemModuleName}/inventario/salvar_traslado_detalle', send, function(dC){
             var grid = Sigma.$grid("genero2_grid");
             grid.reload();
             cargar_totales();
@@ -517,70 +524,43 @@
                 {
                     case "1B":
                         /* compras */
-                        uri = "/nymsa/inventario/transaccionCompra";
+                        uri = "/{systemModuleName}/inventario/transaccionCompra";
                     break;
                     case "1C":
                         /* Ingreso por traslado */
-                        uri = "/nymsa/inventario/transaccionLibre";
+                        uri = "/{systemModuleName}/inventario/transaccionLibre";
                     break;
-                    case "2B":
+                    case "2C":
                         /* Salida por traslado */
-                        uri = "/nymsa/inventario/transaccionLibre";
-                    break;
-                    case "2D":
-                        /* Salida por ajuste */
-                        uri = "/nymsa/inventario/salidas";
+                        uri = "/{systemModuleName}/inventario/transaccionLibre";
                     break;
                     case "2E":
                         /* Otras salidas */
-                        uri = "/nymsa/inventario/salidas";
-                    break;
-                    case "1D":
-                        /* Ingreso por ajuste */
-                        uri = "/nymsa/inventario/ingresos";
+                        uri = "/{systemModuleName}/inventario/salidas";
                     break;
                     case "1E":
                         /* Otros ingresos */
-                        uri = "/nymsa/inventario/ingresos";
+                        uri = "/{systemModuleName}/inventario/ingresos";
+                    break;
+                    case "2B":
+                        /* Devoluciones sobre compras */
+                        uri = "/{systemModuleName}/inventario/devolucionesSobreCompras";
                     break;
                 }
                 /* ejecucion del recurso */
+                porfavor_espere();
                 cmt = $.post(uri, data_request, function(data){
                     /* Accion de respuesta */
-                    if (transaccion == "1B")
-                    {
-                        if (data.of){
-                            alert("Se compraron productos en oferta, no se puede realizar el ingreso");
-                        }else{
-                            location.href = "/nymsa/inventario/traslados";
-                        }
-                    }
+                    if (data.out){
+                        alert("No hay suficiente producto en bodega");
+                    } else{
+                        setTimeout(function(){ 
+                            gracias_por_esperar();
+                        }, 500);
 
-                    if (transaccion == "2B" || transaccion == "1C")
-                    {
-                        if (data.out){
-                            alert("No hay suficiente producto en bodega");
-                        }else{
-                            location.href = "/nymsa/inventario/traslados";
-                        }
-                    }
-
-                    if (transaccion == "2D" || transaccion == "2E")
-                    {
-                        if (data.out){
-                            alert("No hay suficiente producto en bodega");
-                        } else{
-                            location.href = "/nymsa/inventario/traslados";
-                        }
-                    }
-
-                    if (transaccion == "1D" || transaccion == "1E")
-                    {
-                        if (data.out){
-                            alert("No hay suficiente producto en bodega");
-                        } else{
-                            location.href = "/nymsa/inventario/traslados";
-                        }
+                        setTimeout(function(){ 
+                            location.href = "/{systemModuleName}/inventario/traslados";
+                        }, 700);
                     }
                 }, "json");
             } else{
@@ -591,8 +571,8 @@
 
 </script>
 
-<div style="text-align:right;">
-    Consigna <input type="checkbox" id="iConsigna" disabled="disabled" />
+<div style="text-align:right;padding-right: 40px;">
+    <!--Consigna <input type="checkbox" id="iConsigna" disabled="disabled" />-->
     <button type="button" onclick="imprimir();" ><i class="icon-printer"></i> Imprimir </button>
 </div>
 
@@ -675,10 +655,10 @@
         </div>
     </div>
 
-    <div style="float:left;width:630px;">
+    <div style="float:left;width:630px; margin-left: 30px;">
 
     <!-- GRID PRINCIPAL -->
-        &nbsp;&nbsp;&nbsp;&nbsp;Transaccion: {tipoTransaccion}
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;Tipo de transaccion: {tipoTransaccion}</p>
         <div id="bigbox" style="margin:15px;display:!none;">
             <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
@@ -688,6 +668,7 @@
         <!-- DIV TOTALES TRASLADO -->
         <div id="div1">
             &nbsp;&nbsp;&nbsp;&nbsp;Total Costo: <input type="text" id="t_costo" value="0.0" style="width:100px;" readonly="readonly" /> / <span id="valcosto">{totalcosto}</span>
+            <br/>
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;Total Pares:&nbsp; <input type="text" id="t_pares" value="0" style="width:100px;" readonly="readonly" /> / <span id="valpares">{totalpares}</span>
             <br/>

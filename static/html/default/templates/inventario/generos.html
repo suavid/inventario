@@ -46,9 +46,15 @@
 </script>
 
 <div id="page-container">
-    <div id="content">
+    <div id="content" class="span8">
         <form action="/{systemModuleName}/inventario/guardar_genero" method="post">
-            <input type="checkbox" name="rellenar" disabled="disabled" /> Reutilizar Id's
+            <div class="input-control checkbox">
+                <label>
+                    <input type="checkbox" name="rellenar"  />
+                    <span class="check"></span>
+                    Reutilizar ID
+                </label>
+            </div>
             <br/>
             <br/>
             <h3>Nuevo género:</h3> 
@@ -58,6 +64,8 @@
             <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>
         </form>
     </div>
+    <br/>
+    <br/>
     <div id="bigbox" style="margin:15px;display:!none;">
         <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 

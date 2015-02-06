@@ -3,52 +3,44 @@
         event.preventDefault();
         var s = confirm('Quiere crear un nuevo documento?');
         if (s) {
-            location.href = "/nymsa/inventario/salvar_documento";
+            location.href = "/{systemModuleName}/inventario/salvar_documento";
         }
     }
 
     function Historia(event) {
         event.preventDefault();
-        location.href = "/nymsa/inventario/inventarioHistorial";
+        location.href = "/{systemModuleName}/inventario/inventarioHistorial";
     }
 
     function confirmar(id){
         if(confirm("Esta seguro?"))
-            location.href='/nymsa/inventario/actualizar_productos?documento='+id;
+            location.href='/{systemModuleName}/inventario/actualizar_productos?documento='+id;
     }
 </script>
 <section>
-    <div class="toolbar">
-        <button class="big" onclick="NuevoDocumento(event);">
-            <i class="icon-new"></i> Nuevo documento
-        </button>
-        <button class="big" onclick="Historia(event);">
-            <i class="icon-history"></i> Documentos aplicados
-        </button>
-        <button class="big" onclick="location.href = '/nymsa/inventario/resumenGeneralProducto';">
-            <i class="icon-clipboard-2"></i> Catálogo de productos
-        </button>
-        <button class="big" onclick="location.href = '/nymsa/inventario/vericarPermisoPrecio';">
-            <i class="icon-cycle"></i> Actualizar productos
-        </button>
-        <button class="big" onclick="location.href = '/nymsa/inventario/actualizarFoto';">
-            <i class="icon-pictures"></i> Imagen del producto
-        </button>
-        <button class="big" onclick="location.href = '/nymsa/inventario/productosSugeridos';">
-            <i class="icon-bookmark-3"></i> Productos sugeridos
-        </button>
-    </div>
-    <h3>Documentos</h3>
-    <p><br/></p>
-    <div class="balloon bottom span5" style="margin: 10px; padding: 10px;">
-        <p>
-        Los documentos le permiten hacer cambios temporales al catálogo de productos. Una vez se encuentre satisfecho con los cambios
-        que ha realizado los puede volver permamentes. No confirme un documento a menos que se encuentre seguro de los cambios que ha realizado de lo contrario
-        si comente algún error no podrá deshacerlo.
-        </p>
-    </div>
-    <h3>Mis documentos</h3>
-    <table class="table" style="width:700px; text-align:center;">
+    <p>
+        <br />
+    </p>
+    <hr/>
+    <nav class="horizontal-menu compact">
+    <ul>
+        <li><a href="javascript: void(0);" onclick="NuevoDocumento(event);"><i class="icon-new"></i> Nuevo</a></li>
+        <li><a href="javascript: void(0);" onclick="Historia(event);"><i class="icon-history"></i> Historial</a></li>
+        <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-clipboard-2"></i> Mis productos</a></li>
+        <li><a href="/{systemModuleName}/inventario/cambiarPrecios"><i class="icon-cycle"></i> Actualizar productos</a></li>
+        <li><a href="/{systemModuleName}/inventario/actualizarFoto"><i class="icon-pictures"></i> Imagen del producto</a></li>
+        <li><a href="/{systemModuleName}/inventario/productosSugeridos"><i class="icon-bookmark-3"></i> Productos sugeridos</a></li>
+    </ul>
+    </nav>
+    <hr/>
+    <p>
+        <br />
+    </p>
+    <h2>Mis documentos</h2>
+    <p>
+        <br />
+    </p>
+    <table class="table span12" style="text-align:center;">
         <thead>
             <tr>
                 <th>
@@ -74,16 +66,18 @@
             <td>{fecha_creacion}</td>
             <td>{propietario}</td>
             <td>
-                <a href="/nymsa/inventario/doc_productos?documento={id_documento}">
-                    <i class="icon-pencil"></i> Editar 
+                <a class="button link" href="/{systemModuleName}/inventario/doc_productos?documento={id_documento}">
+                    Editar 
                 </a>  
-            </td>
-            <td>
-                <a href="javascript: void(0);" onclick="confirmar({id_documento});">
-                    <i class="icon-upload"></i> Confirmar cambios (CUIDADO!: Son permanentes)  
+            
+                <a class="button link" href="javascript: void(0);" onclick="confirmar({id_documento});">
+                    Confirmar  
                 </a>
             </td>
         </tr>
         <!-- END documentos -->
     </table>
 </section>
+<p>
+    <br />
+</p>

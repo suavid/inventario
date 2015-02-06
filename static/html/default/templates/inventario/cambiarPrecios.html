@@ -46,7 +46,7 @@
             alert('Es necesario que ingrese una cantidad valida');
         } else {
             if (confirm("Esta Seguro de querer realizar esta accion?")) {
-                uri = '/nymsa/inventario/nuevoPrecioProducto/' + parseFloat(nuevoPrecio) + '/' + estilo + '/' + color + '/' + parseFloat(talla) + '/' + linea;
+                uri = '/{systemModuleName}/inventario/nuevoPrecioProducto/' + parseFloat(nuevoPrecio) + '/' + estilo + '/' + color + '/' + parseFloat(talla) + '/' + linea;
                 data = {};
                 ajaxRq = $.post(uri, data, function(data) {
                     if (data.status == 200) {
@@ -77,7 +77,6 @@
             {name: 'linea'},
             {name: 'codigo_origen'},
             {name: 'descripcion'},
-            {name: 'proveedor'},
             {name: 'catalogo'},
             {name: 'n_pagina'},
             {name: 'genero'},
@@ -104,7 +103,6 @@
         {id: 'linea', header: "Linea", width: 40},
         {id: 'estilo', header: "Estilo", width: 60},
         {id: 'descripcion', header: "Descripcion", width: 100},
-        {id: 'proveedor', header: "Proveedor", width: 50},
         {id: 'catalogo', header: "Catalogo", width: 50},
         {id: 'n_pagina', header: "N. Pagina", width: 60},
         {id: 'genero', header: "Genero", width: 50},
@@ -114,7 +112,7 @@
 
     var gridOption = {
         id: grid_demo_id,
-        loadURL: '/nymsa/inventario/cargar_stock2',
+        loadURL: '/{systemModuleName}/inventario/cargar_stock2',
         saveURL: '',
         width: "100%", //"100%", // 700,
         height: "250", //"100%", // 330,
@@ -123,6 +121,8 @@
         encoding: 'UTF-8', // Sigma.$encoding(), 
         dataset: dsOption,
         columns: colsOption,
+        allowCustomSkin: true,
+        skin: 'mac',
         clickStartEdit: true,
         defaultRecord: {'id': "00", 'nombre': ""},
         pageSize: 10,
@@ -131,7 +131,7 @@
 
     var gridOption3 = {
         id: grid_demo3_id,
-        loadURL: '/nymsa/inventario/cargar?tblname=producto',
+        loadURL: '/{systemModuleName}/inventario/cargar?tblname=producto',
         saveURL: '',
         width: "100%", //"100%", // 700,
         height: "260", //"100%", // 330,
@@ -141,6 +141,8 @@
         dataset: dsOption3,
         columns: colsOption3,
         clickStartEdit: true,
+        allowCustomSkin: true,
+        skin: 'mac',
         defaultRecord: {'id': "00"},
         pageSize: 10,
         toolbarContent: 'filter | nav state'
@@ -172,11 +174,10 @@
                 campos = $('#selecciones input[type="checkbox"]');  // obtiene todos los posibles cambios
                 selecciones = [];                                   // array de selecciones
 
-
                 /* obtener aquellos cambios que van a ser aplicados  */
                 ct = 0;
                 for (i = 0; i < campos.length; i++) {
-                    if ($(campos[i]).attr("checked")) {
+                    if (campos[i].checked) {
                         selecciones[ct++] = $(campos[i]).attr("id").split("_")[1]; // si el campo esta marcado se agrega a selecciones
                     }
                 }
@@ -192,7 +193,6 @@
 
                 /* si no hay datos faltantes se procesa la peticion  */
                 if (!empty_var) {
-
                     estilo = $('#estilo').val().trim(); // obtiene es estilo seleccionado
                     linea = $('#linea').val().trim();  // obtiene la linea seleccionada 
 
@@ -200,7 +200,7 @@
                     if (estilo != "" || linea != "") {
 
                         /* cambios que se aplican al producto independientemente del color o la talla */
-                        uriG = '/nymsa/inventario/cambiarDatoGeneral';  // url que manera la peticion de cambios
+                        uriG = '/{systemModuleName}/inventario/cambiarDatoGeneral';  // url que manera la peticion de cambios
 
                         // datos necesarios para este tipo de cambios
                         dataG = {
@@ -223,6 +223,8 @@
                         /* cambio de precio */
                         // encontrar precio
                         pos = -1;
+
+
                         for (i = 0; i < selecciones.length; i++)
                             if (selecciones[i] == 'precio')
                                 pos = i; // verifica la posicion del precio dentro de las selecciones (-1 si no lo puede encontrar)
@@ -233,8 +235,7 @@
                             if ($('#n' + selecciones[pos]).val().toString().trim() == "" || ($('#n' + selecciones[pos]).val() + 0.0) <= 0 || isNaN($('#n' + selecciones[pos]).val())) {
                                 alert('Es necesario que ingrese una cantidad valida'); // validamos que el tipo de dato sea correcto
                             } else {
-
-                                //uri     = '/nymsa/inventario/CambioMasivoDePrecio';     // url que atendera la peticion de cambio de precio
+                                //uri     = '/{systemModuleName}/inventario/CambioMasivoDePrecio';     // url que atendera la peticion de cambio de precio
 
                                 /* se obtienen los datos necesarios*/
                                 talla = $('#talla').val().trim();         // talla inferior
@@ -251,7 +252,7 @@
                                     alert("No se han ingresado tallas validas"); // verificamos que cada valor de talla especificado sea valido
                                 } else {
                                     color = $('#color').val().trim();                 // obtenemos el color (puede que no se haya ingresado)
-                                    uri = '/nymsa/inventario/efectuarCambioPrecios';  // url que atendera la peticion
+                                    uri = '/{systemModuleName}/inventario/efectuarCambioPrecios';  // url que atendera la peticion
 
                                     // datos necesarios para completar la transaccion
                                     data = {
@@ -290,7 +291,7 @@
                                 alert('Es necesario que ingrese una cantidad valida'); // primero revisamos que el costo sea numerico
                             } else {
 
-                                // uri = '/nymsa/inventario/CambioMasivoDeCosto';
+                                // uri = '/{systemModuleName}/inventario/CambioMasivoDeCosto';
 
                                 // seleccionamos los datos que vamos a necesitar
                                 talla = $('#talla').val().trim();
@@ -307,7 +308,7 @@
                                     alert("No se han ingresado tallas validas"); // verifica que los datos de tallas sean validos
                                 } else {
                                     color = $('#color').val().trim();                 // obtiene el color (no es un campo requerido y por lo tanto puede ir vacio)
-                                    uri = '/nymsa/inventario/efectuarCambioCostos';    // url que se va a encargar de manejar la peticion
+                                    uri = '/{systemModuleName}/inventario/efectuarCambioCostos';    // url que se va a encargar de manejar la peticion
 
                                     // datos necesarios para realizar la peticion
                                     data = {
@@ -347,13 +348,12 @@
             //fliltrar(estilo,linea);
             FILTRO();
             FILTRO_ESPECIFICO();
-            uri = "/nymsa/inventario/DatosGeneralesProducto";
+            uri = "/{systemModuleName}/inventario/DatosGeneralesProducto";
             data = {
                 "estilo": estilo,
                 "linea": linea
             };
             http_request = $.post(uri, data, function(data) {
-                $('#proveedor').val(data.proveedor);
                 $('#catalogo').val(data.catalogo);
                 $('#pagina').val(data.n_pagina);
                 $('#propiedad option[value='+data.propiedad+']').attr("selected","selected");
@@ -398,7 +398,7 @@
         if (linea != "")
             filtros.push(['linea', linea].join(":"));
         if (linea != "" || estilo != "") {
-            var uri = "/nymsa/inventario/cargar_con_filtro?tblname=producto&filtros=" + filtros;
+            var uri = "/{systemModuleName}/inventario/cargar_con_filtro?tblname=producto&filtros=" + filtros;
             var grid = Sigma.$grid("producto_grid");
             grid.loadURL = uri;
             grid.reload();
@@ -421,7 +421,7 @@
             filtros.push(['color', color].join(":"));
 
         if (linea != "" || estilo != "") {
-            var uri = "/nymsa/inventario/cargar_stock2_con_filtro?filtros=" + filtros + '&talla=' + talla + '&talla2=' + talla2;
+            var uri = "/{systemModuleName}/inventario/cargar_stock2_con_filtro?filtros=" + filtros + '&talla=' + talla + '&talla2=' + talla2;
             var grid = Sigma.$grid("stock_grid");
             grid.loadURL = uri;
             grid.reload();
@@ -520,109 +520,75 @@
 </script>
 <section style="width:60%; overflow:auto;">
     <div style="display:table;">
-        <p style="text-align:justify;padding-right:45px;padding-bottom:15px">
-            Puede combinar los campos de distintas maneras según considere conveniente,
-            esto hará su trabajo más fácil y podrá realizar sus tareas de forma más sencilla
-            pero ojo! debe estar seguro de lo que está haciendo
-        </p>
-        <p><strong>Parámetros de selección</strong></p>
-        <hr/>
-        <form style="margin-left:5px;float:left;">
-            <table style="width:150px;" class="table hovered">
-                <tr>
-                    <td>
-                        Linea:
-                    </td>
-                    <td> 
-                        <input type="text" name="linea" id="linea" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Estilo:
-                    </td>
-                    <td>  
-                        <input type="text" name="estilo" id="estilo"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Color:
-                    </td>
-                    <td>
-                        <input type="text" name="color" id="color"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Talla
-                    </td>
-                    <td> 
-                        <input type="text" name="talla" id="talla" style="width: 40%" /> - 
-                        <input type="text" name="talla2" id="talla2" style="width: 40%"/>
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <h2>Filtrar productos</h2>
+        <br />
+        <br />
+        <div class="input-control text span3"> 
+            <input type="text" name="linea" id="linea" placeholder="Linea"/>
+        </div>
+        <br />
+        <div class="input-control text span3">
+            <input type="text" name="estilo" id="estilo" placeholder="Estilo"/>
+        </div>
+        <br />
+        <div class="input-control text span3">        
+            <input type="text" name="color" id="color" placeholder="Color"/>
+        </div>
+        <br />
+        <div class="input-control text span3">
+            <input type="text" name="talla" id="talla" placeholder="Corrida desde"/>  
+        </div>
+        <div class="input-control text span3">
+            <input type="text" name="talla2" id="talla2" placeholder="hasta"/>
+        </div> 
         <!--
         <div style="width:150px; min-height:150px; border:solid 1px #D3D3D3; float:left; margin-left:50px; padding:5px">
             <img src="" alt="No disponible" style="width:140px; min-height:140px;" id="prev"/>
         </div>
         -->
     </div>
-    <p><strong>Seleccione para aplicar cambios</strong></p>
-    <hr/>
-
+    <br /><br />
+    <h2>Seleccione para aplicar los cambios</h2>
+    <br />
+    <br />
     <div style="display: table; text-align:right;">
         <form style="float:left;">
-            <table style="width:100px;" class="table hovered" >
+            <table style="width:200px;" class="table hovered" >
                 <caption>
                     <p>
                         Datos anteriores
                     </p>
                 </caption>
                 <tr>
-                    <td>
-                        Precio:
-                    </td>
-                    <td> 
-                        <input type="text" name="precio" id="precio" style="width:100px;" readonly />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Proveedor:
-                    </td>
-                    <td> 
-                        <input type="text" name="proveedor" id="proveedor" style="width:100px;" readonly/>
+                    <td colspan="2"> 
+                        <div class="input-control text">
+                            <input type="text" name="precio" id="precio" readonly placeholder="Precio actual"/>
+                        </div>
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        Catalogo:
-                    </td>
-                    <td> 
-                        <input type="text" name="catalogo" id="catalogo" style="width:100px;" readonly/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Pagina:
-                    </td>
-                    <td> 
-                        <input type="text" name="pagina" id="pagina" style="width:100px;" readonly/>
+                    <td colspan="2"> 
+                        <div class="input-control text">
+                            <input type="text" name="catalogo" id="catalogo" placeholder="Catálogo actual" readonly/>
+                        </div>
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        Propiedad:
+                    <td colspan="2"> 
+                        <div class="input-control text">
+                            <input type="text" name="pagina" id="pagina" placeholder="Página de catálogo" readonly/>
+                        </div>
                     </td>
-                    <td> 
-                        <select name="propiedad" id="propiedad" style="width:100px;" disabled="disabled">
-                            <option value="1">Liquidacion</option>
-                            <option value="2">Comprado</option>
-                            <option value="3">Consignacion</option>
-                        </select>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="input-control select"> 
+                            <select name="propiedad" id="propiedad" disabled="disabled">
+                                <option value="1">Liquidacion</option>
+                                <option value="2">Comprado</option>
+                                <option value="3">Consignacion</option>
+                            </select>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -631,7 +597,7 @@
 
 
         <form style="float:left;" id="selecciones">
-            <table style="width:250px;" class="table hovered">
+            <table style="width:350px;" class="table hovered">
                 <caption>
                     <p>
                         Datos nuevos
@@ -639,48 +605,52 @@
                 </caption>
                 <tr>
                     <td> 
-                        <input type="text" name="nprecio" id="nprecio" style="width:100px;"/>
+                        <div class="input-control text">
+                            <input type="text" name="nprecio" id="nprecio" placeholder="Nuevo precio"/>
+                        </div>
+                    </td>
+                    <td>
                         Modificar? 
                         <input type="checkbox" name="_precio" id="_precio" />
                     </td>
                 </tr>
                 <tr>
-                    <td> 
-                        <select name="nproveedor" id="nproveedor" style="width:100px;"/>
-                        <!-- START l_proveedor -->
+                    <td>
+                        <div class="input-control select"> 
+                            <select name="ncatalogo" id="ncatalogo" style="padding: 7.5px;" />
+                            <!-- START l_catalogos -->
                             <option value="{id}">{nombre} (ID:{id})</option>
-                        <!-- END l_proveedor -->
-                        </select>
-                Modificar?
-                <input type="checkbox" name="_proveedor" id="_proveedor" />
-                </td>
-                </tr>
-                <tr>
-                    <td> 
-                        <select name="ncatalogo" id="ncatalogo" style="width:100px;"/>
-                        <!-- START l_catalogos -->
-                        <option value="{id}">{nombre} (ID:{id})</option>
-                        <!-- END l_catalogos -->
-                        </select>
-                            Modificar?
+                            <!-- END l_catalogos -->
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        Modificar?
                         <input type="checkbox" name="_catalogo" id="_catalogo" />
                     </td>
                 </tr>
                 <tr>
-                    <td> 
-                        <input type="text" name="npagina" id="npagina" style="width:100px;"/>
+                    <td>
+                        <div class="input-control text"> 
+                            <input type="text" name="npagina" id="npagina" placeholder="Nueva página de catálogo"/>
+                        </div>
+                    </td>
+                    <td>
                         Modificar?
                         <input type="checkbox" name="_pagina" id="_pagina" />
                     </td>
                 </tr>
                 <tr>
-                    <td> 
-                        <select name="npropiedad" id="npropiedad" style="width:100px;">
-                            <option value="1">Liquidacion</option>
-                            <option value="2">Comprado</option>
-                            <option value="3">Consignacion</option>
-                        </select>
-                        </select>
+                    <td>
+                        <div class="input-control select"> 
+                            <select name="npropiedad" id="npropiedad">
+                                <option value="1">Liquidacion</option>
+                                <option value="2">Comprado</option>
+                                <option value="3">Consignacion</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
                         Modificar?
                         <input type="checkbox" name="_propiedad" id="_propiedad" />
                     </td>

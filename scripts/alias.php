@@ -309,7 +309,7 @@ function _loaddata_cfd($tblname = '', $field, $value) {
     endif;
 
     if ($json->{'action'} == 'load'):
-        $sql = "select * from $tblname WHERE {$field} = {$value} limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+        $sql = "select * from $tblname WHERE {$field} = {$value} ORDER BY id DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $retArray = array();
         while ($row = mysqli_fetch_object($handle)):

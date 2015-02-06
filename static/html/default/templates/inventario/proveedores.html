@@ -110,12 +110,12 @@
 
     var gridOption = {
         id: grid_demo_id,
-        loadURL: '/nymsa/grid_tables/proveedor_grid_1',
-        saveURL: '/nymsa/inventario/actualizar?tblname=proveedor',
-        exportURL: '/nymsa/inventario/proveedorList?export=true',
+        loadURL: '/{systemModuleName}/grid_tables/proveedor_grid_1',
+        saveURL: '/{systemModuleName}/inventario/actualizar?tblname=proveedor',
+        exportURL: '/{systemModuleName}/inventario/proveedorList?export=true',
         exportFileName: 'proveedor_reporte_',
-        width: "1005", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        width: "995", //"100%", // 700,
+        height: "300", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
@@ -143,104 +143,122 @@
 
 <div id="page-container">
     <div id="content">
-        <h3>Nuevo proveedor</h3>
-        <hr/>
-        <div style="border:solid 1px #D3D3D3; margin-right:20px;padding:20px;" class="span12">
-            <form action="/nymsa/inventario/guardar_proveedor" method="post">
-                <div style="text-align:left;float: left;margin-right: 30px;" class="span3">
-                    <h4>Datos del proveedor</h4>
-                    * Nombre: 
-                    <div class="input-control text">
-                        <input type="text" name="nombre" required/>
-                        <br/> 
-                    </div>
-                    * Direcci&oacute;n: 
-                    <div class="input-control text">
-                        <input type="text" name="direccion" required/>
-                        <br/>
-                    </div>
-                    * Teléfono: 
-                    <div class="input-control text">
-                        <input type="text" name="telefono" required onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9"/>
-                        <br/>
-                    </div> 
-                    Fax: 
-                    <div class="input-control text">
-                        <input type="text" onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9" name="fax"/>
-                        <br/>
-                    </div>
-                    Correo electrónico:
-                    <div class="input-control text"> 
-                        <input type="email" name="correo"/>
-                    </div> 
-                    Pa&iacute;s de origen: 
-                    <div class="input-control select">
-                        <select name="pais_origen">
-                            <!-- START paises -->
-                                <option value="{nombre}">{nombre}</option>
-                            <!-- END paises -->
-                        </select>
-                        <br/>
-                    </div>
-                    Nacionalidad:
-                    <div class="input-control text"> 
-                        <input type="text" name="nacionalidad"/>
-                        <br/>
-                    </div>
-                </div>
-                <div style="float: left;margin-right: 30px;" class="span3">
-                    <h4>&nbsp;</h4>
-                     D&iacute;as de cr&eacute;dito: 
-                    <div class="input-control text"> 
-                        <input type="text" name="dias_credito"/>
-                        <br/>
-                    </div>
-                    D&iacute;as para entrega:
-                    <div class="input-control text"> 
-                        <input type="text" name="dias_entrega"/>
-                        <br/>
-                    </div>
-                    Nit: 
-                    <div class="input-control text">
-                        <input type="text" name="nit" onkeyup="mascara(this, '-', patron_nit, true)" maxlength="17"/>
-                        <br/>
-                    </div>
-                    Registro:
-                    <div class="input-control text">  
-                        <input type="text" name="registro" onkeyup="mascara(this, '-', patron_registro, true)" maxlength="10"/>
-                        <br/>
-                    </div>
-                </div>
-                <div style="float: left;" class="span3">
-                    <h4>Datos del contacto</h4>
-                    Nombre: 
-                    <div class="input-control text">
-                        <input type="text" name="nombre_contacto"/>
-                        <br/>
-                    </div> 
-                    Teléfono:
-                    <div class="input-control text" > 
-                        <input type="text" name="telefono_contacto" onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9"/>
-                        <br/>
-                    </div>
-                    Correo electrónico:  
-                    <div class="input-control text">
-                        <input type="email" name="correo_contacto"/>
-                        <br/>
-                    </div> 
-                </div>
-                <div style="clear: both;"></div>
-                <input type="reset"  value="Reset"/>
-                <button type="submit" class="primary">
-                    Agregar
-                </button>
-            </form>
-        </div>
-        
-    </div>
-</div>
-<div id="bigbox" style="margin:15px;display:!none;">
-    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+        <div class="tab-control bg-white" data-role="tab-control">
+            <ul class="tabs">
+                <li class="active"><a href="#_page_1">Ingresar un nuevo proveedor</a></li>
+                <li><a href="#_page_2">Nuestros proveedores</a></li>
+            </ul>
+             
+            <div class="frames">
+                <div class="frame" id="_page_1">
 
+                    <form action="/{systemModuleName}/inventario/guardar_proveedor" method="post">
+                        <div style="text-align:left;float: left;margin-right: 30px;" class="span3">
+                            <h4>Datos del proveedor</h4>
+                            * Nombre: 
+                            <div class="input-control text">
+                                <input type="text" name="nombre" required/>
+                                <br/> 
+                            </div>
+                            * Direcci&oacute;n: 
+                            <div class="input-control text">
+                                <input type="text" name="direccion" required/>
+                                <br/>
+                            </div>
+                            * Teléfono: 
+                            <div class="input-control text">
+                                <input type="text" name="telefono" required onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9"/>
+                                <br/>
+                            </div> 
+                            Fax: 
+                            <div class="input-control text">
+                                <input type="text" onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9" name="fax"/>
+                                <br/>
+                            </div>
+                            Correo electrónico:
+                            <div class="input-control text"> 
+                                <input type="email" name="correo"/>
+                            </div> 
+                            Pa&iacute;s de origen: 
+                            <div class="input-control select">
+                                <select name="pais_origen">
+                                    <!-- START paises -->
+                                        <option value="{nombre}">{nombre}</option>
+                                    <!-- END paises -->
+                                </select>
+                                <br/>
+                            </div>
+                            Nacionalidad:
+                            <div class="input-control text"> 
+                                <input type="text" name="nacionalidad"/>
+                                <br/>
+                            </div>
+                        </div>
+                        <div style="float: left;margin-right: 30px;" class="span3">
+                            <h4>&nbsp;</h4>
+                             D&iacute;as de cr&eacute;dito: 
+                            <div class="input-control text"> 
+                                <input type="text" name="dias_credito"/>
+                                <br/>
+                            </div>
+                            D&iacute;as para entrega:
+                            <div class="input-control text"> 
+                                <input type="text" name="dias_entrega"/>
+                                <br/>
+                            </div>
+                            Nit: 
+                            <div class="input-control text">
+                                <input type="text" name="nit" onkeyup="mascara(this, '-', patron_nit, true)" maxlength="17"/>
+                                <br/>
+                            </div>
+                            Registro:
+                            <div class="input-control text">  
+                                <input type="text" name="registro" onkeyup="mascara(this, '-', patron_registro, true)" maxlength="10"/>
+                                <br/>
+                            </div>
+                        </div>
+                        <div style="float: left;" class="span3">
+                            <h4>Datos del contacto</h4>
+                            Nombre: 
+                            <div class="input-control text">
+                                <input type="text" name="nombre_contacto"/>
+                                <br/>
+                            </div> 
+                            Teléfono:
+                            <div class="input-control text" > 
+                                <input type="text" name="telefono_contacto" onkeyup="mascara(this, '-', patron_telefono, true)" maxlength="9"/>
+                                <br/>
+                            </div>
+                            Correo electrónico:  
+                            <div class="input-control text">
+                                <input type="email" name="correo_contacto"/>
+                                <br/>
+                            </div> 
+                        </div>
+                        <div style="clear: both;"></div>
+                        <div style="text-align: right;">
+                            <input type="reset" class="large"  value="Limpiar formulario"/>
+                            <button type="submit" class="primary large">
+                                Registrar nuevo proveedor
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="frame" id="_page_2">
+                    <h3>Catálogo de proveedores</h3>
+                    <p>
+                        <br/>
+                        <br/>
+                    </p>
+                    <div id="bigbox" style="margin:15px;display:!none;">
+                        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>

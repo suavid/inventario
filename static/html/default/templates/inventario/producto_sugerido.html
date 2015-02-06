@@ -66,7 +66,7 @@
 				"conditions": [["linea", "=", linea], "AND", ["estilo", "=", estilo]]
 			};
 
-			var uri = "/nymsa/inventario/json_producto";
+			var uri = "/{systemModuleName}/inventario/json_producto";
 
 			$.post(uri, json_data, function(response){
 				if(response[0]<=0){
@@ -92,7 +92,7 @@
 				"conditions": [["linea", "=", linea], "AND", ["estilo", "=", estilo]]
 			};
 
-			var uri = "/nymsa/inventario/json_producto";
+			var uri = "/{systemModuleName}/inventario/json_producto";
 
 			$.post(uri, json_data, function(response){
 				if(response[0]<=0 || (estilo == $('#estilo').val().trim()) ){
@@ -114,7 +114,7 @@
 
 		$('#btnAgregarEstilo').bind('click', function(){
 			if(window.estilo && window.estilo_sugerido){
-				var uri  = "/nymsa/inventario/agregarProductoSugerido";
+				var uri  = "/{systemModuleName}/inventario/agregarProductoSugerido";
 				
 				var data = {
 					"estilo": $('#estilo').val().trim(),
@@ -138,7 +138,7 @@
 	function cargarSugeridos(){
 		var linea  = $('#linea').val();
 		var estilo = $('#estilo').val();
-		var uri    = "/nymsa/inventario/json_productos_sugeridos";
+		var uri    = "/{systemModuleName}/inventario/json_productos_sugeridos";
 		var data   = {
 			"linea": linea,  
 			"estilo": estilo
@@ -147,7 +147,7 @@
 		$.post(uri, data, function(response){
 			$('#sugerencias li').remove();
 			for(var i = 0; i < response.length; i++){
-				$('#sugerencias').append('<li><a target="_blank" href="/nymsa/inventario/detalle_de_producto?estilo='+response[i]['estilo_sugerencia']+'">'+response[i]['estilo_sugerencia']+'</a></li>')
+				$('#sugerencias').append('<li><a target="_blank" href="/{systemModuleName}/inventario/detalle_de_producto?estilo='+response[i]['estilo_sugerencia']+'">'+response[i]['estilo_sugerencia']+'</a></li>')
 			}
 		}, "json");
 	}

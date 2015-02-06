@@ -17,7 +17,7 @@ class inventarioView {
         page()->setTitle('Módulo de control de inventario');
         template()->addTemplateBit('content', 'inventario/principal.html');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/modulo/listar');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         template()->parseOutput();
         template()->parseExtras();
         print page()->getContent();
@@ -27,7 +27,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Control de inventario');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/modulo/destruirSesion/inventario');
+        page()->addEstigma("back_url", '/'.MODULE.'/modulo/destruirSesion/inventario');
         page()->addEstigma("TITULO", 'Inventario');
         page()->addEstigma("acceso", $admin);
         template()->addTemplateBit('content', 'inventario/inventario.html');
@@ -40,7 +40,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Control de inventario');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/inventario/orden_compra');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/orden_compra');
         page()->addEstigma("TITULO", 'Inventario');
         page()->addEstigma("detalle", array('SQL', $detalle));
         page()->addEstigma("anexos", array('SQL', $anexos));
@@ -82,11 +82,33 @@ class inventarioView {
         print page()->getContent();
     }
 
+    public function movKardex(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Kardex');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/inventario/inventario/principal');
+        template()->addTemplateBit('content', 'inventario/mov_kardex.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+
+    public function noKardex(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Kardex');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/inventario/inventario/principal');
+        template()->addTemplateBit('content', 'inventario/no_kardex.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+
     public function productosSugeridos($lineas){
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Productos sugeridos');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         page()->addEstigma("TITULO", 'Inventario');
         page()->addEstigma("linea", array('SQL', $lineas));
         template()->addTemplateBit('content', 'inventario/producto_sugerido.html');
@@ -100,7 +122,7 @@ class inventarioView {
         page()->setTitle('Detalle de producto ');
         template()->addTemplateBit('content', 'inventario/detalle_producto.html');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/modulo/listar');
+        page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
         page()->addEstigma("general", array('SQL', $general));
         page()->addEstigma("estilo", $estilo);
         page()->addEstigma("n", $n);
@@ -127,7 +149,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Alertas de stock');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/modulo/alerta');
+        page()->addEstigma("back_url", '/'.MODULE.'/modulo/alerta');
         page()->addEstigma("TITULO", 'Inventario');
         page()->addEstigma("detalle", array('SQL', $cache));
         template()->addTemplateBit('content', 'inventario/alertas_de_stock.html');
@@ -140,7 +162,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Control de inventario');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         page()->addEstigma("TITULO", 'Inventario');
         page()->addEstigma("lineas", array('SQL', $lineas));
         template()->addTemplateBit('content', 'inventario/actualizar_foto.html');
@@ -208,7 +230,7 @@ class inventarioView {
         page()->setTitle('Cambio de linea');
         page()->addEstigma("linea01", array('SQL', $cache[0]));
         page()->addEstigma("linea02", array('SQL', $cache[1]));
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("username", $usuario);
         template()->addTemplateBit('content', 'inventario/cambio_de_linea.html');
         template()->parseOutput();
@@ -221,7 +243,7 @@ class inventarioView {
         page()->setTitle('Cambio de grupo');
         page()->addEstigma("grupo01", array('SQL', $cache[0]));
         page()->addEstigma("grupo02", array('SQL', $cache[1]));
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("username", $usuario);
         template()->addTemplateBit('content', 'inventario/cambio_de_grupo.html');
         template()->parseOutput();
@@ -233,7 +255,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Traslados');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/traslados');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
         page()->addEstigma("TITULO", 'Traslados');
         template()->addTemplateBit('content', 'inventario/traslado_listado.html');
         template()->parseOutput();
@@ -245,7 +267,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Consignas');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/consigna');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/consigna');
         page()->addEstigma("TITULO", 'Consignas');
         template()->addTemplateBit('content', 'inventario/consigna_listado.html');
         template()->parseOutput();
@@ -259,7 +281,7 @@ class inventarioView {
         page()->addEstigma("username", $usuario);
         page()->addEstigma("lineas", array('SQL', $cache[0]));
         page()->addEstigma("fecha", date("Y/m/d"));
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Promociones');
         template()->addTemplateBit('content', 'inventario/promociones.html');
         template()->parseOutput();
@@ -271,7 +293,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('consigna');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Consignas');
         page()->addEstigma("bodega", array('SQL', $cache[0]));
         page()->addEstigma("proveedor1", array('SQL', $cache[1]));
@@ -321,7 +343,7 @@ class inventarioView {
         $html2pdf->Output('traslado.pdf');
     }
 
-    public function detalle_traslado($usuario, $id, $id_bodega, $nombre_bodega, $id_bodega_, $nombre_bodega_, $transaccion, $total_costo, $total_pares, $cache, $cliente, $consigna, $tolerancia) {
+    public function detalle_traslado($usuario, $id, $id_bodega, $nombre_bodega, $id_bodega_, $nombre_bodega_, $transaccion, $total_costo, $total_pares, $cache, $cliente, $consigna, $tolerancia, $proveedor) {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Traslado No.' . $id);
         page()->addEstigma("username", $usuario);
@@ -335,12 +357,13 @@ class inventarioView {
         page()->addEstigma("consigna", $consigna);
         page()->addEstigma("tolerancia", $tolerancia);
         page()->addEstigma("totalpares", $total_pares);
+        page()->addEstigma("proveedor", $proveedor);
         page()->addEstigma("tipoTransaccion", $transaccion);
         page()->addEstigma("lineas", array('SQL', $cache[0]));
         if ($consigna == 0)
-            page()->addEstigma("back_url", '/nymsa/inventario/traslados');
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
         else
-            page()->addEstigma("back_url", '/nymsa/inventario/consigna');
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/consigna');
         page()->addEstigma("TITULO", 'Traslados');
         template()->addTemplateBit('content', 'inventario/traslado_detalle.html');
         template()->parseOutput();
@@ -352,7 +375,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Traslados');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Traslados');
         page()->addEstigma("proveedor1", array('SQL', $cache[0]));
         page()->addEstigma("proveedor2", array('SQL', $cache[1]));
@@ -425,7 +448,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Orden de compra');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Orden de compra');
         page()->addEstigma("proveedores", array('SQL', $cache[0]));
         page()->addEstigma("colores", array('SQL', $cache[1]));
@@ -441,7 +464,7 @@ class inventarioView {
         page()->setTitle('Producto en tránsito');
         page()->addEstigma("username", Session::singleton()->getUser());
         page()->addEstigma("paginacion", $paginacion_str);
-        page()->addEstigma("back_url", '/nymsa/inventario/orden_compra');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/orden_compra');
         page()->addEstigma("detalle", array('SQL', $cache));
         template()->addTemplateBit('content', 'inventario/orden_compra/producto_en_transito.html');
         template()->parseOutput();
@@ -453,7 +476,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Orden de compra');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Orden de compra');
         page()->addEstigma("id_orden", $id_orden);
         page()->addEstigma("traslado", $traslado);
@@ -467,7 +490,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Comparativo');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Comparativo');
         page()->addEstigma("bodegas", array('SQL', $cache[0]));
         template()->addTemplateBit('content', 'inventario/comparativo.html');
@@ -480,7 +503,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Comparativo');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Comparativo');
         template()->addTemplateBit('content', 'inventario/creacion_comparativo.html');
         template()->parseOutput();
@@ -492,7 +515,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Ofertas');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Ofertas');
         page()->addEstigma("ofertas", array('SQL', $cache[0]));
         page()->addEstigma("aOferta", array('SQL', $cache[1]));
@@ -508,7 +531,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Catalogos');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/modulo/listar');
+        page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
         page()->addEstigma("TITULO", 'Catálogos');
         template()->addTemplateBit('content', 'inventario/catalogo.html');
         template()->parseOutput();
@@ -520,7 +543,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Productos');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         page()->addEstigma("TITULO", 'Resumen general');
         template()->addTemplateBit('content', 'inventario/resumenGeneralProducto.html');
         template()->parseOutput();
@@ -532,7 +555,7 @@ class inventarioView {
         template()->buildFromTemplates('template_table.html');
         page()->setTitle('Stock');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/stock_documentos');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/stock_documentos');
         page()->addEstigma("TITULO", 'Resumen general');
         template()->addTemplateBit('content', 'inventario/resumenGeneralStock.html');
         template()->parseOutput();
@@ -599,7 +622,7 @@ class inventarioView {
         page()->addEstigma("username", $user);
         page()->addEstigma("paginacion", $pag);
         page()->addEstigma("modulo", "inventario");
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         page()->addEstigma("TITULO", 'Historial de eventos');
         template()->addTemplateBit('content', 'inventario/historial.html');
         page()->addEstigma('historial', array('SQL', $cache[0]));
@@ -616,7 +639,7 @@ class inventarioView {
         page()->addEstigma("username", $user);
         page()->addEstigma("paginacion", $pag);
         page()->addEstigma("modulo", "stock");
-        page()->addEstigma("back_url", '/nymsa/inventario/stock_documentos');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/stock_documentos');
         page()->addEstigma("TITULO", 'Historial de eventos');
         template()->addTemplateBit('content', 'inventario/historial.html');
         page()->addEstigma('historial', array('SQL', $cache[0]));
@@ -629,7 +652,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Proveedores');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/modulo/listar');
+        page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
         page()->addEstigma("TITULO", 'Acceso restringido');
         template()->addTemplateBit('content', 'inventario/verificar.html');
         template()->parseOutput();
@@ -641,7 +664,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Cambios');
         page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         page()->addEstigma("TITULO", 'Acceso restringido');
         template()->addTemplateBit('content', 'inventario/verificarPrecio.html');
         template()->parseOutput();
@@ -655,7 +678,7 @@ class inventarioView {
         page()->addEstigma("TITULO", 'Nuevo producto');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("documentos", array('SQL', $cache[0]));
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         template()->addTemplateBit('content', 'inventario/documentoProducto.html');
         template()->parseOutput();
         template()->parseExtras();
@@ -667,7 +690,7 @@ class inventarioView {
         page()->setTitle('Mantenimiento de bodegas');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("empleados", array('SQL', $cache[0]));
-        page()->addEstigma("back_url", '/nymsa/modulo/listar');
+        page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
         page()->addEstigma("TITULO", 'Bodegas');
         template()->addTemplateBit('content', 'inventario/bodegas.html');
         template()->parseOutput();
@@ -679,7 +702,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Regitro de colores');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Colores');
         template()->addTemplateBit('content', 'inventario/colores.html');
         template()->parseOutput();
@@ -691,7 +714,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Mantenimiento de lineas');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Lineas');
         template()->addTemplateBit('content', 'inventario/lineas.html');
         template()->parseOutput();
@@ -703,7 +726,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Mantenimiento de marcas');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Marcas');
         template()->addTemplateBit('content', 'inventario/marcas.html');
         template()->parseOutput();
@@ -716,7 +739,7 @@ class inventarioView {
         page()->setTitle('Mantenimiento de proveedores');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("paises", array('SQL', $paises));
-        page()->addEstigma("back_url", '/nymsa/inventario/destroyProv');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/destroyProv');
         page()->addEstigma("TITULO", 'Proveedores');
         template()->addTemplateBit('content', 'inventario/proveedores.html');
         template()->parseOutput();
@@ -728,7 +751,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Mantenimiento de generos');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Generos');
         template()->addTemplateBit('content', 'inventario/generos.html');
         template()->parseOutput();
@@ -748,7 +771,7 @@ class inventarioView {
         page()->setTitle('Control de stock');
         page()->addEstigma('documento', $doc);
         template()->addTemplateBit('content', 'inventario/stock.html');
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("TITULO", 'Stock');
         template()->parseOutput();
@@ -761,7 +784,7 @@ class inventarioView {
         page()->setTitle('Administracion de documento - ' . $doc);
         page()->addEstigma("TITULO", 'Administracion');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/seleccion_documento?documento=' . $doc);
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/seleccion_documento?documento=' . $doc);
         template()->addTemplateBit('content', 'inventario/administracion.html');
         page()->addEstigma("documento", $doc);
         template()->parseOutput();
@@ -774,7 +797,7 @@ class inventarioView {
         page()->setTitle('Control de Inventario - ' . $usuario);
         page()->addEstigma("TITULO", 'Opciones');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         template()->addTemplateBit('content', 'inventario/doc_inventario.html');
         template()->addTemplateBit('footer', 'footer.html');
         page()->addEstigma("usuario", $usuario);
@@ -812,7 +835,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Productos');
         template()->addTemplateBit('content', 'inventario/doc_productos.html');
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
         //page()->addEstigma('linea', array('SQL', $cache[0]));
         //page()->addEstigma('marca', array('SQL', $cache[1]));
         //page()->addEstigma('proveedor', array('SQL', $cache[2]));
@@ -820,7 +843,7 @@ class inventarioView {
         //page()->addEstigma('genero', array('SQL', $cache[4]));
         page()->addEstigma('lineas_', array('SQL', $cache[5]));
         page()->addEstigma('marca_', array('SQL', $cache[6]));
-        page()->addEstigma('proveedor_', array('SQL', $cache[7]));
+        //page()->addEstigma('proveedor_', array('SQL', $cache[7]));
         page()->addEstigma('genero_', array('SQL', $cache[9]));
         page()->addEstigma('tacon_', array('SQL', $cache[12]));
         page()->addEstigma('suela_', array('SQL', $cache[13]));
@@ -850,7 +873,7 @@ class inventarioView {
         page()->addEstigma("TITULO", 'Stock');
         page()->addEstigma("username", $user);
         page()->addEstigma("documentos", array('SQL', $cache[0]));
-        page()->addEstigma("back_url", '/nymsa/inventario/principal');
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         template()->addTemplateBit('content', 'inventario/documentoStock.html');
         template()->parseOutput();
         template()->parseExtras();
@@ -862,9 +885,9 @@ class inventarioView {
         page()->addEstigma("TITULO", 'Cambios');
         page()->setTitle('Cambios');
         page()->addEstigma("username", $user);
-        page()->addEstigma("back_url", '/nymsa/inventario/nuevo_producto');
-        page()->addEstigma("l_proveedor", array('SQL', $cache[0]));
-        page()->addEstigma("l_catalogos", array('SQL', $cache[1]));
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+        //page()->addEstigma("l_proveedor", array('SQL', $cache[0]));
+        page()->addEstigma("l_catalogos", array('SQL', $cache[0]));
         template()->addTemplateBit('content', 'inventario/cambiarPrecios.html');
         template()->parseOutput();
         template()->parseExtras();

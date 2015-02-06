@@ -31,7 +31,7 @@
 	}
 
 	function cargarEstilos(){
-		var uri  = "/nymsa/inventario/obtenerEstilos";
+		var uri  = "/{systemModuleName}/inventario/obtenerEstilos";
 		var data = { "linea": $('#linea').val() };
 
 		$.post(uri, data, function(resp){
@@ -57,37 +57,54 @@
 		$('#foto').append('<img style="width: 400px; border: solid 1px #d3d3d3; padding: 10px;" src="../static/img/productos/thumbnail_'+linea+'_'+estilo+'.jpg" alt="Sin asignar"/>')
 	}
 </script>
-<table style="text-align: center;">
+<br/>
+<br/>
+<table style="text-align: center; float: left; margin-top: 15px;">
 	<tr>
 		<td>Seleccione una linea</td>
 		<td>Seleccione un estilo</td>
 	</tr>
 	<tr>
 		<td>
-			<select id="linea">
-				<!-- START lineas -->
-				<option value="{id}">{nombre}</option>
-				<!-- END lineas -->
-			</select>
+			<div class="input-control select span4">
+				<select id="linea">
+					<!-- START lineas -->
+					<option value="{id}">{nombre}</option>
+					<!-- END lineas -->
+				</select>
+			</div>
 		</td>
 		<td>
-			<select id="estilo">
-				
-			</select>
+			<div class="input-control select span4">
+				<select id="estilo">
+					
+				</select>
+			</div>
 		</td>
 	</tr>
 </table>
+<div style="float: left; margin-left: 70px;">
+	<h2>Actualizar foto del producto</h2>
+	<br/>
+	<form id="formArchivo" enctype="multipart/form-data" action="/{systemModuleName}/inventario/actualizarFotoProducto" method="post">
+		    <div class="input-control file span4">
+		    	<input type="file" name="archivo" />
+		    	<button class="btn-file"></button>
+		    </div>
+		<input type="hidden" id="ilinea" name="linea"/>
+		<input type="hidden" id="iestilo" name="estilo"/>
+		<br/>
+		<br/>
+		<input type="submit" value="Guardar" />
+	</form>
+</div>
+<div style="clear: both;"></div>
 <hr/>
-<h3>Actualizar foto del producto</h3>
-<form id="formArchivo" enctype="multipart/form-data" action="/nymsa/inventario/actualizarFotoProducto" method="post">
-	<input type="file" name="archivo"/>
-	<input type="hidden" id="ilinea" name="linea"/>
-	<input type="hidden" id="iestilo" name="estilo"/>
-	<input type="submit" value="Guardar" />
-</form>
-<hr/>
-<h3>Imagen actual</h3>
-<div id="foto">
-	
+<div style="text-align: center;">
+	<h3>Imagen actual</h3>
+	<br /><br />
+	<div id="foto">
+		
+	</div>
 </div>
 

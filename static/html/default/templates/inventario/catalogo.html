@@ -23,7 +23,7 @@
 
     var gridOption_catalogo = {
         id: grid_catalogo_id,
-        loadURL: '/nymsa/grid_tables/catalogo_grid_1',
+        loadURL: '/{systemModuleName}/grid_tables/catalogo_grid_1',
         saveURL: '',
         width: "890", //"100%", // 700,
         height: "260", //"100%", // 330,
@@ -54,7 +54,7 @@
     $(function() {
         $('#_id').bind('change', function(data) {
             Id_ = $('#_id').val();
-            uri = '/nymsa/inventario/DatosCatalogo';
+            uri = '/{systemModuleName}/inventario/DatosCatalogo';
             data = {
                 "id": Id_
 
@@ -76,57 +76,87 @@
     }
 </style>
 <section>
-    <div style="display:table;">
-        <form style="width:450px; float:left; border: solid 1px #d3d3d3; padding: 20px;" id="ft" action="/nymsa/inventario/salvarCatalogo" method="post" enctype="multipart/form-data">
-            <div class="bg-magenta fg-white" style="padding:5px">
-                Nuevo cat&aacute;logo de productos
+
+    <div class="tab-control bg-white" data-role="tab-control">
+        <ul class="tabs">
+            <li class="active"><a href="#_page_1">Nuevo catálogo</a></li>
+            <li><a href="#_page_2">Mis catálogos</a></li>
+        </ul>
+         
+        <div class="frames">
+        <div class="frame" id="_page_1">
+
+            <div style="display:table;">
+                <form style="width:450px; float:left; border: solid 1px #d3d3d3; padding: 20px;" id="ft" action="/{systemModuleName}/inventario/salvarCatalogo" method="post" enctype="multipart/form-data">
+                    <h3>
+                        Nuevo cat&aacute;logo de productos
+                    </h3>
+                    <br/>
+                    Id catálogo: (0 = Nuevo)
+                    <div class="input-control text">
+                        <input type="text" name="id" id="_id"/> 
+                    </div>
+                    <div class="input-control text">
+                        <span class="fg-red">*</span> Nombre: <input type="text" name="nombre" id="nombre_" required/>
+                    </div>
+                    <br/>
+                    <br/>
+                    <span class="fg-red">*</span> Descripción: 
+                    <div class="input-control textarea">
+                        <textarea name="descripcion" id="descripcion_" required></textarea>
+                    </div>
+                    <br/>
+                    <span class="fg-red">*</span> Fecha de inicio:
+                    <div id="picker2" class="input-control text" data-role="datepicker"/> 
+                        <input type="text" name="inicio" id="inicio_" required />
+                        <button type="button" class="btn-date"></button>
+                    </div>
+                    <span class="fg-red">*</span> Fecha de cierre: 
+                    <div id="picker1" class="input-control text" data-role="datepicker"/> 
+                        <input type="text" name="final" id="final_" required/>
+                        <button type="button" class="btn-date"></button>
+                    </div>
+                    Imagen: 
+                    <br/>
+                    <br/>
+                    <div class="input-control">
+                        <input type="file" name="archivo"/>
+                    </div>
+                    <p>
+                        <br/>
+                    </p>
+                    <div style="text-align: right;">
+                        <button type="submit" class="primary">Guardar</button>
+                    </div>
+            </form>
+            <div class="panel span6" style="float:left;margin-left:80px;min-height: 300px;">
+                <div class="panel-header">
+                    Imagen del catálogo
+                </div>
+                <div class="panel-content">
+                    <div id="imagenCatalogo">
+                    </div>
+                </div>
             </div>
-            <br/>
-            Id catálogo: (0 = Nuevo)
-            <div class="input-control text">
-                <input type="text" name="id" id="_id"/> 
+        </div>
+
+        </div>
+        <div class="frame" id="_page_2">
+            <h3>Historial</h3>
+            <p>
+                <br /><br />
+            </p>
+            <div id="bigbox" style="margin:15px;display:!none;">
+                <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+                </div>
             </div>
-            <div class="input-control text">
-                Nombre: <input type="text" name="nombre" id="nombre_" required/>
-            </div>
-            <br/>
-            <br/>
-            Descripción: 
-            <div class="input-control textarea">
-                <textarea name="descripcion" id="descripcion_" required></textarea>
-            </div>
-            <br/>
-            Fecha de inicio:
-            <div id="picker2" class="input-control text" data-role="datepicker"/> 
-                <input type="text" name="inicio" id="inicio_" />
-                <button type="button" class="btn-date"></button>
-            </div>
-    Fecha de cierre: 
-    <div id="picker1" class="input-control text" data-role="datepicker"/> 
-        <input type="text" name="final" id="final_"/>
-        <button type="button" class="btn-date"></button>
-    </div>
-Imagen: 
-<br/>
-<br/>
-<div class="input-control">
-    <input type="file" name="archivo"/>
-</div>
-<button type="submit" class="bg-color-green fg-color-white">Guardar</button>
-</form>
-<div class="panel span6" style="float:left;margin-left:80px;">
-    <div class="panel-header">
-        Imagen del catálogo
-    </div>
-    <div class="panel-content">
-        <div id="imagenCatalogo">
+            <p>
+                <br /><br />
+            </p>
+
+        </div>
         </div>
     </div>
-</div>
-</div>
-</section>
-<div id="bigbox" style="margin:15px;display:!none;">
-    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
-    </div>
-</div>
+</section>

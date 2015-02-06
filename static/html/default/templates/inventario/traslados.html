@@ -1,6 +1,7 @@
 <script>
     $(document).ready(function() {
         window.vdate = false;
+        $('#transaccion').change();
         uri_parser = new url_handler();
         uri_parser.initialize();
         if (uri_parser.isKey('op'))
@@ -20,6 +21,7 @@
                     $('#bodega_destino_r').val(bodega);
                     $("#bodega_destino").attr("disabled", "disabled");
                 }
+                
                 $('#concepto').val(concepto);
                 pares = parseInt(uri_parser.getValue('pares'));
                 costo = parseFloat(uri_parser.getValue('costo'));
@@ -103,11 +105,12 @@
     var load_data = function()
     {
         // cargar datos de transaccion
-        uri = "/nymsa/inventario/carga_traslado";
+        uri = "/{systemModuleName}/inventario/carga_traslado";
         data = {"cod": $('#id').val(), "transaccion": $('#transaccion').val()};
         postRq = $.post(uri, data, function(data) {
-            if (data.status == "FOUND")
-            {
+            
+            if (data.status == "FOUND"){
+
                 $('#fecha').attr("disabled", "disabled");
                 $('#proveedor_origen').attr("disabled", "disabled");
                 $('#proveedor_nacional').attr("disabled", "disabled");
@@ -138,14 +141,14 @@
                 $('#transaccion_r').val(data.transaccion);
                 $('#total_pares_r').val(data.total_pares);
                 $('#total_costo_r').val(data.total_costo);
+                
                 if (data.consigna == 1)
                     $('#iConsigna').attr("checked", "checked");
                 else
                     $('#iConsigna').removeAttr("checked");
 
-            }
-            else
-            {
+            }else{
+
                 $('#fecha').removeAttr("disabled");
                 $('#fecha').val("{fecha}");
                 $('#proveedor_origen').removeAttr("disabled");
@@ -162,67 +165,36 @@
         }, "json");
     }
 
-    var cambiar_bodegas = function()
+    function cambiar_bodegas()
     {
         transaccion = $('#transaccion').val();
         switch (transaccion)
         {
             case "1B":
-                $("#bodega_destino option[value=1]").attr("selected", "selected");
+                $("#bodega_origen").attr("disabled", "disabled");
                 break;
-            case "1A":
-                $("#bodega_origen option[value=1]").attr("selected", "selected");
+            case "1C":
+                $("#bodega_origen").removeAttr("disabled");
+                $("#bodega_destino").removeAttr("disabled");
                 break;
-            case "1D":
-                origen = $('#bodega_origen').val( );
-                destino = $('#bodega_destino').val( );
-                if (origen != 1 && origen != 2 && origen != 3)
-                {
-                    $("#bodega_origen option[value=1]").attr("selected", "selected");
-                }
-                if (destino != 1 && destino != 2 && destino != 3)
-                {
-                    $("#bodega_destino option[value=1]").attr("selected", "selected");
-                }
-                break;
-            case "2D":
-                origen = $('#bodega_origen').val( );
-                destino = $('#bodega_destino').val( );
-                if (origen != 1 && origen != 2 && origen != 3)
-                {
-                    $("#bodega_origen option[value=1]").attr("selected", "selected");
-                }
-                if (destino != 1 && destino != 2 && destino != 3)
-                {
-                    $("#bodega_destino option[value=1]").attr("selected", "selected");
-                }
+            case "2C":
+                $("#bodega_origen").removeAttr("disabled");
+                $("#bodega_destino").removeAttr("disabled");
                 break;
             case "1E":
-                origen = $('#bodega_origen').val( );
-                destino = $('#bodega_destino').val( );
-                if (origen != 1 && origen != 2 && origen != 3)
-                {
-                    $("#bodega_origen option[value=1]").attr("selected", "selected");
-                }
-                if (destino != 1 && destino != 2 && destino != 3)
-                {
-                    $("#bodega_destino option[value=1]").attr("selected", "selected");
-                }
+                $("#bodega_destino").removeAttr("disabled");
+                $("#bodega_origen").attr("disabled", "disabled");
                 break;
             case "2E":
-                origen = $('#bodega_origen').val( );
-                destino = $('#bodega_destino').val( );
-                if (origen != 1 && origen != 2 && origen != 3)
-                {
-                    $("#bodega_origen option[value=1]").attr("selected", "selected");
-                }
-                if (destino != 1 && destino != 2 && destino != 3)
-                {
-                    $("#bodega_destino option[value=1]").attr("selected", "selected");
-                }
+                $("#bodega_origen").removeAttr("disabled");
+                $("#bodega_destino").attr("disabled", "disabled");
+                break;
+            case "2B":
+                $("#bodega_origen").removeAttr("disabled");
+                $("#bodega_destino").attr("disabled", "disabled");
                 break;
             default:
-                alert("No implementado");
+                //alert("No implementado");
                 break;
         }
     }
@@ -234,19 +206,21 @@
     }
 </style>
 <section>
-    <form id="fg" style="display:table;" method="post" action="/nymsa/inventario/salvar_traslado">
+    <h2>Traslado de producto</h2>
+    <form id="fg" style="display:table;" method="post" action="/{systemModuleName}/inventario/salvar_traslado">
         <div style="width:400px; float:left;"> 
-            <div class="input-control checkbox">
+            <!--<div class="input-control checkbox">
                 <label>
                     <input type="checkbox" id="iConsigna"/>
                     <span class="check"></span>
                     Consigna
                 </label>
             </div>
+            -->
             <br/>
             Transaccion
             <div class="input-control select">
-                <select name="transaccion" id="transaccion">
+                <select name="transaccion" id="transaccion" onchange="cambiar_bodegas();">
                     <!-- START transacciones -->
                     <option value="{cod}"> {nombre}</option>
                     <!-- END transacciones -->
@@ -257,14 +231,18 @@
                     <label>
                         # Documento (0 = nuevo)
                         <br/>
+                        <div class="input-control text">
                         <input type="text" onchange="load_data();" onkeyup="load_data();" style="width:100px" id="id" name="id" value="0" required="required"/>
+                        </div>
                     </label>
                 </div>
                 <div style="float:left;">
                     <label>
                         Fecha
                         <br/>
+                        <div class="input-control text">
                         <input type="text" id="fDate" name="fecha" id="transaccion" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" style="width:100px" />
+                        </div>
                     </label>
                 </div>
             </div>
@@ -300,7 +278,8 @@
                 </select>
             </div>
             <br/>
-            Origen
+            <br/>
+            Bodega de origen
             <div class="input-control select">
                 <select name="bodega_origen" id="bodega_origen" onchange="cambiar_bodegas();">
                     <!-- START bodega1 -->
@@ -311,7 +290,7 @@
                 </select>
             </div>
             <br/>
-            Destino
+            Bodega de destino
             <div class="input-control select">
                 <select name="bodega_destino" id="bodega_destino" onchange="cambiar_bodegas();">
                     <!-- START bodega2 -->
@@ -327,7 +306,7 @@
                 <input type="text" name="concepto" id="concepto" required="required" />
             </div>
         </div>
-        <div style="float:left;margin-left:50px; width:400px;">
+        <div style="float:left;margin-left:80px; padding-top: 283px; width:400px;">
             <!--<h3>Cuentas por pagar</h3>
             Serie
             <div class="input-control text">
@@ -363,7 +342,7 @@
             <br/>
             <br/>
             <button type="submit" class="button large success">Siguiente</button>
-            <button type="button" class="button large" onclick="location.href = '/nymsa/inventario/listadoTraslado'"><i class="icon-list"></i> Ver traslados</button>
+            <button type="button" class="button large" onclick="location.href = '/{systemModuleName}/inventario/listadoTraslado'"><i class="icon-list"></i> Ver traslados</button>
         </div>
     </form>
 </section>

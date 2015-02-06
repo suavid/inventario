@@ -13,7 +13,6 @@
             {name : 'genero'},
             {name : 'marca'},
             {name : 'propiedad'},
-            {name : 'observacion'},
             {name : 'fecha_ingreso'},
             {name : 'nota'}
         ],
@@ -28,22 +27,21 @@
         {id: 'descripcion', header: "Descripcion", width :250},
         {id: 'catalogo', header: "Catálogo", width :70},
         {id: 'n_pagina', header: "N. Pagina", width :70},
-        {id: 'observacion', header: "Observacion", width :200},
         {id: 'fecha_ingreso', header: "Ingresa el", width :150}
     ];
     
     var gridOption = {
         id : grid_demo_id,
-        loadURL : '/nymsa/inventario/cargar?tblname=producto',
+        loadURL : '/{systemModuleName}/inventario/cargar?tblname=producto',
         saveURL : '',
-        width: "1200", //"100%", // 700,
+        width: "762", //"100%", // 700,
         height: "260", //"100%", // 330,
         container : 'gridbox',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
         dataset : dsOption,
         columns : colsOption,
-        showGridMenu : true,
+        showGridMenu : false,
         allowHide : true,
         allowGroup  : true,
         clickStartEdit : true,
@@ -61,8 +59,9 @@
     });
 
 </script>
-<h3>Productos registrados en el sistema</h3>
 
+<h2>Productos registrados en el sistema</h2>
+<br/>
 <div id="bigbox" style="margin:15px;display:!none;">
     <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 

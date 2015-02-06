@@ -239,13 +239,26 @@ class inventarioController extends controller {
 
     public function proveedores() {
         $this->validar();
-        if (isset($_SESSION['p'])):
-            $usuario = Session::getUser();
-            $paises = $this->model->get_child('paises')->get_list();
-            $this->view->mantenimiento_de_proveedores($usuario, $paises);
-        else:
-            HttpHandler::redirect('/'.MODULE.'/inventario/verificacionProveedor');
-        endif;
+        $usuario = Session::getUser();
+        $paises = $this->model->get_child('paises')->get_list();
+        $this->view->mantenimiento_de_proveedores($usuario, $paises);
+       
+    }
+
+    public function obtenerBodegas(){
+
+        $bodegas = array();
+        $bds     = $this->model->get_child('bodega');
+        $bodegas = $bds->get_list_array();
+        echo json_encode($bodegas);
+    }
+
+    public function movKardex(){
+        if(!isInstalled("kardex")){
+            $this->view->noKardex();
+        }else{
+            $this->view->movKardex();
+        }
     }
 
     public function requestColors(){
@@ -700,13 +713,17 @@ class inventarioController extends controller {
         $id = (!isset($_POST['id']) || empty($_POST['id'])) ? 0 : $_POST['id'];
         $data = $_POST;
         unset($data['id']);
-        if (isset($data['bodega_origen']) && isset($data['bodega_destino'])) {
+        if (isset($data['bodega_origen'])) {
             $id_bodega_ = $data['bodega_origen'];
-            $id_bodega = $data['bodega_destino'];
         } else {
             $id_bodega_ = $data['bodega_origen_r'];
-            $id_bodega = $data['bodega_destino_r'];
             $data['bodega_origen'] = $data['bodega_origen_r'];
+        }
+
+        if (isset($data['bodega_destino'])) {
+            $id_bodega = $data['bodega_destino'];
+        } else {
+            $id_bodega = $data['bodega_destino_r'];
             $data['bodega_destino'] = $data['bodega_destino_r'];
         }
         
@@ -780,9 +797,12 @@ class inventarioController extends controller {
             $this->model->get_sibling('cliente')->actualizar_saldo($_POST['id_ref'], $_POST['total'] * -1);
             $this->model->reducir_costos_y_pares2($_POST['cantidad'], $_POST['total'], $_POST['id_ref']);
         }
+
+        echo json_encode(array("msg"=>""));
     }
 
     public function detalle_traslado() {
+        
         $this->validar();
         $id = $_GET['id'];
 
@@ -794,8 +814,11 @@ class inventarioController extends controller {
         $id_bodega = 0; // destino
         $nombre_bodega = "";
         $oConsigna = $this->model->get_child('traslado');
+        data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
+        data_model()->setActiveConnection(1);
         $system = $this->model->get_child('system');
         $system->get(1);
+        data_model()->setActiveConnection(0);
 
         if ($oConsigna->exists($id) && !empty($id)) {
 
@@ -825,6 +848,7 @@ class inventarioController extends controller {
             if ($consigna != 1) {
                 # solo traslado
                 $consigna = 0;
+                $proveedor   = $oConsigna->get_attr('proveedor_origen');
                 $total_costo = $oConsigna->get_attr('total_costo');
                 $total_pares = $oConsigna->get_attr('total_pares');
             } else {
@@ -832,7 +856,7 @@ class inventarioController extends controller {
             }
 
             $cache[0] = $this->model->get_child('linea')->get_list();
-            $this->view->detalle_traslado(Session::singleton()->getUser(), $id, $id_bodega, $nombre_bodega, $id_bodega_, $nombre_bodega_, $transaccion, $total_costo, $total_pares, $cache, $cliente, $consigna, $system->tolerancia);
+            $this->view->detalle_traslado(Session::singleton()->getUser(), $id, $id_bodega, $nombre_bodega, $id_bodega_, $nombre_bodega_, $transaccion, $total_costo, $total_pares, $cache, $cliente, $consigna, $system->tolerancia, $proveedor);
         } else {
             HttpHandler::redirect('/'.MODULE.'/error/not_found');
         }
@@ -1096,8 +1120,11 @@ class inventarioController extends controller {
 
     public function reporteDocumentoPr(){
         $docDetail = $this->model->detalleDocumento($_GET['id']);
+        data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
+        data_model()->setActiveConnection(1);
         $system = $this->model->get_child('system');
         $system->get(1);
+        data_model()->setActiveConnection(0);
         $this->view->reporteDocumentoPr($docDetail, $_GET['id'], $system);
     }
 
@@ -1546,8 +1573,8 @@ class inventarioController extends controller {
     public function cambiarPrecios() {
         $this->validar();
         $cache = array();
-        $cache[0] = $this->model->get_child('proveedor')->get_list();
-        $cache[1] = $this->model->get_child('catalogo')->get_list();
+        //$cache[0] = $this->model->get_child('proveedor')->get_list();
+        $cache[0] = $this->model->get_child('catalogo')->get_list();
         $this->view->cambiarPrecios(Session::singleton()->getUser(), $cache);
     }
 
@@ -1565,12 +1592,12 @@ class inventarioController extends controller {
             $cache     = array();
             $cache[0]  = $this->model->get_child('linea')->get_list();
             $cache[1]  = $this->model->get_child('marca')->get_list();
-            $cache[2]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
+            $cache[2]  = 0;
             $cache[3]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
             $cache[4]  = $this->model->get_child('genero')->get_list();
             $cache[5]  = $this->model->get_child('linea')->get_list();
             $cache[6]  = $this->model->get_child('marca')->get_list();
-            $cache[7]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
+            $cache[7]  = 0;
             $cache[8]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
             $cache[9]  = $this->model->get_child('genero')->get_list();
             $cache[10] = $this->model->get_child('catalogo')->get_list();
@@ -1768,10 +1795,10 @@ class inventarioController extends controller {
             $prodTmp = $this->model->get_child('documento_producto');
             $prodMdl->setVirtualId('estilo');
             $prodTmp->setVirtualId('estilo');
-            $prodTmp->get(0);
+            $prodTmp->get(array("estilo"=>0, "linea"=>0));
             $fields = $prodMdl->get_fields();
             if(!$prodTmp->exists($estilo)){
-                $prodMdl->get($estilo);
+                $prodMdl->get(array("estilo"=>$estilo, "linea"=>$linea));
                 foreach ($fields as $field) {
                     $prodTmp->set_attr($field, $prodMdl->get_attr($field));
                 }
@@ -1948,10 +1975,10 @@ class inventarioController extends controller {
                     $modelo->get(0);      
                     $modelo->CESTILO    = $estilo;
                     $modelo->LINEA      = $linea;
-                    $modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
+                    //$modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
                     $modelo->CCOLOR     = $color;
                     $modelo->DESCRIP    = $productInfo->{"descripcion"};
-                    $modelo->PROVEEDOR  = $productInfo->{"proveedor"};
+                    //$modelo->PROVEEDOR  = $productInfo->{"proveedor"};
                     $modelo->CATALOGO   = $productInfo->{"catalogo"};
                     $modelo->PAGINA     = $productInfo->{"n_pagina"};
                     $modelo->GENERO     = $productInfo->{"genero"};
@@ -1976,9 +2003,9 @@ class inventarioController extends controller {
                 $target->get(0);
                 $target->set_attr("estilo", $estilo);
                 $target->set_attr("linea", $linea);
-                $target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
+                //$target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
                 $target->set_attr("descripcion", $productInfo->{"descripcion"});
-                $target->set_attr("proveedor", $productInfo->{"proveedor"});
+                //$target->set_attr("proveedor", $productInfo->{"proveedor"});
                 $target->set_attr("catalogo", $productInfo->{"catalogo"});
                 $target->set_attr("n_pagina", $productInfo->{"n_pagina"});
                 $target->set_attr("genero", $productInfo->{"genero"});
@@ -2036,9 +2063,9 @@ class inventarioController extends controller {
                     $modelo->get($id);      
                     $modelo->CESTILO    = $estilo;
                     $modelo->LINEA      = $linea;
-                    $modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
+                    //$modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
                     $modelo->DESCRIP    = $productInfo->{"descripcion"};
-                    $modelo->PROVEEDOR  = $productInfo->{"proveedor"};
+                    //$modelo->PROVEEDOR  = $productInfo->{"proveedor"};
                     $modelo->CATALOGO   = $productInfo->{"catalogo"};
                     $modelo->PAGINA     = $productInfo->{"n_pagina"};
                     $modelo->GENERO     = $productInfo->{"genero"};
@@ -2054,9 +2081,9 @@ class inventarioController extends controller {
                     $target->get($estilo);
                     $target->set_attr("estilo", $estilo);
                     $target->set_attr("linea", $linea);
-                    $target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
+                    //$target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
                     $target->set_attr("descripcion", $productInfo->{"descripcion"});
-                    $target->set_attr("proveedor", $productInfo->{"proveedor"});
+                    //$target->set_attr("proveedor", $productInfo->{"proveedor"});
                     $target->set_attr("catalogo", $productInfo->{"catalogo"});
                     $target->set_attr("n_pagina", $productInfo->{"n_pagina"});
                     $target->set_attr("genero", $productInfo->{"genero"});
@@ -2175,10 +2202,6 @@ class inventarioController extends controller {
         endif;
     }
 
-    public function get_proveedor() {
-        echo "asdas";
-    }
-
     /**
      * Esta funcion es llamada para comprobar si un estilo ya existe. Esta comprobacion se hace antes
      * de permitir al usuario crear un nuevo estilo ya que no puede ingresarse un estilo ya existente.
@@ -2193,8 +2216,8 @@ class inventarioController extends controller {
         
         // se cargan dos modelos. El temporal (para documentos) y el operativo a modo
         // de verificar la existencia del producto y evitar duplicados con otros documentos
-        $temp   = $this->model->get_child('documento_producto');
         $prod   = $this->model->get_child('producto');
+        $temp   = $this->model->get_child('documento_producto');
         
         // se fuerza al estilo como identificador
         $temp->setVirtualId('estilo');
@@ -2210,7 +2233,7 @@ class inventarioController extends controller {
         $resp['auth']  = true;              # autorizado a cambios en documento
         $resp['ref_doc'] = -1;
 
-
+        
         // si se encuentra se recogen los datos
         if ($resp['found']) {
             // target es la tabla donde se ha encontrado el producto
@@ -2219,10 +2242,10 @@ class inventarioController extends controller {
             $target->get(array("estilo"=>$estilo, "linea"=>1));           # se carga el modelo con los datos del producto
             // se prepata la respuesta para el cliente
             foreach ($fields as $key) {
-                //$resp['data'][$key] = $target->$key;
+                $resp['data'][$key] = $target->$key;
             }
             
-            /* seccion agregada por cambio en la interfaz del sistema */
+            
             // en esta seccion se obtiene los colores asociados al producto, tanto nombre como identificador
             $colorMod = null;
             
@@ -2558,15 +2581,15 @@ class inventarioController extends controller {
     }
 
     public function transaccionLibre() {
-        $ret = array();
-        $id_ref = $_POST['id_ref'];
-        $transaccion = $_POST['transaccion'];
-        $bodega_origen = $_POST['bodega_origen'];
+        $ret            = array();
+        $id_ref         = $_POST['id_ref'];
+        $transaccion    = $_POST['transaccion'];
+        $bodega_origen  = $_POST['bodega_origen'];
         $bodega_destino = $_POST['bodega_destino'];
 
-        if ($transaccion == '1C' || $transaccion == '2B') {
+        if ($transaccion == '1C' || $transaccion == '2C') {
             $ret['tran'] = "success";
-            $ret['out'] = $this->model->transaccionLibre($id_ref, $bodega_origen, $bodega_destino);
+            $ret['out']  = $this->model->transaccionLibre($id_ref, $bodega_origen, $bodega_destino, $transaccion);
         } else {
             $ret['out'] = false;
             $ret['tran'] = "error";
@@ -2622,7 +2645,8 @@ class inventarioController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
 
-        $filtros = $_POST['filtros'];
+        $filtros   = $_POST['filtros'];
+        $proveedor = $_POST['proveedor'];
         $temp = explode(',', $filtros);
         $filtros = array();
         foreach ($temp as $parts) {
@@ -2632,7 +2656,7 @@ class inventarioController extends controller {
 
         /* CADENA DE CONDICION */
         //*/
-        $fin = " WHERE precio > 0 AND ";
+        $fin = " WHERE precio > 0 AND producto.proveedor = $proveedor AND ";
         $keys = array_keys($filtros);
         $values = array_values($filtros);
         $str_ct = implode(' = \'$\' ? ', $keys);
@@ -2645,7 +2669,7 @@ class inventarioController extends controller {
 
         //*/  
         //to get how many records totally.
-        $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla" . $fin;
+        $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo  " . $fin;
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -2656,7 +2680,8 @@ class inventarioController extends controller {
         endif;
 
         if ($json->{'action'} == 'load'):
-            $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla" . $fin . " limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+            $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo " . $fin . " limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+            
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):

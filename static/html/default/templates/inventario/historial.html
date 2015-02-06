@@ -1,11 +1,13 @@
+<br/>
+<br/>
+<h3>Historial de documentos</h3>
+<br/>
+<br/>
 {paginacion}
 <br/>
 <br/>
-<a href="/nymsa/inventario/exportarHistorial/{modulo}" target="blank">
-    <i class="icon-file-pdf"></i> exportar
-</a>
 <br/>
-<table class="table" style="text-align:center;">
+<table class="table span11" style="text-align:center;">
     <thead>
         <tr>
             <th>ID</th>
@@ -26,7 +28,7 @@
     <!-- START historial -->
     <tr>
         <td>
-            <a href="/nymsa/inventario/reporteDocumentoPr?id={id_documento}" target="_blank">{id_documento}</a>
+            <a href="/{systemModuleName}/inventario/reporteDocumentoPr?id={id_documento}" target="_blank">{id_documento}</a>
         </td>
         <td>
             {propietario}

@@ -7,14 +7,65 @@
         <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
     </head>
     <body class="metro">
-        <div id="black_screen" class="black_screen"></div>
+        <style type="text/css">
+
+        #blsBScreen{
+            position: fixed;
+            z-index: 1000000;
+            height: 100%;
+            width: 100%;
+            background: #000;
+            -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+            filter: alpha(opacity=50);
+            -moz-opacity:0.5;
+            -khtml-opacity: 0.5;
+            opacity: 0.5;
+            display: none;
+        }
+
+        #blsMScreen{
+            min-height: 300px;
+            width: 100%;
+            position: fixed;
+            z-index: 1000001;
+            margin-top: 150px;
+            display: none;
+        }
+
+        #blsMessage{ 
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+
+        </style>        
         <noscript>
         Para que el sistema trabaje correctamente necesita tener activado Javascript,
         si usted puede leer este mensaje significa que javascript se encuentra desactivado.
         Active Javascript y recarge la p&aacute;gina; si no sabe como activarlo contacte 
         con el administrador.
         </noscript>
+        <div id="blsBScreen"></div>
+        <div id="blsMScreen" class="bg-blue">
+            <div id="blsMessage" class="span5"> 
+                <p class="fg-white" style="font-size: 20px; text-align: center;"> 
+                    Por favor, espere un momento
+                    <br />
+                    <br />
+                </p>
+                <div style="text-align: center;"><img src="../static/img/loader_screen.gif" style="width: 32px;"></div> 
+            </div>
+        </div>
         <script>
+
+            function porfavor_espere(){
+                $('#blsBScreen').css('display', 'blocK');
+                $('#blsMScreen').css('display', 'blocK');
+            } 
+
+            function gracias_por_esperar(){
+                $('#blsBScreen').css('display', 'none');
+                $('#blsMScreen').css('display', 'none');  
+            }
 
             $(document).ready(function() {
                 //var noti = setInterval( notificaciones , 1000 );
@@ -83,34 +134,35 @@
             
             function ver_detalle_producto(){
 
-                window.open('/nymsa/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val() , '_blank')
+                window.open('/{systemModuleName}/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val() , '_blank')
             }
         </script>
         <div>
-            <nav class="navigation-bar dark" >
+            <nav class="navigation-bar white fixed-top" >
                 <nav class="navigation-bar-content">
-                    <a href="/nymsa/modulo/listar" class="element brand">
-                        <i class="icon-grid-view"></i>
+                    <a href="/{systemModuleName}/inventario/principal" class="element brand">
+                        <i class="icon-home"></i>
                         Inicio
                     </a>
                     <span class="element-divider place-left"></span> 
 
-                    <a class="element brand" href="{back_url}"><i class="icon-arrow-left-3"> Volver</i></a>
+                    <a class="element brand" href="{back_url}"><i class="icon-arrow-left-3"></i></a>
                     
 
                     <a class="element" href="/{systemModuleName}/inventario/segmentacion"><i class="icon-list"></i> Segmentación</a>
-                    <!--<a class="element" href="/{systemModuleName}/inventario/verificacionProveedor"><i class="icon-user-2"></i> Proveedores</a>-->
+                    <a class="element" href="/{systemModuleName}/inventario/proveedores"><i class="icon-user-2"></i> Proveedores</a>
                     <a class="element" href="/{systemModuleName}/inventario/bodegas"><i class="icon-box"></i> Bodegas</a>
                     <a class="element" href="/{systemModuleName}/inventario/nuevo_producto"><i class="icon-basket"></i> Catálogo</a>
                     <a class="element" href="/{systemModuleName}/inventario/traslados"><i class="icon-tab"></i> Traslados</a>
                     <!--<a class="element" href="/{systemModuleName}/inventario/orden_compra"><i class="icon-clipboard"></i> Compras</a>-->
                     <div class="element">
-                        <a class="dropdown-toggle" href="#">Más</a>
+                        <a class="dropdown-toggle" href="#"><i class="icon-plus-2"></i> Más</a>
                         <ul class="dropdown-menu" data-role="dropdown">
-                            <li><a href="/{systemModuleName}/inventario/catalogos"><i class="icon-star-3"></i> Campañas</a></li>
-                            <li><a href="/{systemModuleName}/inventario/ofertas"><i class="icon-tag"></i> Ofertas</a></li> 
-                            <li><a href="/{systemModuleName}/inventario/cambio_de_linea"> Cambio de linea</a></li>
-                            <li><a href="/{systemModuleName}/inventario/cambio_de_grupo"> Cambio de grupo</a></li>       
+                            <li><a href="/{systemModuleName}/inventario/catalogos"><i class="icon-broadcast"></i> Campañas</a></li>
+                            <li><a href="/{systemModuleName}/inventario/movKardex"><i class="icon-clipboard"></i> Kardex</a></li>
+                            <!--<li><a href="/{systemModuleName}/inventario/ofertas"><i class="icon-tag"></i> Ofertas</a></li> -->
+                            <!--<li><a href="/{systemModuleName}/inventario/cambio_de_linea"> Cambio de linea</a></li>
+                            <li><a href="/{systemModuleName}/inventario/cambio_de_grupo"> Cambio de grupo</a></li>-->       
                         </ul>
                     </div>
                     
@@ -139,7 +191,7 @@
                     </button>
                     <div class="element place-right" >
                         <a href="javascript: void(0);" class="dropdown-toggle" onclick="inboxPreview();"><i class="icon-mail"></i></a>
-                        <span id="inboxPending" style="background: red; border-radius: 100px; width: 18px; height: 18px; display: blocK;text-align: center; font-size: 12px;font-weight: bold; float: right; position: relative; left: -14px;">0</span>
+                        <span id="inboxPending" class="fg-white" style="background: red; border-radius: 100px; width: 18px; height: 18px; display: blocK;text-align: center; font-size: 12px;font-weight: bold; float: right; position: relative; left: -14px;display:none; ">0</span>
                         <ul class="dropdown-menu place-right" id="bandeja" data-role="dropdown" style="padding: 10px; ">
                              <li onclick="location.href='/nymsa/modulo/inboxRead?inboxId=0&Compose=true'"><i class="icon-plus-2"></i> Redactar mensaje </li>   
                             <img id="loader" src="../static/img/loader.gif" />
@@ -151,7 +203,7 @@
             <br/>
 
 
-            <div class="page-region" style="padding-left:30px;">
+            <div class="page-region" style="padding-left:30px; padding-top: 50px;">
                 {content}
             </div>
 

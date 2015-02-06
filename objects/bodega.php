@@ -17,7 +17,7 @@ class bodegaModel extends object {
     }
 
     public function obtener_bodega($linea, $estilo, $color, $talla) {
-        $query = "SELECT bodega FROM estado_bodega WHERE estilo=$estilo AND linea=$linea AND talla=$talla AND color=$color";
+        $query = "SELECT bodega FROM estado_bodega WHERE estilo='{$estilo}' AND linea=$linea AND talla=$talla AND color=$color";
         data_model()->executeQuery($query);
         $bodegas = array();
         while ($res = data_model()->getResult()->fetch_assoc()) {

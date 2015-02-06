@@ -9,6 +9,7 @@ class ORMHelper {
         $id = 0;
         $auto = false;
         data_model()->executeQuery("DESCRIBE $name");
+        
         while ($data = data_model()->getResult()->fetch_assoc()):
             $vars[] = $data['Field'];
             if ($data['Key'] === 'PRI')

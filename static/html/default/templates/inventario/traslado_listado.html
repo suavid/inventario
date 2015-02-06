@@ -35,15 +35,17 @@
 
     var gridOption = {
         id: grid_id,
-        loadURL: '/nymsa/inventario/cargar_cfd?tblname=traslado&field=consigna&value=0',
+        loadURL: '/{systemModuleName}/inventario/cargar_cfd?tblname=traslado&field=consigna&value=0',
         saveURL: '',
-        width: "100%", //"100%", // 700,
+        width: "900", //"100%", // 700,
         height: "320", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
         dataset: dsOption,
         columns: colsOption,
+        allowCustomSkin: true,
+        skin: 'mac',
         clickStartEdit: true,
         defaultRecord: {'id': "00", 'nombre': ""},
         pageSize: 10,
@@ -58,19 +60,22 @@
     function impresion(id, editable)
     {
         if (editable == 0) {
-            var vurl = window.open('/nymsa/inventario/imprimirTraslado/' + id, '_blank');
+            var vurl = window.open('/{systemModuleName}/inventario/imprimirTraslado/' + id, '_blank');
         } else {
             alert("Este es un documento no aplicado");
         }
     }
 </script>
 <section>
+    <h2>Historial de traslados de productos</h2>
+    <br />
+    <br />
     <div id="bigbox" style="margin:15px;display:!none;">
         <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
         </div>
     </div>
-    <form method="post" action="/nymsa/inventario/imprimirTraslado" target="blank" id="frmImp">
+    <form method="post" action="/{systemModuleName}/inventario/imprimirTraslado" target="blank" id="frmImp">
         <input type="hidden" name="id" value="" id="id_" />
         <input type="hidden" name="transaccion" value="" id="transaccion" />
         <input type="hidden" name="fecha" value="" id="fecha" />

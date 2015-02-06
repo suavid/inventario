@@ -14,25 +14,7 @@
     
     $(document).ready(function(){
         window.nymsaLinea = null;
-        $('#proveedor').bind('change',obtenerPrefijo);
-        $('#proveedor').change();
     });
-
-    function obtenerPrefijo(){
-        var prov = $('#proveedor').val();
-        var rest = "";
-        if(prov < 10) { 
-            rest = "000"+prov;
-        }else if(prov >= 10 && prov < 100) {
-            rest = "00"+prov;
-        }else if(prov >= 100 && prov < 1000){
-            rest = "0"+prov;
-        }else{
-            rest = prov;
-        }
-
-        $('#fgs').val(rest);
-    }
 
     var grid_demo_id  = "producto_grid";
     var grid_demo2_id = "producto2_grid";
@@ -47,7 +29,7 @@
     // carga los datos de productos ya existentes
     function xTESt(event){             
         var nuevo_estilo = $(event.target).val().trim();
-        var rq_url       = '/nymsa/inventario/comprobar_estilo'; 
+        var rq_url       = '/{systemModuleName}/inventario/comprobar_estilo'; 
         var grid         = Sigma.$grid("producto2_grid"); 
         var grid2        = Sigma.$grid("producto3_grid"); 
         var http_request = $.post(rq_url, {estilo:nuevo_estilo, doc:{documento}}, function(data){
@@ -61,10 +43,9 @@
                     }
 
                     $('#cfslinea').val(data.data.linea);
-                    $('#codigo_origen').val(data.data.codigo_origen);
                     $('#descripcion').val(data.data.descripcion);
                     $('#n_pagina').val(data.data.n_pagina);
-                    $('#dias_garantia').val(data.data.dias_garantia);
+                    $('#dias_garantia').val(data.data.garantia);
                     $('#fecha_ingreso').val(data.data.fecha_ingreso);
                     $('#observacion').val(data.data.observacion);
                     $("#linea option[value=" + data.data.linea + "]").attr("selected", true);
@@ -92,8 +73,8 @@
                     $('#btnSaveProduct').removeAttr("disabled");
 
                     $('.nd_s').removeAttr('disabled'); 
-                    grid.loadURL = '/nymsa/inventario/cargar_stock_ce/'+nuevo_estilo;
-                    grid2.loadURL = '/nymsa/inventario/cargar_ce/' +nuevo_estilo;
+                    grid.loadURL = '/{systemModuleName}/inventario/cargar_stock_ce/'+nuevo_estilo;
+                    grid2.loadURL = '/{systemModuleName}/inventario/cargar_ce/' +nuevo_estilo;
                     grid.reload();
                     grid2.reload();
 
@@ -113,7 +94,6 @@
                     $('#CTBTN').removeClass('disabled');
                 }else{
                     $('#fgs').val("");
-                    $('#codigo_origen').val("");
                     $('#fgs').focus();
                     alert("El estilo ya existe en otro documento (No."+data.ref_doc+")");
                 }    
@@ -152,7 +132,7 @@
         var estilo  = $('#fproducto').val();
         var _color  = $('#color').val();
         var _linea  = window.nymsaLinea;
-        var url_consulta = '/nymsa/inventario/salvar_color';
+        var url_consulta = '/{systemModuleName}/inventario/salvar_color';
         var exists = false;
         $('#pcolores  option').each(function(){
             if(this.value == _color)  {
@@ -193,7 +173,7 @@
         record['estilo'] = $('#seleccionado').html().trim();
         $('#fproducto').val(record['estilo']);
         $('#pcolores option').remove();
-        var url_consulta = '/nymsa/inventario/colores_producto';
+        var url_consulta = '/{systemModuleName}/inventario/colores_producto';
         var ajax = $.post(url_consulta, {estilo: record['estilo']});
         ajax.done(function(data){
             var colores = data.trim().split(',');
@@ -223,7 +203,7 @@
         event.preventDefault();
         var colores = $('#pcolores').val();
         var _estilo = $('#seleccionado').html().trim();
-        var url_request = '/nymsa/inventario/borrar_colores';
+        var url_request = '/{systemModuleName}/inventario/borrar_colores';
         var ajax = $.post(url_request, {string_colores:colores, estilo:_estilo});
         window.color_ = colores;
         ajax.done(function(data){
@@ -240,9 +220,7 @@
         fields :[
             {name : 'estilo'  },
             {name : 'linea'  }, 
-            {name : 'codigo_origen'  },
             {name : 'descripcion'  },
-            {name : 'proveedor'  },
             {name : 'catalogo'  },
             {name : 'n_pagina'  },
             {name : 'genero'  },
@@ -269,9 +247,7 @@
         fields :[
             {name : 'estilo'  },
             {name : 'linea'  },
-            {name : 'codigo_origen'  },
             {name : 'descripcion'  },
-            {name : 'proveedor'  },
             {name : 'catalogo'  },
             {name : 'n_pagina'  },
             {name : 'genero'  },
@@ -288,7 +264,6 @@
     var colsOption = [
         {id: 'estilo', header: "Estilo", width:90 },
         {id: 'linea', header: "Linea", width:50},
-        {id: 'codigo_origen', header: "Codigo de origen", width :110},
         {id: 'catalogo', header: "Catalogo", width :70},
         {id: 'n_pagina', header: "N. Pagina", width :80},
         {id: 'fecha_ingreso' , header: "Ingresa el " , width :95}
@@ -306,7 +281,6 @@ var colsOption2 = [
 var colsOption3 = [
      {id: 'estilo' , header: "Estilo" , width :90},
      {id: 'linea' , header: "Linea" , width :50 },
-     {id: 'codigo_origen' , header: "Codigo de origen" , width :110},
      {id: 'catalogo' , header: "Catalogo" , width :70 },
      {id: 'n_pagina' , header: "N. Pagina" , width :80 },
      {id: 'fecha_ingreso' , header: "Ingresa el " , width :95}      
@@ -315,7 +289,7 @@ var colsOption3 = [
 
 var gridOption={
   id : grid_demo_id,
-  loadURL : '/nymsa/inventario/cargar_cf?tblname=documento_producto&value={documento}&field=numero_documento',
+  loadURL : '/{systemModuleName}/inventario/cargar_cf?tblname=documento_producto&value={documento}&field=numero_documento',
   saveURL : '',
   width: "100%",  //"100%", // 700,
   height: "260",  //"100%", // 330,
@@ -343,7 +317,7 @@ var gridOption={
 var gridOption2={
   id : grid_demo2_id,
   loadURL : '',
-  saveURL : '/nymsa/inventario/establecer_stock',
+  saveURL : '/{systemModuleName}/inventario/establecer_stock',
   width: "100%",  //"100%", // 700,
   height: "260",  //"100%", // 330,
   container : 'gridbox2', 
@@ -361,7 +335,7 @@ var gridOption2={
 var gridOption3={
   id : grid_demo3_id,
   loadURL : '',
-  saveURL : '/nymsa/inventario/actualizar?tblname=producto',
+  saveURL : '/{systemModuleName}/inventario/actualizar?tblname=producto',
   width: "100%",  //"100%", // 700,
   height: "260",  //"100%", // 330,
   container : 'gridbox3', 
@@ -387,7 +361,7 @@ function ver_tallas(){
   $('#foestilo').val($('#seleccionado').html().trim()+'_'+last);
   $('#res_t img').remove();
   //$('#res_t').append('<img src="../static/img/productos/thumbnail_'+$('#seleccionado').html().trim()+'_'+last+'" alt="Imagen no asignada" width="200"/>');
-  var ajax = $.post('/nymsa/inventario/preliminar_tallas',{estilo:$('#seleccionado').html().trim(),color:last});
+  var ajax = $.post('/{systemModuleName}/inventario/preliminar_tallas',{estilo:$('#seleccionado').html().trim(),color:last});
   ajax.done(function(data){
     $('#tallas_tabla').html(data);
   });
@@ -436,7 +410,6 @@ function saveNewProduct(){
             'fgs'
             ,'linea'
             ,'descripcion'
-            ,'proveedor'
             ,'catalogo'
             ,'n_pagina'
             ,'genero'
@@ -466,9 +439,7 @@ function saveNewProduct(){
                 dataSend = {
                     "estilo" : $('#fgs').val().trim(),
                     "linea"  : $('#linea').val().trim(),
-                    "codigo_origen" : $('#codigo_origen').val().trim(),
                     "descripcion":$('#descripcion').val().trim(),
-                    "proveedor":$('#proveedor').val().trim(),
                     "catalogo":$('#catalogo').val().trim(),
                     "n_pagina":$('#n_pagina').val().trim(),
                     "genero":$('#genero').val().trim(),
@@ -489,7 +460,7 @@ function saveNewProduct(){
                 
                 //alert(JSON.stringify(dataSend));
 
-                var uri  = "/nymsa/inventario/guardarNuevoProducto";
+                var uri  = "/{systemModuleName}/inventario/guardarNuevoProducto";
                 var data = { "productInfo" : JSON.stringify(dataSend) };
                 
                 $.post(uri, data, function(d){
@@ -610,17 +581,10 @@ function checkNumber(event, id){
 
 function copyCode(event){
     var estilo = $('#fgs').val().trim();
-    $('#codigo_origen').val(estilo);
 }
 
 </script>
 
-<h3 class="nav-bar fg-color-white" style="padding:10px;"> 
-    Edición de catálogo de productos - 
-    <strong>
-        Documento #{documento}
-    </strong>
-</h3>
 <div id="page-container">
     <div style="margin-right:30px;">
 
@@ -630,150 +594,167 @@ function copyCode(event){
         <form id="nw_b">
             <div style="border:solid 1px #D3D3D3;padding:35px;display:table;">
                 <div style="padding: 30px;">
-                    <h3>
-                        Registrar un nuevo producto
-                    </h3>
+                    <h2>
+                        Registrar un nuevo producto (Documento No. {documento})
+                    </h2>
                     <div style="float:right;margin-left:5px;">
                         <a href="javascript: void(0);" onclick="showPane('thisDoc');">En este documento <i class="icon-new"></i></a>  | 
                         <a href="javascript: void(0);" onclick="showPane('general');">General <i class="icon-database"></i></a>   |  
                         <a href="javascript: void(0);" onclick="showPane('detail');">Detalle <i class="icon-list"></i></a>
                     </div>
                     <hr/>
-                    <p class="nymsaAdvice">
-                        Todos los campos marcados con (*) son obligatorios
-                    </p>
                     <br/>
                     <div style="width:200px; float:left; text-align: right; margin:10px;margin-bottom:50px;">
-                        *Estilo:
-                        <input type="text" style="width:100px;margin-bottom:5px;" onkeyup="copyCode(event);" name="estilo" id="fgs" class="nd_s" onchange="xTESt(event);" required/>
+                        <div class="input-control text">
+                            <input type="text" placeholder="Estilo" onkeyup="copyCode(event);" name="estilo" id="fgs" class="nd_s" onchange="xTESt(event);" required/>
+                        </div>
                         <br/>
-                        *Linea: 
-                        <select name="linea" id="linea" style="width:100px;margin-bottom:5px;" required/>
-                        <!-- START lineas_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END lineas_ -->
-                        </select>
-                        <br/>
-                        *Cod origen: 
-                        <input type="text" style="width:100px;margin-bottom:5px;" name="codigo_origen" id="codigo_origen" required/>
-                        <br/>
-                        *Descripcion: 
-                        <textarea name="descripcion" style="width:100px;margin-bottom:5px;" id="descripcion" required></textarea>
-                        <br/>
-                        *Proveedor: 
-                        <select name="proveedor" style="width:100px;margin-bottom:5px;" id="proveedor"  required/>
-                        <!-- START proveedor_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END proveedor_ -->
-                        </select> 
-                        <br/>
-                        *Fecha ingreso:
-                        <input type="text" style="width:100px;margin-bottom:5px;" readonly name="fecha_ingreso" value="{fecha}" id="fecha_ingreso" required/>
-                        <br/>
-                        *D&iacute;as garant&iacute;a: 
-                        <input type="text" style="width:100px;margin-bottom:5px;" name="dias_garantia" value="30"  id="dias_garantia" onchange="checkNumber(event, 'dias_garantia');" required/>
-                        <br/>
-                    </div>
-                    <div style="width:200px; float:left; text-align: right; ">
-                        *Catalogo: 
-                        <select name="catalogo" style="width:100px;margin-bottom:5px;" id="catalogo" required>
-                            <!-- START catalogo -->
+                        <div class="input-control select"> 
+                            <select name="linea" id="linea" required/>
+                            <option value="-1">--- Seleccione una linea ---</option>
+                            <!-- START lineas_ -->
                             <option value="{id}">{nombre}</option>
-                            <!-- END catalogo -->
-                        </select>
+                            <!-- END lineas_ -->
+                            </select>
+                        </div>
                         <br/>
-                        *N. Pagina:
-                        <input type="text" style="width:100px;margin-bottom:5px;" onchange="checkNumber(event, 'n_pagina');" id="n_pagina" name="n_pagina" maxlength="9" required/>
+                        <div class="input-control textarea">
+                            <textarea name="descripcion" placeholder="Descripcion del producto" id="descripcion" required></textarea>
+                        </div>
                         <br/>
-                        *Genero:  
-                        <select name="genero" style="width:100px;margin-bottom:5px;" id="genero" required/>
-                        <!-- START genero_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END genero_ -->
-                        </select>
+                        <div class="input-control text">
+                            <input type="text" readonly name="fecha_ingreso" value="{fecha}" id="fecha_ingreso" required/>
+                        </div>
                         <br/>
-                        *Marca:  
-                        <select name="marca" style="width:100px;margin-bottom:5px;" id="marca" required/>
-                        <!-- START marca_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END marca_ -->
-                        </select>
+                        <div class="input-control text"> 
+                            <input type="text" placeholder="Días de garantía"  name="dias_garantia" id="dias_garantia" onchange="checkNumber(event, 'dias_garantia');" required/>
+                        </div>
                         <br/>
-                        *Tacon:  
-                        <select name="tacon" style="width:100px;margin-bottom:5px;" id="tacon" required/>
-                        <!-- START tacon_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END tacon_ -->
-                        </select>
+                        <div class="input-control select">
+                            <select name="catalogo" id="catalogo" required>
+                                <option value="-1">--- Seleccione un catálogo ---</option>
+                                <!-- START catalogo -->
+                                <option value="{id}">{nombre}</option>
+                                <!-- END catalogo -->
+                            </select>
+                        </div>
+                    </div>
+                    <div style="width:200px; float:left; text-align: right; padding-top: 10px;">
+                        <div class="input-control text">
+                            <input type="text" placeholder="No. Página del catálogo" onchange="checkNumber(event, 'n_pagina');" id="n_pagina" name="n_pagina" maxlength="9" required/>
+                        </div>
                         <br/>
-                        *Grupo:  
-                        <select name="grupo" style="width:100px;margin-bottom:5px;" id="grupo" required/>
-                        <!-- START grupo_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END grupo_ -->
-                        </select>
+                        <div class="input-control select">  
+                            <select name="genero" id="genero" required/>
+                            <option>--- Seleccione un género ---</option>
+                            <!-- START genero_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END genero_ -->
+                            </select>
+                        </div>
                         <br/>
-                        Suela:  
-                        <select name="suela" style="width:100px;margin-bottom:5px;" id="suela" />
-                        <!-- START suela_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END suela_ -->
-                        </select>
+                        <div class="input-control select">
+                            <select name="marca"  id="marca" required/>
+                            <option>--- Seleccione una marca</option>
+                            <!-- START marca_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END marca_ -->
+                            </select>
+                        </div>
                         <br/>
-                        *Concepto:  
-                        <select name="concepto" style="width:100px;margin-bottom:5px;" id="concepto" required/>
-                        <!-- START concepto_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END concepto_ -->
-                        </select>
+                        <div class="input-control select">  
+                            <select name="tacon" id="tacon" required/>
+                            <option>--- Seleccione un tacón ---</option>
+                            <!-- START tacon_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END tacon_ -->
+                            </select>
+                        </div>
                         <br/>
-                        Material:  
-                        <select name="material" style="width:100px;margin-bottom:5px;" id="material" />
-                        <!-- START material_ -->
-                        <option value="{id}">{nombre}</option>
-                        <!-- END material_ -->
-                        </select>
+                        <div class="input-control select">  
+                            <select name="grupo" id="grupo" required/>
+                            <option>--- Seleccione un grupo ---</option>
+                            <!-- START grupo_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END grupo_ -->
+                            </select>
+                        </div>
                         <br/>
-                        *Propiedad:
-                        <select name="propiedad" style="width:100px;margin-bottom:5px;" id="propiedad" required/>
-                            <option value="1">Liquidacion</option>
-                            <option value="2">Comprado</option>
-                            <option value="3">Consignacion</option>
-                        </select>
+                        <div class="input-control select">
+                            <select name="suela" id="suela" />
+                            <option>--- Seleccione una suela ---</option>
+                            <!-- START suela_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END suela_ -->
+                            </select>
+                        </div>
+                        <br/>
+                        <div class="input-control select"> 
+                            <select name="concepto" id="concepto" required/>
+                            <option>--- Seleccione un concepto ---</option>
+                            <!-- START concepto_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END concepto_ -->
+                            </select>
+                        </div>
+                        <br/>
+                        <div class="input-control select">  
+                            <select name="material" id="material" />
+                            <option>--- Seleccione un material ---</option>
+                            <!-- START material_ -->
+                            <option value="{id}">{nombre}</option>
+                            <!-- END material_ -->
+                            </select>
+                        </div>
+                        <br/>
+                        <div class="input-control select">
+                            <select name="propiedad" id="propiedad" required/>
+                                <option>--- Seleccione una propiedad ---</option>
+                                <option value="1">Liquidacion</option>
+                                <option value="2">Comprado</option>
+                                <option value="3">Consignacion</option>
+                            </select>
+                        </div>
                         <br/>
                         <br/>
                     </div>
-                    <div style="width:300px; float:left; text-align: right; ">
-                        Colores:
-                        <select id="coloresProducto" onclick="checkSelected();" multiple="multiple" style="width:200px;margin-bottom:10px;"></select> 
+                    <div style="width:300px; float:left; text-align: right; padding-top: 10px;">
+                        Colores
+                        <div class="input-control select span3">
+                            <select id="coloresProducto" onclick="checkSelected();" multiple="multiple" style="margin-bottom:10px;"></select> 
+                        </div>
                         <br/>
                         <span id="selectedColors"></span>
                         <br/><br/>
-                        <select id="color" name="color" style="width:100px;">
-                            <!-- START color -->
-                            <option id="opt_color_{id}" value="{id}">{nombre}</option>
-                            <!-- END color -->
-                        </select>
+                        <div class="input-control select span3">
+                            <select id="color" name="color">
+                                <!-- START color -->
+                                <option id="opt_color_{id}" value="{id}">{nombre}</option>
+                                <!-- END color -->
+                            </select>
+                        </div>
                         <button type="button" id="btnAddColor" onclick="appendColor(event);" >
                             Agregar 
                             <i class="icon-plus"></i>
                         </button>
                     </div>
 
-                    <div style="width:300px; float:left; text-align: right;">
-                        Observaci&oacute;n: 
-                        <textarea style="margin-bottom:5px;" name="observacion" id="observacion"></textarea>
+                    <div style="width:300px; float:left; text-align: right; padding-top: 10px;">
+                        <div class="input-control textarea span3">
+                            <textarea style="margin-bottom:5px;" placeholder="Observaciones" name="observacion" id="observacion"></textarea>
+                        </div>
                         <br/>
-                        Nota: 
-                        <textarea style="margin-bottom:5px;" name="nota" id="nota"></textarea>
+                        <div class="input-control textarea span3">
+                            <textarea style="margin-bottom:5px;" placeholder="Notas" name="nota" id="nota"></textarea>
+                        </div>
                         <br/>
                         <br/>
                         <input type="hidden" name="numero_documento" value="{documento}" />
                         <input type="hidden" name="visible" value="0" />
 
                         <input type="reset" value="Reset"/>
-                        <button type="button" id="btnSaveProduct" class="big" onclick="saveNewProduct();">
-                            <i class="icon-save"></i>Aceptar
+                        <button type="button" id="btnSaveProduct" class="large primary" onclick="saveNewProduct();">
+                            Registrar producto
                         </button>
                     </div>
                 </div>
@@ -865,7 +846,7 @@ function copyCode(event){
 <div id="editCyT" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 1px #000;padding-left:20px;">
     <button onclick="closePane('editCyT'); edicionColores();" style="margin:10px;">Cerrar</button>
     <div id="corrida" style="width:400px;text-align:left;background: #fff;padding-left:20px;" class="span5">
-        <form id="corrida_formulario" action="/nymsa/inventario/salvar_color" method="post">
+        <form id="corrida_formulario" action="/{systemModuleName}/inventario/salvar_color" method="post">
             <fieldset>
                 <input type="hidden" value="" id="fproducto" name="color_estilo_producto" /> 
                 <h3>Colores Disponibles</h3>
@@ -904,7 +885,7 @@ function copyCode(event){
 
     <!-- TALLAS -->
     <div id="nueva_corrida" style="display:none;margin-top:10px;">
-        <form id="talla_prod" action="/nymsa/inventario/agregar_corrida_doc?doc={documento}" style="width:300px;" method="post">
+        <form id="talla_prod" action="/{systemModuleName}/inventario/agregar_corrida_doc?doc={documento}" style="width:300px;" method="post">
             <fieldset style="padding:15px;border: solid 1px #D3D3D3;">
                 <p>
                     <strong>Talla para color:</strong> <span id="corrida_color"></span>
@@ -924,7 +905,7 @@ function copyCode(event){
     </div><!-- FIN TALLAS-->
     <!--
     <div id="foto" style="background:#fff;width:300px;display:none;margin-top:10px;">
-        <form id="foto2" action="/nymsa/inventario/subir_foto" style="display:none;" method="post" enctype="multipart/form-data">
+        <form id="foto2" action="/{systemModuleName}/inventario/subir_foto" style="display:none;" method="post" enctype="multipart/form-data">
             <fieldset style="padding:15px;border: solid 1px #D3D3D3;margin-right:20px;">
                 <p>
                     <strong>Foto para color:</strong> <span id="foto_color"></span>
@@ -951,7 +932,7 @@ function copyCode(event){
 <script>
     function registrar_estilo(event){
         var nuevo_estilo = $('#nuevo_estilo').val();
-        var request_url = '/nymsa/inventario/comprobar_estilo';
+        var request_url = '/{systemModuleName}/inventario/comprobar_estilo';
         var http_request = $.post(request_url, {estilo:nuevo_estilo, doc:{documento}});
         http_request.done(function(data){
             $('#estatus').html(data.trim());

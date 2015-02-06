@@ -1,0 +1,150 @@
+<script type="text/javascript">
+	
+	
+
+	$(document).ready(function(){
+		
+		var f 	 = new Date();
+		var anio = f.getFullYear();
+		var mes  = (f.getMonth() + 1);
+		var fechaInicial = anio+"/"+mes+"/1";
+		var fechaFinal = anio+"/"+(mes+1)+"/1"; 
+		window.entradas = 1;
+		window.salidas  = 1;
+
+		$("#limitInf").datepicker({
+			date: fechaInicial, // set init date
+			format: "yyyy/m/d", // set output format
+			effect: "slide", // none, slide, fade
+			position: "bottom", // top or bottom,
+			locale: 'es', // 'ru' or 'en', default is $.Metro.currentLocale
+		});
+
+		$("#limitSup").datepicker({
+			date: fechaFinal, // set init date
+			format: "yyyy/m/d", // set output format
+			effect: "slide", // none, slide, fade
+			position: "bottom", // top or bottom,
+			locale: 'es', // 'ru' or 'en', default is $.Metro.currentLocale
+		});	
+
+		$('#entradas').bind('click',  function(){
+			if(window.entradas == 0) window.entradas = 1;
+			else window.entradas = 0;
+		});
+
+		$('#salidas').bind('click',  function(){
+			if(window.salidas == 0) window.salidas = 1;
+			else window.salidas = 0;
+		});
+
+	});
+
+	function generar_kardex(){
+		
+		var linea  = $('#linea').val();
+		var estilo = $('#estilo').val();
+		var color  = $('#color').val();
+		var talla  = $('#talla').val();
+		var fe_limitInf = $('#fe_limitInf').val();
+		var fe_limitSup = $('#fe_limitSup').val();
+		
+		
+		var uri  = "/kardex/kardex/kardexHtmlReport";
+
+		var data = {
+			"linea": linea,
+			"estilo": estilo,
+			"color": color,
+			"talla": talla,
+			"fe_limitInf": fe_limitInf,
+			"fe_limitSup": fe_limitSup,
+			"entradas": window.entradas,
+			"salidas": window.salidas
+		}
+
+		
+
+		//porfavor_espere();
+
+		$.post(uri, data, function(response){
+			$('#kardex_content').html(response.html);
+			$('#kardex_content table').addClass('table');
+			$('#kardex_content table').addClass('span12');
+			$('#kardex_content table').css('text-align', 'center');
+			//$('#kardex_content table').addClass('striped');
+			$('#kardex_content table').addClass('hovered');
+
+			var url = "/inventario/inventario/obtenerBodegas";
+
+			$.post(url, {}, function(d){
+
+				for(var i = 0; i < d.length; i++){
+
+					$('.kardexBodega_'+d[i].id).html(d[i].nombre);
+				}
+
+				//setTimeout(function(){
+					//gracias_por_esperar();
+				//}, 1000);
+
+			},"json");
+
+		}, "json");
+	}
+</script>
+
+<h1 style="float: left;" class="span4"><i class="icon-clipboard"></i> Kardex</h1>
+
+<p>
+	<br /><br />
+</p>
+
+<form style="float: left; display: block;" class="span12">
+	<div class="input-control checkbox">
+		<label>
+			<input type="checkbox" id="entradas" checked="checked"/>
+			<span class="check"></span>
+			Entradas
+		</label>
+	</div>
+	<div class="input-control checkbox">
+		<label>
+			<input type="checkbox" id="salidas" checked="checked" />
+			<span class="check"></span>
+			Salidas
+		</label>
+	</div>
+    <div class="input-control text span1">
+    	<input type="text" id="linea" placeholder="Linea"/>
+    </div>
+    <div class="input-control text span2">
+    	<input type="text" id="estilo" placeholder="Estilo"/>
+    </div>
+    <div class="input-control text span1">
+    	<input type="text" id="color" placeholder="Color"/>
+    </div>
+    <div class="input-control text span1">
+    	<input type="text" id="talla" placeholder="Talla"/>
+    </div>
+    <br />
+    <br />	
+	<div id="limitInf" class="input-control text span3">
+    	<input type="text" id="fe_limitInf" />
+    	<button type="button" class="btn-date"></button>
+    </div>
+    <div id="limitSup" class="input-control text span3">
+    	<input type="text" id="fe_limitSup"/>
+    	<button type="button" class="btn-date"></button>
+    </div>
+    <br/>
+    <br/>
+    <button type="button" class="primary" onclick="generar_kardex();"> Consultar </button>
+</form>
+<div style="clear: both;"></div>
+<p>
+	<br /><br />
+</p>
+<div id="kardex_content">
+
+</div>
