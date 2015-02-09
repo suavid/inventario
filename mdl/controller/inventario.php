@@ -33,6 +33,11 @@ class inventarioController extends controller {
         $this->view->mantenimiento_de_bodegas($usuario, $cache);
     }
 
+    public function kits(){
+
+        $this->view->kits();
+    }
+
     public function json_producto(){
         $fields          = (isset($_POST['fields']) && !empty($_POST['fields'])) ? $_POST['fields']: null;
         $conditions      = (isset($_POST['conditions']) && !empty($_POST['conditions']))? $_POST['conditions'] : null;
@@ -1592,12 +1597,12 @@ class inventarioController extends controller {
             $cache     = array();
             $cache[0]  = $this->model->get_child('linea')->get_list();
             $cache[1]  = $this->model->get_child('marca')->get_list();
-            $cache[2]  = 0;
+            $cache[2]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));;
             $cache[3]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
             $cache[4]  = $this->model->get_child('genero')->get_list();
             $cache[5]  = $this->model->get_child('linea')->get_list();
             $cache[6]  = $this->model->get_child('marca')->get_list();
-            $cache[7]  = 0;
+            $cache[7]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
             $cache[8]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
             $cache[9]  = $this->model->get_child('genero')->get_list();
             $cache[10] = $this->model->get_child('catalogo')->get_list();
@@ -1975,10 +1980,10 @@ class inventarioController extends controller {
                     $modelo->get(0);      
                     $modelo->CESTILO    = $estilo;
                     $modelo->LINEA      = $linea;
-                    //$modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
+                    $modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
                     $modelo->CCOLOR     = $color;
                     $modelo->DESCRIP    = $productInfo->{"descripcion"};
-                    //$modelo->PROVEEDOR  = $productInfo->{"proveedor"};
+                    $modelo->PROVEEDOR  = $productInfo->{"proveedor"};
                     $modelo->CATALOGO   = $productInfo->{"catalogo"};
                     $modelo->PAGINA     = $productInfo->{"n_pagina"};
                     $modelo->GENERO     = $productInfo->{"genero"};
@@ -2000,12 +2005,12 @@ class inventarioController extends controller {
             
             if($colorCount>0){
                 $target = $prodTmp;
-                $target->get(0);
+                $target->get(array("estilo"=>"0", "linea"=>"0"));
                 $target->set_attr("estilo", $estilo);
                 $target->set_attr("linea", $linea);
-                //$target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
+                $target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
                 $target->set_attr("descripcion", $productInfo->{"descripcion"});
-                //$target->set_attr("proveedor", $productInfo->{"proveedor"});
+                $target->set_attr("proveedor", $productInfo->{"proveedor"});
                 $target->set_attr("catalogo", $productInfo->{"catalogo"});
                 $target->set_attr("n_pagina", $productInfo->{"n_pagina"});
                 $target->set_attr("genero", $productInfo->{"genero"});
@@ -2063,9 +2068,9 @@ class inventarioController extends controller {
                     $modelo->get($id);      
                     $modelo->CESTILO    = $estilo;
                     $modelo->LINEA      = $linea;
-                    //$modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
+                    $modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
                     $modelo->DESCRIP    = $productInfo->{"descripcion"};
-                    //$modelo->PROVEEDOR  = $productInfo->{"proveedor"};
+                    $modelo->PROVEEDOR  = $productInfo->{"proveedor"};
                     $modelo->CATALOGO   = $productInfo->{"catalogo"};
                     $modelo->PAGINA     = $productInfo->{"n_pagina"};
                     $modelo->GENERO     = $productInfo->{"genero"};
@@ -2081,9 +2086,9 @@ class inventarioController extends controller {
                     $target->get($estilo);
                     $target->set_attr("estilo", $estilo);
                     $target->set_attr("linea", $linea);
-                    //$target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
+                    $target->set_attr("codigo_origen", $productInfo->{"codigo_origen"});
                     $target->set_attr("descripcion", $productInfo->{"descripcion"});
-                    //$target->set_attr("proveedor", $productInfo->{"proveedor"});
+                    $target->set_attr("proveedor", $productInfo->{"proveedor"});
                     $target->set_attr("catalogo", $productInfo->{"catalogo"});
                     $target->set_attr("n_pagina", $productInfo->{"n_pagina"});
                     $target->set_attr("genero", $productInfo->{"genero"});
@@ -2239,7 +2244,7 @@ class inventarioController extends controller {
             // target es la tabla donde se ha encontrado el producto
             $target = ($flg1) ? $temp : $prod;
             $fields = $target->get_fields(); # se obtiene los atributos del modelo
-            $target->get(array("estilo"=>$estilo, "linea"=>1));           # se carga el modelo con los datos del producto
+            $target->get(array("estilo"=>$estilo, "linea"=>$_POST['linea']));           # se carga el modelo con los datos del producto
             // se prepata la respuesta para el cliente
             foreach ($fields as $key) {
                 $resp['data'][$key] = $target->$key;
@@ -2519,12 +2524,12 @@ class inventarioController extends controller {
 
     public function salidas() {
         $ret = array();
-        $id_ref = $_POST['id_ref'];
-        $transaccion = $_POST['transaccion'];
-        $bodega_origen = $_POST['bodega_origen'];
+        $id_ref         = $_POST['id_ref'];
+        $transaccion    = $_POST['transaccion'];
+        $bodega_origen  = $_POST['bodega_origen'];
         $bodega_destino = $_POST['bodega_destino'];
 
-        if ($transaccion == '2D' || $transaccion == '2E') {
+        if ($transaccion == '2B' || $transaccion == '2E') {
             $ret['tran'] = "success";
             $ret['out'] = $this->model->salidas($id_ref, $bodega_origen, $bodega_destino);
         } else {

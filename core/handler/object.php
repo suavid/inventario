@@ -119,6 +119,7 @@ abstract class object {
             else:
                 $query = MysqliHandler::get_insert_query($tblname, $data);
             endif;
+            //throw_error($query);
             data_model()->executeQuery($query);
             return true;
         else:

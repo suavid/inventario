@@ -1,0 +1,41 @@
+<script type="text/javascript">
+	function numero(e){
+		var val = $(e.target).val();
+		if(isNaN(val)){
+			$(e.target).val("");
+		}
+	}
+</script>
+<h2>Kit de productos</h2>
+
+<div class="tab-control" data-role="tab-control">
+    <ul class="tabs">
+	    <li class="active"><a href="#_page_1">Nuevo kit</a></li>
+	    <li><a href="#_page_2">Mis kits</a></li>
+	    <li><a href="#_page_3">Editar kit</a></li>
+    </ul>
+     
+    <div class="frames">
+	    <div class="frame" id="_page_1">
+	    	<div class="input-control text span4">
+				<input type="text" class="span1" value="KT" readonly="readonly" />
+				<input type="text" class="span3"  placeholder="Código del kit" />
+			</div>
+			<br />
+			<div class="input-control textarea span4">
+			    <textarea style="margin-bottom:5px;" placeholder="Descripción del kit" ></textarea>
+			</div>
+			<br/>
+			<div class="input-control text span4">
+				<input type="text" onkeyup="numero(event);"  placeholder="Precio del kit" />
+			</div>
+			<br/>
+			<button>Crear nuevo kit</button>
+
+	    </div>
+	    <div class="frame" id="_page_2">
+	    	<h2>Mis kits</h2>
+	    </div>
+	    <div class="frame" id="_page_3">...</div>
+    </div>
+</div>

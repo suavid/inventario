@@ -82,6 +82,17 @@ class inventarioView {
         print page()->getContent();
     }
 
+    public function kits(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Creación de kits');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/inventario/inventario/principal');
+        template()->addTemplateBit('content', 'inventario/kits.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+
     public function movKardex(){
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Kardex');
@@ -843,7 +854,7 @@ class inventarioView {
         //page()->addEstigma('genero', array('SQL', $cache[4]));
         page()->addEstigma('lineas_', array('SQL', $cache[5]));
         page()->addEstigma('marca_', array('SQL', $cache[6]));
-        //page()->addEstigma('proveedor_', array('SQL', $cache[7]));
+        page()->addEstigma('proveedor_', array('SQL', $cache[7]));
         page()->addEstigma('genero_', array('SQL', $cache[9]));
         page()->addEstigma('tacon_', array('SQL', $cache[12]));
         page()->addEstigma('suela_', array('SQL', $cache[13]));

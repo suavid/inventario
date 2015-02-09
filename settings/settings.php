@@ -85,4 +85,10 @@ function error_handler($errno, $errstr, $errfile, $errline) {
     return false;
 }
 
+function throw_error($errorMsg){
+    $fp = fopen(APP_PATH."error.log", "a");
+    fputs($fp, $errorMsg);
+    fclose($fp);    
+}
+
 ?>

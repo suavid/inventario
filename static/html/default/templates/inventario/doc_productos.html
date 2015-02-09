@@ -14,7 +14,24 @@
     
     $(document).ready(function(){
         window.nymsaLinea = null;
+        $('#proveedor').bind('change',obtenerPrefijo);
     });
+
+    function obtenerPrefijo(){
+        var prov = $('#proveedor').val();
+        var rest = "";
+        if(prov < 10) { 
+            rest = "000"+prov;
+        }else if(prov >= 10 && prov < 100) {
+            rest = "00"+prov;
+        }else if(prov >= 100 && prov < 1000){
+            rest = "0"+prov;
+        }else{
+            rest = prov;
+        }
+
+        $('#fgs').val(rest);
+    }
 
     var grid_demo_id  = "producto_grid";
     var grid_demo2_id = "producto2_grid";
@@ -32,7 +49,7 @@
         var rq_url       = '/{systemModuleName}/inventario/comprobar_estilo'; 
         var grid         = Sigma.$grid("producto2_grid"); 
         var grid2        = Sigma.$grid("producto3_grid"); 
-        var http_request = $.post(rq_url, {estilo:nuevo_estilo, doc:{documento}}, function(data){
+        var http_request = $.post(rq_url, {estilo:nuevo_estilo, doc:{documento}, linea: $('#linea').val()}, function(data){
             if (data.found){
                 if(data.auth){
                     clearColorContainer();
@@ -43,12 +60,14 @@
                     }
 
                     $('#cfslinea').val(data.data.linea);
+                    $('#codigo_origen').val(data.data.codigo_origen);
                     $('#descripcion').val(data.data.descripcion);
                     $('#n_pagina').val(data.data.n_pagina);
                     $('#dias_garantia').val(data.data.garantia);
                     $('#fecha_ingreso').val(data.data.fecha_ingreso);
                     $('#observacion').val(data.data.observacion);
                     $("#linea option[value=" + data.data.linea + "]").attr("selected", true);
+                    $("#proveedor option[value=" + data.data.proveedor + "]").attr("selected", true);
                     $("#tacon option[value=" + data.data.tacon + "]").attr("selected", true);
                     $("#suela option[value=" + data.data.suela + "]").attr("selected", true);
                     $("#grupo option[value=" + data.data.grupo + "]").attr("selected", true);
@@ -94,6 +113,7 @@
                     $('#CTBTN').removeClass('disabled');
                 }else{
                     $('#fgs').val("");
+                    $('#codigo_origen').val("");
                     $('#fgs').focus();
                     alert("El estilo ya existe en otro documento (No."+data.ref_doc+")");
                 }    
@@ -220,7 +240,9 @@
         fields :[
             {name : 'estilo'  },
             {name : 'linea'  }, 
+             {name : 'codigo_origen'  },
             {name : 'descripcion'  },
+            {name : 'proveedor'  },
             {name : 'catalogo'  },
             {name : 'n_pagina'  },
             {name : 'genero'  },
@@ -247,7 +269,9 @@
         fields :[
             {name : 'estilo'  },
             {name : 'linea'  },
+            {name : 'codigo_origen'  },
             {name : 'descripcion'  },
+            {name : 'proveedor'  },
             {name : 'catalogo'  },
             {name : 'n_pagina'  },
             {name : 'genero'  },
@@ -264,6 +288,7 @@
     var colsOption = [
         {id: 'estilo', header: "Estilo", width:90 },
         {id: 'linea', header: "Linea", width:50},
+        {id: 'codigo_origen', header: "Codigo de origen", width :110},
         {id: 'catalogo', header: "Catalogo", width :70},
         {id: 'n_pagina', header: "N. Pagina", width :80},
         {id: 'fecha_ingreso' , header: "Ingresa el " , width :95}
@@ -281,6 +306,7 @@ var colsOption2 = [
 var colsOption3 = [
      {id: 'estilo' , header: "Estilo" , width :90},
      {id: 'linea' , header: "Linea" , width :50 },
+     {id: 'codigo_origen' , header: "Codigo de origen" , width :110},
      {id: 'catalogo' , header: "Catalogo" , width :70 },
      {id: 'n_pagina' , header: "N. Pagina" , width :80 },
      {id: 'fecha_ingreso' , header: "Ingresa el " , width :95}      
@@ -410,12 +436,18 @@ function saveNewProduct(){
             'fgs'
             ,'linea'
             ,'descripcion'
+            ,'proveedor'
             ,'catalogo'
             ,'n_pagina'
             ,'genero'
             ,'marca'
+            ,'material'
+            ,'concepto'
             ,'propiedad'
             ,'fecha_ingreso'
+            ,'tacon'
+            ,'suela'
+            ,'grupo'
         ];
 
         if(selectedColors < 1){
@@ -424,7 +456,7 @@ function saveNewProduct(){
             for(var m = 0; m < requiredValues.length; m++){
                 currentVal  = $('#'+requiredValues[m]).val();
                 if(!currentVal) currentVal = '';
-                if(currentVal.trim()=="" || typeof(currentVal)==undefined){
+                if(currentVal.trim()=="" || typeof(currentVal)==undefined || currentVal == -1){
                     validFormFlag = false;
                     if(requiredValues[m]!='fgs')
                         alert("Error: Falta "+requiredValues[m]);
@@ -439,7 +471,9 @@ function saveNewProduct(){
                 dataSend = {
                     "estilo" : $('#fgs').val().trim(),
                     "linea"  : $('#linea').val().trim(),
+                    "codigo_origen" : $('#codigo_origen').val().trim(),
                     "descripcion":$('#descripcion').val().trim(),
+                    "proveedor":$('#proveedor').val().trim(),
                     "catalogo":$('#catalogo').val().trim(),
                     "n_pagina":$('#n_pagina').val().trim(),
                     "genero":$('#genero').val().trim(),
@@ -457,8 +491,7 @@ function saveNewProduct(){
                     "nota":$('#nota').val().trim(),
                     "documento":{documento}
                 };
-                
-                //alert(JSON.stringify(dataSend));
+            
 
                 var uri  = "/{systemModuleName}/inventario/guardarNuevoProducto";
                 var data = { "productInfo" : JSON.stringify(dataSend) };
@@ -581,6 +614,7 @@ function checkNumber(event, id){
 
 function copyCode(event){
     var estilo = $('#fgs').val().trim();
+    $('#codigo_origen').val(estilo);
 }
 
 </script>
@@ -605,9 +639,14 @@ function copyCode(event){
                     <hr/>
                     <br/>
                     <div style="width:200px; float:left; text-align: right; margin:10px;margin-bottom:50px;">
-                        <div class="input-control text">
-                            <input type="text" placeholder="Estilo" onkeyup="copyCode(event);" name="estilo" id="fgs" class="nd_s" onchange="xTESt(event);" required/>
-                        </div>
+                        <div class="input-control select"> 
+                            <select name="proveedor" style="margin-bottom:5px;" id="proveedor"  required/>
+                                <option value="-1">--- Seleccione un proveedor ---</option>
+                                <!-- START proveedor_ -->
+                                <option value="{id}">{nombre}</option>
+                                <!-- END proveedor_ -->
+                            </select>
+                        </div> 
                         <br/>
                         <div class="input-control select"> 
                             <select name="linea" id="linea" required/>
@@ -616,6 +655,14 @@ function copyCode(event){
                             <option value="{id}">{nombre}</option>
                             <!-- END lineas_ -->
                             </select>
+                        </div>
+                        <br/>
+                        <div class="input-control text">
+                            <input type="text" placeholder="Estilo" onkeyup="copyCode(event);" name="estilo" id="fgs" class="nd_s" onchange="xTESt(event);" required/>
+                        </div>
+                        <br/>
+                        <div class="input-control text">
+                            <input type="text" style="margin-bottom:5px;" placeholder="Código de origen" name="codigo_origen" id="codigo_origen" required/>
                         </div>
                         <br/>
                         <div class="input-control textarea">
@@ -627,7 +674,7 @@ function copyCode(event){
                         </div>
                         <br/>
                         <div class="input-control text"> 
-                            <input type="text" placeholder="Días de garantía"  name="dias_garantia" id="dias_garantia" onchange="checkNumber(event, 'dias_garantia');" required/>
+                            <input type="text" placeholder="Días de garantía"  name="dias_garantia" id="dias_garantia" onchange="checkNumber(event, 'dias_garantia');" />
                         </div>
                         <br/>
                         <div class="input-control select">
@@ -638,6 +685,8 @@ function copyCode(event){
                                 <!-- END catalogo -->
                             </select>
                         </div>
+                        <br />
+                        
                     </div>
                     <div style="width:200px; float:left; text-align: right; padding-top: 10px;">
                         <div class="input-control text">
@@ -646,7 +695,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">  
                             <select name="genero" id="genero" required/>
-                            <option>--- Seleccione un género ---</option>
+                            <option  value="-1">--- Seleccione un género ---</option>
                             <!-- START genero_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END genero_ -->
@@ -655,7 +704,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">
                             <select name="marca"  id="marca" required/>
-                            <option>--- Seleccione una marca</option>
+                            <option  value="-1">--- Seleccione una marca</option>
                             <!-- START marca_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END marca_ -->
@@ -664,7 +713,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">  
                             <select name="tacon" id="tacon" required/>
-                            <option>--- Seleccione un tacón ---</option>
+                            <option  value="-1">--- Seleccione un tacón ---</option>
                             <!-- START tacon_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END tacon_ -->
@@ -673,7 +722,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">  
                             <select name="grupo" id="grupo" required/>
-                            <option>--- Seleccione un grupo ---</option>
+                            <option  value="-1">--- Seleccione un grupo ---</option>
                             <!-- START grupo_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END grupo_ -->
@@ -682,7 +731,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">
                             <select name="suela" id="suela" />
-                            <option>--- Seleccione una suela ---</option>
+                            <option  value="-1">--- Seleccione una suela ---</option>
                             <!-- START suela_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END suela_ -->
@@ -691,7 +740,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select"> 
                             <select name="concepto" id="concepto" required/>
-                            <option>--- Seleccione un concepto ---</option>
+                            <option  value="-1">--- Seleccione un concepto ---</option>
                             <!-- START concepto_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END concepto_ -->
@@ -700,7 +749,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">  
                             <select name="material" id="material" />
-                            <option>--- Seleccione un material ---</option>
+                            <option  value="-1">--- Seleccione un material ---</option>
                             <!-- START material_ -->
                             <option value="{id}">{nombre}</option>
                             <!-- END material_ -->
@@ -709,7 +758,7 @@ function copyCode(event){
                         <br/>
                         <div class="input-control select">
                             <select name="propiedad" id="propiedad" required/>
-                                <option>--- Seleccione una propiedad ---</option>
+                                <option  value="-1">--- Seleccione una propiedad ---</option>
                                 <option value="1">Liquidacion</option>
                                 <option value="2">Comprado</option>
                                 <option value="3">Consignacion</option>
@@ -724,7 +773,7 @@ function copyCode(event){
                             <select id="coloresProducto" onclick="checkSelected();" multiple="multiple" style="margin-bottom:10px;"></select> 
                         </div>
                         <br/>
-                        <span id="selectedColors"></span>
+                        <span id="selectedColors">No se ha selecionado ningún color</span>
                         <br/><br/>
                         <div class="input-control select span3">
                             <select id="color" name="color">

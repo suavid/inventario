@@ -1122,6 +1122,8 @@ class inventarioModel extends object {
         $query = "SELECT linea, estilo, color, talla, cantidad, costo FROM detalle_traslado WHERE id_ref = $id_ref";
         $productos = array();
         $stop_flag = false;
+        $traslado = $this->get_child('traslado');
+        $traslado->get($id_ref);
 
         data_model()->executeQuery($query);
 
@@ -1137,8 +1139,8 @@ class inventarioModel extends object {
             $cantidad = $producto['cantidad'];
             $costo = $producto['costo'];
 
-            $kardex = $this->get_child('kardex');
-            $kardex->generar_entrada($linea, $estilo, $color, $talla, $cantidad, $costo);
+            //$kardex = $this->get_child('kardex');
+            //$kardex->generar_entrada($linea, $estilo, $color, $talla, $cantidad, $costo);
 
             $existe = "SELECT id,stock FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega_destino";
             data_model()->executeQuery($existe);
@@ -1162,6 +1164,65 @@ class inventarioModel extends object {
                 $newItem->change_status($ins_dat);
                 $newItem->save();
             }
+
+            if(isInstalled("kardex")){
+                    
+                $prod = $this->get_child('producto');
+                $prod->get(array("estilo"=>$estilo, "linea"=>$linea));
+                $prov = $this->get_child('proveedor');
+                $prov->get($prod->proveedor);
+
+                data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
+                data_model()->setActiveConnection(1);
+
+                $system = $this->get_child('system');
+                $system->get(1);
+
+                data_model()->newConnection(HOST, USER, PASSWORD, "db_kardex");
+                data_model()->setActiveConnection(2);
+                $kardex   = connectTo("kardex", "mdl.model.kardex", "kardex");
+                $articulo = connectTo("kardex", "objects.articulo", "articulo");
+                $articulo->nuevo_articulo($linea, $estilo, $color, $talla);
+                    
+                $dato_articulo = array(
+                    'codigo'=>$articulo->no_articulo($linea, $estilo, $color, $talla),
+                    'articulo'=>"$linea-$estilo-$color-$talla",
+                    'descripcion'=> $prod->descripcion
+                );
+
+                $dato_proveedor = array(
+                    'nombre_proveedor'=> $prov->nombre,
+                    'nacionalidad_proveedor'=> $prov->nacionalidad
+                );
+
+                $dato_entrada = array(
+                    "ent_cantidad"=> $cantidad,
+                    "ent_costo_unitario"=> $costo,
+                    "ent_costo_total"=> $cantidad * $costo
+                );
+
+
+                $kardex->nueva_entrada(
+                    date("Y-m-d"), 
+                    $traslado->concepto, 
+                    $dato_articulo, 
+                    0, 
+                    1000, 
+                    0, 
+                    $dato_proveedor,
+                    $system->periodo_actual,
+                    0, 
+                    $dato_entrada,
+                    "TR-".$traslado->transaccion."-".$traslado->cod,
+                    $bodega_destino
+                );        
+
+                list($kcantidad, $kcosto_unitario, $kcosto_total) = $kardex->estado_actual($articulo->no_articulo($linea, $estilo, $color, $talla), $bodega_destino); 
+
+                data_model()->setActiveConnection(0);
+
+                $this->get_child('control_precio')->cambiar_costo($linea, $estilo, $color, $talla, $kcosto_unitario);
+            }
         }
 
         $close_q = "UPDATE traslado SET editable = 0 WHERE id = $id_ref";
@@ -1184,6 +1245,8 @@ class inventarioModel extends object {
         $query = "SELECT * FROM detalle_traslado WHERE id_ref = $id_ref";
         $productos = array();
         $stop_flag = false;
+        $traslado = $this->get_child('traslado');
+        $traslado->get($id_ref);
 
         data_model()->executeQuery($query);
 
@@ -1206,8 +1269,8 @@ class inventarioModel extends object {
             data_model()->executeQuery($existe);
             $dat_ = data_model()->getResult()->fetch_assoc();
 
-            $kardex = $this->get_child('kardex');
-            $kardex->generar_salida($linea, $estilo, $color, $talla, $cantidad);
+            //$kardex = $this->get_child('kardex');
+            //$kardex->generar_salida($linea, $estilo, $color, $talla, $cantidad);
             if (data_model()->getNumRows() <= 0) {
                 $stop_flag = true;
             } else {
@@ -1221,6 +1284,7 @@ class inventarioModel extends object {
                     $producto['total'] = $cantidad * $costo;
                 }
             }
+
         }
 
         if (!$stop_flag) {
@@ -1237,27 +1301,57 @@ class inventarioModel extends object {
                 $ect = data_model()->getResult()->fetch_assoc();
                 $id_origen = $ect['id'];
 
-                $existe = "SELECT id,stock FROM entrada_pendiente WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega_destino";
-                data_model()->executeQuery($existe);
-                $ect = data_model()->getResult()->fetch_assoc();
-                $id_destino = $ect['id'];
+                if(isInstalled("kardex")){
+                    
+                    $prod = $this->get_child('producto');
+                    $prod->get(array("estilo"=>$estilo, "linea"=>$linea));
+                    $prov = $this->get_child('proveedor');
+                    $prov->get($prod->proveedor);
 
-                if (data_model()->getNumRows() > 0) {
-                    $up = "UPDATE entrada_pendiente SET stock = (stock + $cantidad) WHERE id=$id_destino ";
-                    data_model()->executeQuery($up);
-                } else {
-                    $ins_dat = array();
-                    $ins_dat['estilo'] = $estilo;
-                    $ins_dat['linea'] = $linea;
-                    $ins_dat['color'] = $color;
-                    $ins_dat['talla'] = $talla;
-                    $ins_dat['stock'] = $cantidad;
-                    $ins_dat['bodega'] = $bodega_destino;
+                    data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
+                    data_model()->setActiveConnection(1);
 
-                    $newItem = $this->get_child('entrada_pendiente');
-                    $newItem->get(0);
-                    $newItem->change_status($ins_dat);
-                    $newItem->save();
+                    $system = $this->get_child('system');
+                    $system->get(1);
+
+                    data_model()->newConnection(HOST, USER, PASSWORD, "db_kardex");
+                    data_model()->setActiveConnection(2);
+                    $kardex   = connectTo("kardex", "mdl.model.kardex", "kardex");
+                    $articulo = connectTo("kardex", "objects.articulo", "articulo");
+                    $articulo->nuevo_articulo($linea, $estilo, $color, $talla);
+                        
+                    $dato_articulo = array(
+                        'codigo'=>$articulo->no_articulo($linea, $estilo, $color, $talla),
+                        'articulo'=>"$linea-$estilo-$color-$talla",
+                        'descripcion'=> $prod->descripcion
+                    );
+
+                    $dato_proveedor = array(
+                        'nombre_proveedor'=> $prov->nombre,
+                        'nacionalidad_proveedor'=> $prov->nacionalidad
+                    );
+
+                    $dato_salida = array(
+                        "sal_cantidad"=> $cantidad
+                    );
+
+
+                    $kardex->nueva_salida(
+                        date("Y-m-d"), 
+                        $traslado->concepto, 
+                        $dato_articulo, 
+                        0, 
+                        1000, 
+                        0, 
+                        $dato_proveedor,
+                        $system->periodo_actual,
+                        0, 
+                        $dato_salida,
+                        "TR-".$traslado->transaccion."-".$traslado->cod,
+                        $bodega_origen
+                    );        
+
+                    data_model()->setActiveConnection(0);
                 }
 
                 $up = "UPDATE estado_bodega SET stock = (stock - $cantidad) WHERE id=$id_origen ";
