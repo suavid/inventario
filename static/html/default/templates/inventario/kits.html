@@ -5,6 +5,47 @@
 			$(e.target).val("");
 		}
 	}
+    
+    function registrarKit(){
+        var estilo      = "KT"+$('#estilo').val();
+        var descripcion = $('#descripcion').val().trim();
+        var precio      = $('#precio').val().trim();
+        if(!window._vestilo){
+            $('#estilo').popover('show');	
+            $('#div_estilo').addClass("error-state");
+        }else{
+            if(descripcion=="" || precio==""){
+                $('#btnRegistrar').popover('show'); 
+            }else{
+                
+                var uri  = "/inventario/inventario/guardar_kit";
+                var data = {
+                    "estilo": estilo,
+                    "descripcion": descripcion,
+                    "precio": precio
+                };
+                
+                $.post(uri, data, function(response){
+                    $('#estilo').val("");
+                    $('#div_estilo').removeClass("success-state");
+                    $('#precio').val("");
+                    $('#descripcion').val("");
+                     $.Dialog({
+                        overlay: true,
+                        shadow: true,
+                        flat: true,
+                        icon: '<i class="icon-info"></i>',
+                        title: ' Información',
+                        content: '',
+                        onShow: function(_dialog){
+                        var content = _dialog.children('.content');
+                            content.html('<div style="padding: 20px;"><p>Se ha creado el kit exitosamente!</p></div>');
+                        }
+                    });
+                }, "json");
+            }
+        }  
+    }
 
 	/* Verificar si el kit existe */
 	function validar_kit(){
@@ -12,13 +53,15 @@
 		var uri  = "/inventario/inventario/validar_kit";
 
 		var data = { "estilo": $('#estilo').val() }; 
-
-		if(uri, data, function(response){
+        
+		$.post(uri, data, function(response){
 
 			if(response.existe){
+                window._vestilo = false;
 				$('#estilo').popover('show');	
 				$('#div_estilo').addClass("error-state");	
 			}else{
+                window._vestilo = true;
 				$('#div_estilo').removeClass("error-state");
 				$('#div_estilo').addClass("success-state");
 			}
@@ -27,20 +70,26 @@
 	}
 
 	$(document).ready(function(){
-		
+		window._vestilo = false; 
 	});
 
 </script>
 <h2>Kit de productos</h2>
+
 <p>
 	<br />
-	<br />
 </p>
+<nav class="horizontal-menu compact">
+    <ul>
+        <li><a href="javascript: void(0);" onclick="$('#windowKits').css('display','block');"><i class="icon-search"></i> Buscar</a></li>
+    </ul>
+</nav>
+
 <div class="tab-control" data-role="tab-control">
     <ul class="tabs">
 	    <li class="active"><a href="#_page_1">Nuevo kit</a></li>
-	    <li><a href="#_page_2">Mis kits</a></li>
-	    <li><a href="#_page_3">Editar kit</a></li>
+	    <li><a href="#_page_2">Armar Kit</a></li>
+	    <li><a href="#_page_3">Stock</a></li>
     </ul>
      
     <div class="frames">
@@ -57,19 +106,281 @@
 			</div>
 			<br />
 			<div class="input-control textarea span4">
-			    <textarea style="margin-bottom:5px;" placeholder="Descripción del kit" ></textarea>
+			    <textarea style="margin-bottom:5px;" id="descripcion" placeholder="Descripción del kit" ></textarea>
 			</div>
 			<br/>
 			<div class="input-control text span4">
-				<input type="text" onkeyup="numero(event);"  placeholder="Precio del kit" />
+				<input type="text" onkeyup="numero(event);" id="precio"  placeholder="Precio del kit" />
 			</div>
 			<br/>
-			<button>Crear nuevo kit</button>
+			<button type="button" id="btnRegistrar"  onclick="registrarKit();"
+                    data-popover="popover"
+		            data-popover-position="right"
+		            data-popover-text="Rellene todos los campos!"
+		            data-popover-background="bg-red"
+		            data-popover-color="fg-white">Crear nuevo kit</button>
 
 	    </div>
 	    <div class="frame" id="_page_2">
-	    	<h2>Mis kits</h2>
+	    	<h2>Armado de kits</h2>
+            <br /><br />
+            <div class="input-control text span3">
+                <input type="text" onfocus="$('#windowKits').css('display','block');" id="armado_estilo" placeholder="Seleccione un kit"/>
+            </div>
+            <button onclick="limpiar_estilo();">Cancelar</button>
+            <br />
+            <div class="input-control text span3">
+                <input type="text" disabled="disabled" id="estilo_producto" onfocus="$('#windowProducto').css('display','block');" placeholder="Seleccionar producto"/>
+            </div>
+            <div class="input-control text span3">
+                <input type="text" disabled="disabled" id="cantidad_producto"  placeholder="Cantidad por kit"/>
+            </div>
+            <input type="hidden" id="h_estilo" />
+            <input type="hidden" id="h_linea" />
+            <input type="hidden" id="h_color" />
+            <input type="hidden" id="h_talla" />
+            <button onclick="agregar_producto();" disabled="disabled" id="btnAgregarProducto" class="primary">Agregar</button>
+            <br />
+            <h2>Elementos del kit</h2>
+            <div id="bigbox2" style="margin:15px;display:!none;">
+                <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+                </div>
+            </div>
 	    </div>
 	    <div class="frame" id="_page_3">...</div>
     </div>
 </div>
+
+<div id="windowKits" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
+    <div class="caption">
+        <span class="icon icon-search"></span> 
+        <div class="title">Mis kits</div> 
+        <button class="btn-close" onclick="$('#windowKits').css('display','none');"></button>
+    </div>
+    <div class="content">
+        <div id="bigbox" style="margin:15px;display:!none;">
+            <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="windowProducto" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
+    <div class="caption">
+        <span class="icon icon-search"></span> 
+        <div class="title">Productos</div> 
+        <button class="btn-close" onclick="$('#windowProducto').css('display','none');"></button>
+    </div>
+    <div class="content">
+        <div id="bigbox3" style="margin:15px;display:!none;">
+            <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var grid_demo_id = "producto_grid";
+    
+    var dsOption = {
+        fields :[
+            {name : 'estilo'},
+            {name : 'descripcion'},
+            {name : 'stock'},
+            {name : 'fecha_increso'},
+            {name : 'precio'}
+        ],
+        uniqueField: 1,
+        recordType : 'object'
+    }
+
+    var colsOption = [
+        {id: 'estilo', header: "Código", width :75},
+        {id: 'descripcion', header: "Descripcion", width :225},
+        {id: 'precio', header: "($) Precio", width :70},
+        {id: 'stock', header: "Stock (Unidades)", width :125},
+        {id: 'fecha_ingreso', header: "Creado el", width :125},
+        {id: 'seleccion', header: "Acción", width: 100, renderer:accion_render }
+    ];
+    
+    function accion_render(value, record, columnObj, grid, colNo, rowNo){
+            
+        return '<a href="javascript: void(0);" onclick="establecer_estilo(\''+record['estilo']+'\')">Seleccionar</a>';
+    }
+    
+    function establecer_estilo(estilo){
+        $('#windowKits').css('display', 'none');
+        $('#armado_estilo').val(estilo);
+        $('#armado_estilo').attr("disabled", "disabled");
+        $('#estilo_producto').removeAttr("disabled");
+        $('#btnAgregarProducto').removeAttr("disabled");
+        var loadUrl = '/{systemModuleName}/grid_tables/grid_kit_elementos_1';
+        var grid = Sigma.$grid("kit_grid");
+        grid.loadURL = loadUrl;    
+        grid.reload();
+    }
+    
+    function limpiar_estilo(){
+        $('#estilo_producto').attr("disabled", "disabled");
+        $('#btnAgregarProducto').attr("disabled", "disabled");
+        $('#windowKits').css('display', 'none');
+        $('#armado_estilo').val("");
+        $('#armado_estilo').removeAttr("disabled");
+    }
+    
+    var gridOption = {
+        id : grid_demo_id,
+        loadURL : '/{systemModuleName}/grid_tables/grid_kit_1',
+        saveURL : '',
+        width: "722", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption,
+        columns : colsOption,
+        showGridMenu : false,
+        allowHide : true,
+        allowGroup  : true,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00"},
+        pageSize:10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent : 'filter | nav state'
+    };
+            
+    var mygrid = new Sigma.Grid( gridOption );
+    
+    Sigma.Util.onLoad(function(){
+        mygrid.render()
+    });
+
+</script>
+
+<script type="text/javascript">
+    var grid_elementos_id = "kit_grid";
+    
+    var dsOption2 = {
+        fields :[
+            {name : 'estilo'},
+            {name : 'descripcion'},
+            {name : 'stock'},
+            {name : 'fecha_increso'},
+            {name : 'precio'}
+        ],
+        uniqueField: 1,
+        recordType : 'object'
+    }
+
+    var colsOption2 = [
+        {id: 'estilo', header: "Código", width :75},
+        {id: 'descripcion', header: "Descripcion", width :225},
+        {id: 'precio', header: "($) Precio", width :70},
+        {id: 'stock', header: "Stock (Unidades)", width :125},
+        {id: 'fecha_ingreso', header: "Creado el", width :125}
+    ];
+    
+    var gridOption2 = {
+        id : grid_elementos_id,
+        loadURL : '',
+        saveURL : '',
+        width: "722", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox2',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption2,
+        columns : colsOption2,
+        showGridMenu : false,
+        allowHide : true,
+        allowGroup  : true,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00"},
+        pageSize:10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent : 'filter | nav state'
+    };
+            
+    var mygrid2 = new Sigma.Grid( gridOption2 );
+    
+    Sigma.Util.onLoad(function(){
+        mygrid2.render()
+    });
+
+</script>
+<script>
+    var grid_producto_id = "items_grid";
+    
+    var dsOption3 = {
+        fields :[
+            {name : 'estilo'},
+            {name : 'linea'},
+            {name:  'color'},
+            {name:  'color_nombre'},
+            {name:  'talla'},
+            {name:  'stock'},
+            {name:  'precio'}
+        ],
+        uniqueField: 1,
+        recordType : 'object'
+    }
+
+    var colsOption3 = [
+        {id: 'estilo', header: "Estilo", width :60},
+        {id: 'linea', header: "Linea", width  :50},
+        {id: 'color_nombre', header: "Color", width :110},
+        {id: 'talla', header: "Talla", width :50},
+        {id: 'stock', header: "Stock", width :70},
+        {id: 'precio', header: "Precio", width :70},
+        {id: 'descripcion', header: "Descripcion", width :230},
+        {id: 'accion', header: "Acción", width :100, renderer: seleccionar_producto}
+    ];
+    
+    function seleccionar_producto(value, record, columnObj, grid, colNo, rowNo){
+            
+        return '<a href="javascript: void(0);" onclick="sel_producto(\''+record['descripcion']+'\',\''+record['estilo']+'\','+record['linea']+','+record['color']+','+record['talla']+')">Seleccionar</a>';
+    }
+    
+    function sel_producto(descripcion, estilo, linea, color, talla){
+        $('#estilo_producto').val(descripcion +"("+linea+"-"+estilo+"-"+color+"-"+talla+"-)");
+        $('#windowProducto').css('display','none');
+        $('#h_estilo').val(estilo);
+        $('#h_linea').val(linea);
+        $('#h_color').val(color);
+        $('#h_talla').val(talla);
+    }
+    
+    var gridOption3 = {
+        id : grid_producto_id,
+        loadURL : '/{systemModuleName}/grid_tables/productos_grid_1',
+        saveURL : '',
+        width: "742", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox3',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption3,
+        columns : colsOption3,
+        showGridMenu : false,
+        allowHide : true,
+        allowGroup  : true,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00"},
+        pageSize:10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent : 'filter | nav state'
+    };
+            
+    var mygrid3 = new Sigma.Grid( gridOption3 );
+    
+    Sigma.Util.onLoad(function(){
+        mygrid3.render()
+    });
+
+</script>

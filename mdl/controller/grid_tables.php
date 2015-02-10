@@ -106,6 +106,93 @@ class grid_tablesController extends controller {
             echo $ret;
         endif;
     }
+    
+    public function grid_kit_1() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        $sql = "select count(*) as cnt from producto where linea = 0";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $row->cnt;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "select * from producto inner join estado_bodega on producto.linea = estado_bodega.linea and producto.estilo = estado_bodega.estilo inner join control_precio on control_estilo = producto.estilo and control_precio.linea = producto.linea where producto.linea = 0 order by fecha_ingreso desc limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function grid_kit_elementos_1() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        $sql = "select count(*) as cnt from elemento_kit ";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $row->cnt;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "select * from elemento_kit limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function productos_grid_1() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        $sql = "select count(*) as cnt  from estado_bodega inner join producto on producto.estilo = estado_bodega.estilo and producto.linea = estado_bodega.linea inner join color on color.id = estado_bodega.color inner join control_precio on estado_bodega.estilo = control_estilo and estado_bodega.linea = control_precio.linea where bodega = 1 and estado_bodega.linea != 0 and stock > 0 and precio > 0 group by estado_bodega.estilo, estado_bodega.linea, estado_bodega.color, estado_bodega.talla order by fecha_ingreso desc";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $row->cnt;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "select descripcion, estado_bodega.linea, estado_bodega.estilo, estado_bodega.color, estado_bodega.talla, color.nombre as color_nombre, stock, precio  from estado_bodega inner join producto on producto.estilo = estado_bodega.estilo and producto.linea = estado_bodega.linea inner join color on color.id = estado_bodega.color inner join control_precio on estado_bodega.estilo = control_estilo and estado_bodega.linea = control_precio.linea where bodega = 1 and estado_bodega.linea != 0 and stock > 0 and precio > 0 group by estado_bodega.estilo, estado_bodega.linea, estado_bodega.color, estado_bodega.talla order by fecha_ingreso desc limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
 
     /* grid para resumen de lineas omitiendo espacios en blanco */
 
@@ -183,6 +270,64 @@ class grid_tablesController extends controller {
         endif;
         if ($json->{'action'} == 'load'):
             $sql = "select * from concepto WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function grid_retaceo_pendiente_1() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        $sql = "select count(*) as cnt from hoja_retaceo where aplicada = 0";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $row->cnt;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "select * from hoja_retaceo where aplicada = 0 limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function grid_retaceo_aplicado_1() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        $sql = "select count(*) as cnt from hoja_retaceo where aplicada = 1";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $row->cnt;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "select * from hoja_retaceo where aplicada = 1 limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):

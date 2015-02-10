@@ -92,6 +92,17 @@ class inventarioView {
         template()->parseExtras();
         print page()->getContent();
     }
+    
+    public function hoja_retaceo(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Creación de hojas de retacep');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/inventario/inventario/principal');
+        template()->addTemplateBit('content', 'inventario/hoja_retaceo.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
 
     public function movKardex(){
         template()->buildFromTemplates('template_nofixed.html');

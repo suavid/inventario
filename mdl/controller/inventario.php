@@ -32,10 +32,92 @@ class inventarioController extends controller {
 
         $this->view->mantenimiento_de_bodegas($usuario, $cache);
     }
+    
+    public function hoja_retaceo(){
+        
+        $this->view->hoja_retaceo();   
+    }
+    
+    public function editar_hoja_retaceo(){
+        
+           
+    }
+    
+    public function guardar_hoja_retaceo(){
+        if(isset($_POST)){
+            $hoja_retaceo = $this->model->get_child('hoja_retaceo');
+            $hoja_retaceo->get($_POST['cod']);
+            $hoja_retaceo->change_status($_POST);
+            $hoja_retaceo->save();
+            
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo?estado=ok');
+        }
+    }
 
     public function kits(){
 
         $this->view->kits();
+    }
+    
+    public function validar_kit(){
+        if(isset($_POST) && !empty($_POST['estilo'])){
+            $estilo  = "KT".$_POST['estilo'];
+            $product = $this->model->get_child('producto');
+            echo json_encode(array("existe"=>$product->exists($estilo)));
+        }
+    }
+    
+    public function guardar_kit(){
+        $estilo      = $_POST['estilo'];
+        $linea       = "0";
+        $descripcion = $_POST['descripcion'];
+        $precio      = $_POST['precio'];
+        
+        $producto = $this->model->get_child('producto');
+        
+        $producto->get(array("estilo"=>0, "linea"=>0));
+        $producto->estilo = $estilo;
+        $producto->linea = $linea;
+        $producto->descripcion = $descripcion;
+        $producto->fecha_ingreso = date("Y-m-d");
+        $producto->save();
+        
+        $color_producto = $this->model->get_child("color_producto");
+        $color_producto->get(0);
+        $color_producto->color_estilo_producto = $estilo;
+        $color_producto->linea = $linea;
+        $color_producto->color = 1;
+        $color_producto->force_save();
+        
+        $talla_producto = $this->model->get_child("talla_producto");
+        $talla_producto->get(0);
+        $talla_producto->talla_estilo_producto = $estilo;
+        $talla_producto->linea = $linea;
+        $talla_producto->color = 1;
+        $talla_producto->talla = 1;
+        $talla_producto->force_save();
+        
+        $control_precio = $this->model->get_child("control_precio");
+        $control_precio->get(0);
+        $control_precio->control_estilo = $estilo;
+        $control_precio->linea  = $linea;
+        $control_precio->talla  = 1;
+        $control_precio->color  = 1;
+        $control_precio->precio = $precio;
+        $control_precio->costo  = 0;
+        $control_precio->force_save();
+        
+        $estado_bodega = $this->model->get_child('estado_bodega');
+        $estado_bodega->get(0);
+        $estado_bodega->estilo  = $estilo;
+        $estado_bodega->linea = $linea;
+        $estado_bodega->talla = 1;
+        $estado_bodega->color = 1;
+        $estado_bodega->stock = 0;
+        $estado_bodega->bodega = 1;
+        $estado_bodega->force_save();
+        
+        echo json_encode(array("success"=>true));
     }
 
     public function json_producto(){

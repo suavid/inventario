@@ -1,0 +1,175 @@
+<nav class="horizontal-menu compact">
+    <ul>
+        <li><a href="javascript: void(0);" onclick="$('#windowPendientes').css('display','block');"><i class="icon-search"></i> Hojas pendientes</a></li>
+        <li><a href="javascript: void(0);" onclick="$('#windowAplicadas').css('display','block');"><i class="icon-search"></i> Hojas aplicadas</a></li>
+    </ul>
+</nav>
+<br/>
+<h2>Nueva hoja de retaceo</h2>
+<br />
+<form action="/inventario/inventario/guardar_hoja_retaceo" method="post">
+    <div class="input-control text span3">
+        <input type="text" placeholder="Numero de documento (0 = nuevo)" name="cod" required/>
+    </div>
+    <br />
+    <div class="input-control text span3" data-role="datepicker"
+        data-format="yyyy/m/d"
+        data-position="bottom"
+        data-effect="fade">
+        <input type="text" name="fecha" required />
+        <button class="btn-date"></button>
+    </div>
+    <br />
+    <div class="input-control text span3">
+        <input type="text" placeholder="Numero de pedido" name="id_orden_compra" required/>
+    </div>
+    <br />
+    <button type="submit">Guardar</button>
+</form>
+
+
+<div id="windowPendientes" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
+    <div class="caption">
+        <span class="icon icon-search"></span> 
+        <div class="title">Pendientes</div> 
+        <button class="btn-close" onclick="$('#windowPendientes').css('display','none');"></button>
+    </div>
+    <div class="content">
+        <div id="bigbox" style="margin:15px;display:!none;">
+            <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="windowAplicadas" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
+    <div class="caption">
+        <span class="icon icon-search"></span> 
+        <div class="title">Aplicadas</div> 
+        <button class="btn-close" onclick="$('#windowAplicadas').css('display','none');"></button>
+    </div>
+    <div class="content">
+        <div id="bigbox2" style="margin:15px;display:!none;">
+            <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var grid_pendientes_id = "pendientes_grid";
+    
+    var dsOption = {
+        fields :[
+            {name : 'cod'},
+            {name : 'id_orden_compra'},
+            {name : 'fecha'},
+            {name : 'total_gastos'}
+        ],
+        uniqueField: 1,
+        recordType : 'object'
+    }
+
+    var colsOption = [
+        {id: 'cod', header: "Código", width :75},
+        {id: 'id_orden_compra', header: "# Pedido", width :125},
+        {id: 'fecha', header: "Creado el", width :100},
+        {id: 'total_gastos', header: "Total gastos ($)", width :100},
+        {id: 'seleccion', header: "Acción", width: 320, renderer:accion_render }
+    ];
+    
+    function accion_render(value, record, columnObj, grid, colNo, rowNo){
+            
+        return '<a href="javascript: void(0);" onclick="location.href=\'/inventario/inventario/editar_hoja_retaceo?cod='+record['cod']+'\'">Editar gastos</a>';
+    }
+    
+    
+    var gridOption = {
+        id : grid_pendientes_id,
+        loadURL : '/{systemModuleName}/grid_tables/grid_retaceo_pendiente_1',
+        saveURL : '',
+        width: "722", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption,
+        columns : colsOption,
+        showGridMenu : false,
+        allowHide : true,
+        allowGroup  : true,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00"},
+        pageSize:10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent : 'filter | nav state'
+    };
+            
+    var mygrid = new Sigma.Grid( gridOption );
+    
+    Sigma.Util.onLoad(function(){
+        mygrid.render()
+    });
+
+</script>
+
+<script type="text/javascript">
+    var grid_aplicadas_id = "aplicadas_grid";
+    
+    var dsOption2 = {
+        fields :[
+            {name : 'cod'},
+            {name : 'id_orden_compra'},
+            {name : 'fecha'},
+            {name : 'total_gastos'}
+        ],
+        uniqueField: 1,
+        recordType : 'object'
+    }
+
+    var colsOption2 = [
+        {id: 'cod', header: "Código", width :75},
+        {id: 'id_orden_compra', header: "# Pedido", width :125},
+        {id: 'fecha', header: "Creado el", width :100},
+        {id: 'total_gastos', header: "Total gastos ($)", width :100},
+        {id: 'seleccion', header: "Acción", width: 320, renderer:accion_bloqueada_render }
+    ];
+    
+    function accion_bloqueada_render(value, record, columnObj, grid, colNo, rowNo){
+            
+        return '<a href="javascript: void(0);" onclick="alert(\'No se puede editar!\')">Editar gastos</a>';
+    }
+    
+    
+    var gridOption2 = {
+        id : grid_aplicadas_id,
+        loadURL : '/{systemModuleName}/grid_tables/grid_retaceo_aplicado_1',
+        saveURL : '',
+        width: "722", //"100%", // 700,
+        height: "260", //"100%", // 330,
+        container : 'gridbox2',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption2,
+        columns : colsOption2,
+        showGridMenu : false,
+        allowHide : true,
+        allowGroup  : true,
+        clickStartEdit : true,
+        defaultRecord : {'id':"00"},
+        pageSize:10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent : 'filter | nav state'
+    };
+            
+    var mygrid2 = new Sigma.Grid( gridOption2 );
+    
+    Sigma.Util.onLoad(function(){
+        mygrid2.render()
+    });
+
+</script>
