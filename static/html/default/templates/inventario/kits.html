@@ -5,9 +5,37 @@
 			$(e.target).val("");
 		}
 	}
+
+	/* Verificar si el kit existe */
+	function validar_kit(){
+
+		var uri  = "/inventario/inventario/validar_kit";
+
+		var data = { "estilo": $('#estilo').val() }; 
+
+		if(uri, data, function(response){
+
+			if(response.existe){
+				$('#estilo').popover('show');	
+				$('#div_estilo').addClass("error-state");	
+			}else{
+				$('#div_estilo').removeClass("error-state");
+				$('#div_estilo').addClass("success-state");
+			}
+
+		}, "json");
+	}
+
+	$(document).ready(function(){
+		
+	});
+
 </script>
 <h2>Kit de productos</h2>
-
+<p>
+	<br />
+	<br />
+</p>
 <div class="tab-control" data-role="tab-control">
     <ul class="tabs">
 	    <li class="active"><a href="#_page_1">Nuevo kit</a></li>
@@ -17,9 +45,15 @@
      
     <div class="frames">
 	    <div class="frame" id="_page_1">
-	    	<div class="input-control text span4">
+	    	<div class="input-control text span4" id="div_estilo">
 				<input type="text" class="span1" value="KT" readonly="readonly" />
-				<input type="text" class="span3"  placeholder="Código del kit" />
+				<input type="text" class="span3" id="estilo" onkeyup="validar_kit();" 
+					placeholder="Código del kit"
+		            data-popover="popover"
+		            data-popover-position="right"
+		            data-popover-text="Este código ya existe!, escoja uno diferente"
+		            data-popover-background="bg-red"
+		            data-popover-color="fg-white"/>
 			</div>
 			<br />
 			<div class="input-control textarea span4">
