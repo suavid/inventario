@@ -120,6 +120,7 @@
                 $('#transaccion').attr("disabled", "disabled");
                 $('#total_pares').attr("disabled", "disabled");
                 $('#total_costo').attr("disabled", "disabled");
+                $('#referencia_retaceo').attr("disabled", "disabled");
 
 
                 $('#fecha').val(data.fecha);
@@ -130,6 +131,7 @@
                 $('#concepto').val(data.concepto);
                 $('#total_pares').val(data.total_pares);
                 $('#total_costo').val(data.total_costo);
+                $('#referencia_retaceo').val(data.referencia_retaceo);
                 $("#transaccion option[value=" + data.transaccion + "]").attr("selected", "selected");
 
                 $('#fecha_r').val(data.fecha);
@@ -141,6 +143,7 @@
                 $('#transaccion_r').val(data.transaccion);
                 $('#total_pares_r').val(data.total_pares);
                 $('#total_costo_r').val(data.total_costo);
+                $('#referencia_retaceo_r').val(data.referencia_retaceo);
                 
                 if (data.consigna == 1)
                     $('#iConsigna').attr("checked", "checked");
@@ -161,6 +164,7 @@
                 $('#total_pares').val(0);
                 $('#total_costo').val(0.0);
                 $('#iConsigna').removeAttr("checked");
+                $('#referencia_retaceo').removeAttr("checked");
             }
         }, "json");
     }
@@ -247,6 +251,11 @@
                 </div>
             </div>
             <br/>
+            Referencia retaceo No.
+            <div class="input-control text">
+                <input type="text" id="referencia_retaceo" name="referencia_retaceo" onclick="$('#windowPendientes').css('display','block');" placeholder="Prorrateo de gastos de adquisición" />
+            </div>
+            <br/>
             Proveedor Origen
             <div class="input-control select">
                 <select name="proveedor_origen" id="proveedor_origen">
@@ -266,6 +275,7 @@
             <input type="hidden" id="concepto_r" name="concepto_r" value="0" />
             <input type="hidden" id="total_pares_r" name="total_pares_r" value="0" />
             <input type="hidden" id="total_costo_r" name="total_costo_r" value="0" />
+            <input type="hidden" id="referencia_retaceo_r" name="referencia_retaceo_r" value="0" />
             <br/>
             Proveedor Nacional (importador)
             <div class="input-control select">
@@ -346,3 +356,31 @@
         </div>
     </form>
 </section>
+
+<div id="windowPendientes" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
+    <div class="caption">
+        <span class="icon icon-search"></span> 
+        <div class="title">Hojas de retaceo confirmadas (sin aplicar)</div> 
+        <button class="btn-close" onclick="$('#windowPendientes').css('display','none');"></button>
+    </div>
+    <div class="content">
+        <table class="table" style="text-align: center;">
+            <tr>
+                <th>No. documento</th>
+                <th>Ref. Pedido</th>
+                <th>Fecha documento</th>
+                <th>Monto</th>
+                <th>Acción</th>
+            </tr>
+            <!-- START retaceos -->
+            <tr>
+                <td>{cod}</td>
+                <td>{id_orden_compra}</td>
+                <td>{fecha}</td>
+                <td>${total_gastos}</td>
+                <td><a href="javascript: void(0);" onclick="$('#referencia_retaceo').val('{cod}');$('#windowPendientes').css('display','none');">Aplicar</a></td>
+            </tr>
+            <!-- END retaceos -->
+        </table>      
+    </div>
+</div>

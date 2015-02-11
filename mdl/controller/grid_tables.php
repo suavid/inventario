@@ -142,7 +142,9 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from elemento_kit ";
+         $kit = $_POST['kit'];
+        $sql = "select count(*) as cnt from elemento_kit WHERE kit = '{$kit}'";
+       
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -151,7 +153,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from elemento_kit limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from elemento_kit WHERE kit = '{$kit}' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -171,7 +173,7 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt  from estado_bodega inner join producto on producto.estilo = estado_bodega.estilo and producto.linea = estado_bodega.linea inner join color on color.id = estado_bodega.color inner join control_precio on estado_bodega.estilo = control_estilo and estado_bodega.linea = control_precio.linea where bodega = 1 and estado_bodega.linea != 0 and stock > 0 and precio > 0 group by estado_bodega.estilo, estado_bodega.linea, estado_bodega.color, estado_bodega.talla order by fecha_ingreso desc";
+        $sql = "select count(*) as cnt  from estado_bodega inner join producto on producto.estilo = estado_bodega.estilo and producto.linea = estado_bodega.linea inner join color on color.id = estado_bodega.color inner join control_precio on estado_bodega.estilo = control_estilo and estado_bodega.linea = control_precio.linea where bodega = 1 and estado_bodega.linea != 0 and stock > 0 and precio > 0 group by estado_bodega.estilo, estado_bodega.linea order by fecha_ingreso desc";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -180,7 +182,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select descripcion, estado_bodega.linea, estado_bodega.estilo, estado_bodega.color, estado_bodega.talla, color.nombre as color_nombre, stock, precio  from estado_bodega inner join producto on producto.estilo = estado_bodega.estilo and producto.linea = estado_bodega.linea inner join color on color.id = estado_bodega.color inner join control_precio on estado_bodega.estilo = control_estilo and estado_bodega.linea = control_precio.linea where bodega = 1 and estado_bodega.linea != 0 and stock > 0 and precio > 0 group by estado_bodega.estilo, estado_bodega.linea, estado_bodega.color, estado_bodega.talla order by fecha_ingreso desc limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select descripcion, estado_bodega.linea, estado_bodega.estilo, estado_bodega.color, estado_bodega.talla, color.nombre as color_nombre, SUM(stock) as stock, precio  from estado_bodega inner join producto on producto.estilo = estado_bodega.estilo and producto.linea = estado_bodega.linea inner join color on color.id = estado_bodega.color inner join control_precio on estado_bodega.estilo = control_estilo and estado_bodega.linea = control_precio.linea where bodega = 1 and estado_bodega.linea != 0 and stock > 0 and precio > 0 group by estado_bodega.estilo, estado_bodega.linea order by fecha_ingreso desc limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):

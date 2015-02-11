@@ -27,7 +27,6 @@
     <button type="submit">Guardar</button>
 </form>
 
-
 <div id="windowPendientes" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
     <div class="caption">
         <span class="icon icon-search"></span> 
@@ -66,7 +65,8 @@
             {name : 'cod'},
             {name : 'id_orden_compra'},
             {name : 'fecha'},
-            {name : 'total_gastos'}
+            {name : 'total_gastos'},
+            {name : 'confirmada'}
         ],
         uniqueField: 1,
         recordType : 'object'
@@ -74,10 +74,11 @@
 
     var colsOption = [
         {id: 'cod', header: "Código", width :75},
-        {id: 'id_orden_compra', header: "# Pedido", width :125},
+        {id: 'id_orden_compra', header: "# Pedido", width :75},
+        {id: 'confirmada', header: "Confirmada", width :75, renderer: confirmada_render},
         {id: 'fecha', header: "Creado el", width :100},
         {id: 'total_gastos', header: "Total gastos ($)", width :100},
-        {id: 'seleccion', header: "Acción", width: 320, renderer:accion_render }
+        {id: 'seleccion', header: "Acción", width: 295, renderer:accion_render }
     ];
     
     function accion_render(value, record, columnObj, grid, colNo, rowNo){
@@ -85,6 +86,10 @@
         return '<a href="javascript: void(0);" onclick="location.href=\'/inventario/inventario/editar_hoja_retaceo?cod='+record['cod']+'\'">Editar gastos</a>';
     }
     
+    function confirmada_render(value, record, columnObj, grid, colNo, rowNo){
+        if(record['confirmada']) return "SI";
+        else return "NO";
+    }
     
     var gridOption = {
         id : grid_pendientes_id,
@@ -140,7 +145,7 @@
     
     function accion_bloqueada_render(value, record, columnObj, grid, colNo, rowNo){
             
-        return '<a href="javascript: void(0);" onclick="alert(\'No se puede editar!\')">Editar gastos</a>';
+            return '<a href="javascript: void(0);" onclick="location.href=\'/inventario/inventario/ver_hoja_retaceo?cod='+record['cod']+'\'">Ver hoja</a>';
     }
     
     

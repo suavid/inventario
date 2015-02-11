@@ -39,8 +39,83 @@ class inventarioController extends controller {
     }
     
     public function editar_hoja_retaceo(){
-        
-           
+        if(isset($_GET['cod'])){
+            $hoja_retaceo = $this->model->get_child('hoja_retaceo');
+            if($hoja_retaceo->exists($_GET['cod'])){
+                $id_hoja = $_GET['cod'];
+                $hoja_retaceo->get($id_hoja);
+                if(!$hoja_retaceo->confirmada){
+                    $detalle = $this->model->get_child('detalle_retaceo')->filter('id_hoja_retaceo', $id_hoja);
+                    $this->view->editar_hoja_retaceo($id_hoja, $hoja_retaceo->total_gastos, $detalle);
+                }else{
+                    HttpHandler::redirect('/inventario/inventario/ver_hoja_retaceo?cod='.$id_hoja);    
+                }
+            }else{
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+            }
+        }else{
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');   
+        }
+    }
+    
+    public function ver_hoja_retaceo(){
+        if(isset($_GET['cod'])){
+            $hoja_retaceo = $this->model->get_child('hoja_retaceo');
+            if($hoja_retaceo->exists($_GET['cod'])){
+                $id_hoja = $_GET['cod'];
+                $hoja_retaceo->get($id_hoja);
+                if($hoja_retaceo->confirmada){
+                    $detalle = $this->model->get_child('detalle_retaceo')->filter('id_hoja_retaceo', $id_hoja);
+                    $this->view->ver_hoja_retaceo($id_hoja, $hoja_retaceo->total_gastos, $detalle);
+                }else{
+                    HttpHandler::redirect('/inventario/inventario/editar_hoja_retaceo?cod='.$id_hoja);    
+                }
+            }else{
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+            }
+        }else{
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');   
+        }
+    }
+    
+    public function guardar_detalle_retaceo(){
+        if(isset($_POST)){
+            $id_hoja = $_POST['id_hoja_retaceo'];
+            $hoja_retaceo = $this->model->get_child('hoja_retaceo');
+            if($hoja_retaceo->exists($id_hoja)){
+                $data = $_POST;
+                if($data['gasto']<0) $data['gasto'] *= -1 ; 
+                $detalle_retaceo = $this->model->get_child('detalle_retaceo');
+                $detalle_retaceo->get(0);
+                $detalle_retaceo->change_status($data);
+                $detalle_retaceo->save();
+                $hoja_retaceo->get($id_hoja);
+                $hoja_retaceo->total_gastos += $data['gasto'];
+                $hoja_retaceo->save();
+                HttpHandler::redirect('/inventario/inventario/editar_hoja_retaceo?cod='.$id_hoja);    
+            }else{
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+            }
+        }else{
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
+        }
+    }
+    
+    public function confirmar_hoja_retaceo(){
+        if(isset($_GET)){
+            $id_hoja = $_GET['cod'];
+            $hoja_retaceo = $this->model->get_child('hoja_retaceo');
+            if($hoja_retaceo->exists($id_hoja)){
+                $hoja_retaceo->get($id_hoja);
+                $hoja_retaceo->confirmada = 1;
+                $hoja_retaceo->save();
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo?confirmacion=ok');    
+            }else{
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+            }
+        }else{
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
+        }
     }
     
     public function guardar_hoja_retaceo(){
@@ -63,6 +138,7 @@ class inventarioController extends controller {
         if(isset($_POST) && !empty($_POST['estilo'])){
             $estilo  = "KT".$_POST['estilo'];
             $product = $this->model->get_child('producto');
+            $product->setVirtualId('estilo');
             echo json_encode(array("existe"=>$product->exists($estilo)));
         }
     }
@@ -80,7 +156,7 @@ class inventarioController extends controller {
         $producto->linea = $linea;
         $producto->descripcion = $descripcion;
         $producto->fecha_ingreso = date("Y-m-d");
-        $producto->save();
+        $producto->force_save();
         
         $color_producto = $this->model->get_child("color_producto");
         $color_producto->get(0);
@@ -118,6 +194,22 @@ class inventarioController extends controller {
         $estado_bodega->force_save();
         
         echo json_encode(array("success"=>true));
+    }
+    
+    public function guardar_elemento_kit(){
+        
+        $this->model->guardar_elemento_kit();
+        
+        echo json_encode(array("msg"=>""));
+    }
+    
+    public function eliminar_item_kit(){
+        if(isset($_POST)){
+            $elemento_kit = $this->model->get_child('elemento_kit');
+            $elemento_kit->delete($_POST['id']);
+        }
+        
+        echo json_encode(array("msg"=>""));
     }
 
     public function json_producto(){
@@ -840,6 +932,10 @@ class inventarioController extends controller {
         if (!isset($data['transaccion'])) {
             $data['transaccion'] = $data['transaccion_r'];
         }
+        
+        if (!isset($data['referencia_retaceo'])) {
+            $data['referencia_retaceo'] = $data['referencia_retaceo_r'];
+        }
 
         if (!isset($data['fecha'])) {
             $data['fecha'] = $data['fecha_r'];
@@ -852,6 +948,11 @@ class inventarioController extends controller {
         if (!isset($data['total_costo'])) {
             $data['total_costo'] = $data['total_costo_r'];
         }
+        
+        $hoja_retaceo = $this->model->get_child('hoja_retaceo');
+        $hoja_retaceo->get($data['referencia_retaceo']);
+        $hoja_retaceo->aplicada = 1;
+        $hoja_retaceo->save();
 
         $nombre_bodega  = $this->model->obtenerBodega($id_bodega);
         $nombre_bodega_ = $this->model->obtenerBodega($id_bodega_);
@@ -957,6 +1058,7 @@ class inventarioController extends controller {
         $cache[2] = $this->model->get_child('bodega')->get_list('','',array('nombre'));
         $cache[3] = $this->model->get_child('bodega')->get_list('','',array('nombre'));
         $cache[4] = $this->model->get_child('transacciones')->transaccionesTraslados();
+        $cache[5] = $this->model->get_child('hoja_retaceo')->aplicables();
         $this->view->traslados(Session::singleton()->getUser(), $cache);
     }
 
@@ -2686,10 +2788,10 @@ class inventarioController extends controller {
     }
 
     public function borrarOferta() {
-        $linea = $_POST['linea'];
+        $linea  = $_POST['linea'];
         $estilo = $_POST['estilo'];
-        $color = $_POST['color'];
-        $talla = $_POST['talla'];
+        $color  = $_POST['color'];
+        $talla  = $_POST['talla'];
 
         $this->model->borrarOferta($linea, $estilo, $color, $talla);
     }

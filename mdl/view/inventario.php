@@ -95,10 +95,38 @@ class inventarioView {
     
     public function hoja_retaceo(){
         template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Creación de hojas de retacep');
+        page()->setTitle('Creación de hojas de retaceo');
         page()->addEstigma("username", Session::singleton()->getUser());
         page()->addEstigma("back_url", '/inventario/inventario/principal');
         template()->addTemplateBit('content', 'inventario/hoja_retaceo.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+    
+    public function editar_hoja_retaceo($id_hoja, $total, $detalle){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Editar hoja de retaceo');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("id_hoja", $id_hoja);
+        page()->addEstigma("total", $total);
+        page()->addEstigma("detalle", array('SQL', $detalle));
+        page()->addEstigma("back_url", '/inventario/inventario/hoja_retaceo');
+        template()->addTemplateBit('content', 'inventario/editar_hoja_retaceo.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+    
+    public function ver_hoja_retaceo($id_hoja, $total, $detalle){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Ver hoja de retaceo');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("id_hoja", $id_hoja);
+        page()->addEstigma("total", $total);
+        page()->addEstigma("detalle", array('SQL', $detalle));
+        page()->addEstigma("back_url", '/inventario/inventario/hoja_retaceo');
+        template()->addTemplateBit('content', 'inventario/ver_hoja_retaceo.html');
         template()->parseOutput();
         template()->parseExtras();
         print page()->getContent();
@@ -396,6 +424,7 @@ class inventarioView {
     public function traslados($usuario, $cache) {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Traslados');
+        template()->addTemplateBit('content', 'inventario/traslados.html');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Traslados');
@@ -404,8 +433,8 @@ class inventarioView {
         page()->addEstigma("bodega1", array('SQL', $cache[2]));
         page()->addEstigma("bodega2", array('SQL', $cache[3]));
         page()->addEstigma("transacciones", array('SQL', $cache[4]));
+        page()->addEstigma("retaceos", array('SQL', $cache[5]));
         page()->addEstigma("fecha", date("Y-m-d"));
-        template()->addTemplateBit('content', 'inventario/traslados.html');
         template()->parseOutput();
         template()->parseExtras();
         print page()->getContent();

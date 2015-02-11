@@ -1,0 +1,41 @@
+<script type="text/javascript">
+    function comprobarNumero(event){
+        var val = $(event.target).val();
+        if(isNaN(val)){
+            $(event.target).val("");   
+        }
+    }
+</script>
+<h2>Gastos por adquisición de producto</h2>
+<p>
+    <br />
+    Esta hoja ya ha sido confirmada y no se puede editar
+    <br />
+    <br />
+</p>
+<div class="span5" style="float: left; margin-left: 20px;">
+    <table class="table striped" style="text-align: center;">
+        <tr>
+            <th>Concepto de gasto</th>
+            <th>Gastos ($)</th>
+        </tr>
+        <!-- START detalle -->
+            <tr>
+                <td>
+                    {concepto}
+                </td>
+                <td>
+                    {gasto}
+                </td>
+            </tr>
+        <!-- END detalle -->
+    </table>
+    <p>
+        <br />
+    </p>
+
+    <div class="input-control text span2">
+        Monto
+        <input type="text" value="{total}" disabled="disabled"/>
+    </div>
+</div>

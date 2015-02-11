@@ -1,0 +1,56 @@
+<script type="text/javascript">
+    function comprobarNumero(event){
+        var val = $(event.target).val();
+        if(isNaN(val)){
+            $(event.target).val("");   
+        }
+    }
+</script>
+<h2>Gastos por adquisición de producto</h2>
+<p>
+    <br />
+</p>
+<form method="post" action="/inventario/inventario/guardar_detalle_retaceo" class="span5" style="float: left;">
+    <h4>Agregar un nuevo gasto</h4>
+    <input type="hidden" name="id_hoja_retaceo" value="{id_hoja}" /> 
+    <div class="input-control text span3">
+        <input type="text" name="concepto" placeholder="Concepto de gasto" required/>
+    </div>
+    <br />
+    <div class="input-control text span3">
+        <input type="text" name="gasto" placeholder="Monto" onkeyup="comprobarNumero(event);" required/>
+    </div>
+    <br />
+    <button class="primary">Agregar</button>
+</form>
+<p>
+    <br/>
+</p>
+<div class="span5" style="float: left; margin-left: 20px;">
+    <table class="table striped" style="text-align: center;">
+        <tr>
+            <th>Concepto de gasto</th>
+            <th>Gastos ($)</th>
+        </tr>
+        <!-- START detalle -->
+            <tr>
+                <td>
+                    {concepto}
+                </td>
+                <td>
+                    {gasto}
+                </td>
+            </tr>
+        <!-- END detalle -->
+    </table>
+    <p>
+        <br />
+    </p>
+
+    <div class="input-control text span2">
+        Monto
+        <input type="text" value="{total}" disabled="disabled"/>
+    </div>
+    <button class="success" onclick="location.href='/inventario/inventario/confirmar_hoja_retaceo?cod={id_hoja}'">Confirmar hoja</button>
+    
+</div>

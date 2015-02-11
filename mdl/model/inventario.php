@@ -86,6 +86,28 @@ class inventarioModel extends object {
             return false;
         endif;
     }
+    
+    public function guardar_elemento_kit(){
+        if(isset($_POST)){
+            $estilo   = $_POST['estilo'];
+            $linea    = $_POST['linea'];
+            $kit      = $_POST['kit'];
+            $cantidad = $_POST['cantidad'];
+            $elemento_kit = $this->get_child('elemento_kit');
+            $query = "SELECT id FROM elemento_kit WHERE estilo='{$estilo}' AND linea=$linea AND kit='{$kit}'";
+            data_model()->executeQuery($query);
+            if(data_model()->getNumRows()>0){
+                $res = data_model()->getResult()->fetch_assoc();
+                $elemento_kit->get($res['id']);
+                $elemento_kit->change_status($_POST);
+                $elemento_kit->save();
+            }else{
+                $elemento_kit->get(0);
+                $elemento_kit->change_status($_POST);
+                $elemento_kit->save();
+            }
+        }
+    }
 
     public function requestRun($linea, $estilo, $color){
         $query = "select * from talla_producto WHERE  talla_estilo_producto='{$estilo}' AND linea=$linea AND color=$color";
@@ -1124,6 +1146,15 @@ class inventarioModel extends object {
         $stop_flag = false;
         $traslado = $this->get_child('traslado');
         $traslado->get($id_ref);
+        $hoja_retaceo = $this->get_child('hoja_retaceo');
+        if($hoja_retaceo->exists($traslado->referencia_retaceo)){
+            $hoja_retaceo->get($traslado->referencia_retaceo);
+            $gasto_indirecto = $hoja_retaceo->total_gastos;
+            $total_pares     = $traslado->total_pares;
+            $gasto_indirecto_unitario = $gasto_indirecto / $total_pares;
+        }else{
+            $gasto_indirecto_unitario = 0;   
+        }
 
         data_model()->executeQuery($query);
 
@@ -1197,8 +1228,8 @@ class inventarioModel extends object {
 
                 $dato_entrada = array(
                     "ent_cantidad"=> $cantidad,
-                    "ent_costo_unitario"=> $costo,
-                    "ent_costo_total"=> $cantidad * $costo
+                    "ent_costo_unitario"=> $costo + $gasto_indirecto_unitario,
+                    "ent_costo_total"=> $cantidad * ($costo + $gasto_indirecto_unitario)
                 );
 
 
@@ -1399,7 +1430,17 @@ class inventarioModel extends object {
         $stop_flag = false;
         $traslado  = $this->get_child('traslado');
         $traslado->get($id_ref);
-
+        $hoja_retaceo = $this->get_child('hoja_retaceo');
+        if($hoja_retaceo->exists($traslado->referencia_retaceo)){
+            $hoja_retaceo->get($traslado->referencia_retaceo);
+            $gasto_indirecto = $hoja_retaceo->total_gastos;
+            $total_pares     = $traslado->total_pares;
+            $gasto_indirecto_unitario = $gasto_indirecto / $total_pares;
+        }else{
+            $gasto_indirecto_unitario = 0;   
+        }
+        
+        
         data_model()->executeQuery($query);
 
         while ($data = data_model()->getResult()->fetch_assoc()) {
@@ -1479,8 +1520,8 @@ class inventarioModel extends object {
 
                     $dato_entrada = array(
                         "ent_cantidad"=> $cantidad,
-                        "ent_costo_unitario"=> $costo,
-                        "ent_costo_total"=> $cantidad * $costo
+                        "ent_costo_unitario"=> $costo + $gasto_indirecto_unitario,
+                        "ent_costo_total"=> $cantidad * ($costo + $gasto_indirecto_unitario)
                     );
 
                     $dato_salida = array(
@@ -1587,7 +1628,15 @@ class inventarioModel extends object {
         $query     = "SELECT linea, estilo, color, talla, cantidad, costo FROM detalle_traslado WHERE id_ref = $id_ref";
         $productos = array();
         $stop_flag = false;
-
+        $hoja_retaceo = $this->get_child('hoja_retaceo');
+        if($hoja_retaceo->exists($traslado->referencia_retaceo)){
+            $hoja_retaceo->get($traslado->referencia_retaceo);
+            $gasto_indirecto = $hoja_retaceo->total_gastos;
+            $total_pares     = $traslado->total_pares;
+            $gasto_indirecto_unitario = $gasto_indirecto / $total_pares;
+        }else{
+            $gasto_indirecto_unitario = 0;   
+        }
         /**
         * Usando id_ref se puede obtener los datos del traslado, obtener la descripcion del traslado y luego insertarla en la entrada del kardex
         */
@@ -1673,8 +1722,8 @@ class inventarioModel extends object {
 
                     $dato_entrada = array(
                         "ent_cantidad"=> $cantidad,
-                        "ent_costo_unitario"=> $costo,
-                        "ent_costo_total"=> $cantidad * $costo
+                        "ent_costo_unitario"=> $costo + $gasto_indirecto_unitario,
+                        "ent_costo_total"=> $cantidad * ($costo + $gasto_indirecto_unitario)
                     );
 
 
@@ -1682,7 +1731,7 @@ class inventarioModel extends object {
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 
-                        0, 
+                        $traslado->referencia_retaceo, 
                         1000, 
                         0, 
                         $dato_proveedor,
