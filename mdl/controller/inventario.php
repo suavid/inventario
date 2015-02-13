@@ -417,10 +417,14 @@ class inventarioController extends controller {
     }
 
     public function proveedores() {
-        $this->validar();
-        $usuario = Session::getUser();
-        $paises = $this->model->get_child('paises')->get_list();
-        $this->view->mantenimiento_de_proveedores($usuario, $paises);
+        if(!isInstalled("compras")){
+            $this->validar();
+            $usuario = Session::getUser();
+            $paises = $this->model->get_child('paises')->get_list();
+            $this->view->mantenimiento_de_proveedores($usuario, $paises);
+        }else{
+            $this->view->acceso_restringido();
+        }
        
     }
 

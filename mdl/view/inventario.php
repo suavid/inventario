@@ -12,6 +12,17 @@ class inventarioView {
         page()->addEstigma("fecha_sistema", date('d/m/Y'));
     }
 
+    public function acceso_restringido(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Error 403');
+        template()->addTemplateBit('content', 'e403.html');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+    
     public function principal(){
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Módulo de control de inventario');
