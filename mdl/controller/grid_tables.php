@@ -33,7 +33,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from bodega INNER JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
