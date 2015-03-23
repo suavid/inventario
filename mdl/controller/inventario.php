@@ -37,6 +37,13 @@ class inventarioController extends controller {
         
         $this->view->hoja_retaceo();   
     }
+
+    public function obtener_lineas(){
+
+        $linea = $this->model->get_child('linea');
+
+        echo json_encode($linea->get_list_array());
+    }
     
     public function editar_hoja_retaceo(){
         if(isset($_GET['cod'])){
