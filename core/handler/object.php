@@ -324,14 +324,26 @@ abstract class object {
         return data_model()->cacheQuery($query);
     }
 
-    public function get_list_array($limitInf = '', $limitSup = '') {
+    public function get_list_array($limitInf = '', $limitSup = '', $trim = null) {
         list($tblname, $fields, $id, $is_auto) = ORMHelper::analize($this);
         $limit_str = "";
         if ($limitInf !== '')
             $limit_str .= "LIMIT $limitInf";
         if ($limitSup !== '')
             $limit_str .= ", $limitSup";
-        $query = "SELECT * FROM $tblname " . $limit_str;
+        
+        $str_trim = "";
+
+        if ($trim != null) {
+            $str_trim = " WHERE ";
+            $arr_trim = array();
+            foreach ($trim as $clave) {
+                $arr_trim[] = " ( $clave is not null AND $clave != '' ) ";
+            }
+            $str_trim.= implode(' AND ', $arr_trim);
+        }
+
+        $query = "SELECT * FROM $tblname $str_trim" . $limit_str;
         $res = array();
         data_model()->executeQuery($query);
         while ($dat = data_model()->getResult()->fetch_assoc()) {

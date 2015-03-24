@@ -42,7 +42,25 @@ class inventarioController extends controller {
 
         $linea = $this->model->get_child('linea');
 
-        echo json_encode($linea->get_list_array());
+        echo json_encode($linea->get_list_array('','',array('nombre')));
+    }
+
+    public function obtener_colores_por_estilo(){
+
+        $params = json_decode(file_get_contents('php://input'),true);
+
+        $colorprod = $this->model->get_child('color_producto');
+
+        echo json_encode($colorprod->get_colors_p_line($params['linea'], $params['estilo']));
+    }
+
+    public function obtener_tallas_por_estilo(){
+
+        $params = json_decode(file_get_contents('php://input'),true);
+
+        $tallaprod = $this->model->get_child('talla_producto');
+
+        echo json_encode($tallaprod->tallas($params['linea'],$params['estilo'], $params['color']));
     }
     
     public function editar_hoja_retaceo(){
