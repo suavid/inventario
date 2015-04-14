@@ -2878,7 +2878,7 @@ class inventarioController extends controller {
         $keys = array_keys($filtros);
         $values = array_values($filtros);
         $str_ct = implode(' = \'$\' ? ', $keys);
-        $str_ct.= ' = \'$\' ';
+        $str_ct.= ' = $ ';
         $art = explode('?', $str_ct);
         for ($i = 0; $i < count($art); $i++):
             $art[$i] = str_replace('$', $values[$i], $art[$i]);
@@ -2887,7 +2887,7 @@ class inventarioController extends controller {
 
         //*/  
         //to get how many records totally.
-        $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo  " . $fin;
+        $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo where estado_bodega.linea = 1";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -2898,8 +2898,8 @@ class inventarioController extends controller {
         endif;
 
         if ($json->{'action'} == 'load'):
-            $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo " . $fin . " limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
-            
+            $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo where estado_bodega.linea = 1  limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+            $sql;
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
