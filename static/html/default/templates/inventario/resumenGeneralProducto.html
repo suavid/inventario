@@ -32,10 +32,10 @@
     
     var gridOption = {
         id : grid_demo_id,
-        loadURL : '/{systemModuleName}/inventario/cargar?tblname=producto',
+        loadURL : '/{systemModuleName}/inventario/cargarResumenProd',
         saveURL : '',
         width: "762", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        height: "360", //"100%", // 330,
         container : 'gridbox',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
@@ -44,9 +44,11 @@
         showGridMenu : false,
         allowHide : true,
         allowGroup  : true,
-        clickStartEdit : true,
-        defaultRecord : {'id':"00"},
+        clickStartEdit : false,
         pageSize:10,
+        remotePaging: true,
+        remoteSort: true,
+        autoLoad: true,
         allowCustomSkin: true,
         skin: 'mac',
         toolbarContent : 'filter | nav state'

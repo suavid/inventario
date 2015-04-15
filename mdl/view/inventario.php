@@ -198,7 +198,7 @@ class inventarioView {
         }
 
         foreach ($lineas as $linea) {
-            page()->addEstigma("producto_sugerido_".$linea, array('SQL', $cache_sugeridos[$linea]));
+           page()->addEstigma("producto_sugerido_".$linea, array('SQL', $cache_sugeridos[$linea]));
         }
 
         template()->parseOutput();

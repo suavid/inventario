@@ -2887,7 +2887,7 @@ class inventarioController extends controller {
 
         //*/  
         //to get how many records totally.
-        $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo where estado_bodega.linea = 1";
+        $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo $fin";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -2896,9 +2896,9 @@ class inventarioController extends controller {
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
-
+        
         if ($json->{'action'} == 'load'):
-            $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo where estado_bodega.linea = 1  limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+            $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo $fin  limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
             $sql;
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
@@ -3104,6 +3104,40 @@ class inventarioController extends controller {
             $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
             $ret .= "recordType : 'object'}";
             echo $ret;
+        endif;
+    }
+
+    public function cargarResumenProd() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        $sql = "select count(estilo) as cnt from producto";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $row->cnt;
+
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+
+        if ($json->{'action'} == 'load'):
+            $sql = "select estilo, linea, codigo_origen, catalogo, n_pagina, descripcion, fecha_ingreso from producto limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = $row;
+            endwhile;
+            $data = json_encode($retArray);
+            if(!empty($data)){
+                
+                $ret = "{data:" . $data . ",\n";
+                $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+                $ret .= "recordType : 'object'}";
+                echo $ret;
+            }
         endif;
     }
 
