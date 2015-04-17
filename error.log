@@ -67,3 +67,15 @@
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/inventario/detalle_de_producto?estilo=200 - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/login/form - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/login/login - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/login/form - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/principal - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/movKardex - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtenerBodegas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/logout/user - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/login/form - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
