@@ -67,15 +67,72 @@
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/inventario/detalle_de_producto?estilo=200 - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+<<<<<<< HEAD
+=======
+2: mysqli::mysqli(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) - url: /inventario/login/form - line: 42 - file: C:\wamp\www\inventario\core\engine\database.php
+2: database::newConnection(): Couldn't fetch mysqli - url: /inventario/login/form - line: 45 - file: C:\wamp\www\inventario\core\engine\database.php
+256: Can not connect to server.  - url: /inventario/login/form - line: 45 - file: C:\wamp\www\inventario\core\engine\database.php
+>>>>>>> b4cc477c9df9285ca97365ff96aafe113497b65e
 8: Undefined offset: 2 - url: /inventario/login/form - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/login/login - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/login/form - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/inventario/principal - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+<<<<<<< HEAD
 8: Undefined offset: 2 - url: /inventario/inventario/movKardex - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/inventario/obtenerBodegas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/logout/user - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/login/form - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
 8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+=======
+8: Undefined offset: 2 - url: /inventario/inventario/detalle_de_producto?estilo=200 - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/detalle_de_producto?estilo=2003216 - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/detalle_de_producto?estilo=2003216 - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/traslados - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/error/not_found - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+256: Error, query can not be executedYou have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 212 - file: C:\wamp\www\inventario\core\engine\database.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+256: Error, query can not be executedYou have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 212 - file: C:\wamp\www\inventario\core\engine\database.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_colores_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_tallas_por_estilo - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+8: Undefined offset: 2 - url: /inventario/inventario/obtener_lineas - line: 41 - file: C:\wamp\www\inventario\core\engine\frontController.php
+>>>>>>> b4cc477c9df9285ca97365ff96aafe113497b65e
