@@ -2509,6 +2509,12 @@ a {
 .metro .input-control.radio input[type="radio"]:focus ~ .check {
   outline: 1px #999999 dotted !important;
 }
+.metro .input-control.checkbox input[type="checkbox"]:focus ~ .check2,
+.metro .input-control.radio input[type="checkbox"]:focus ~ .check2,
+.metro .input-control.checkbox input[type="radio"]:focus ~ .check2,
+.metro .input-control.radio input[type="radio"]:focus ~ .check2 {
+  outline: 1px #999999 dotted !important;
+}
 .metro .input-control.checkbox .caption,
 .metro .input-control.radio .caption {
   margin: 0 5px;
@@ -2525,24 +2531,61 @@ a {
   display: inline-block;
   vertical-align: middle;
 }
+
+.metro .input-control.checkbox .check2,
+.metro .input-control.radio .check2 {
+  width: 35px;
+  height: 35px;
+  background-color: #ffffff;
+  border: 2px #d9d9d9 solid;
+  padding: 0;
+  margin: 0 5px 26px 5px;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .metro .input-control.checkbox.text-left .check,
 .metro .input-control.radio.text-left .check {
+  margin: 0 0 0 5px;
+}
+.metro .input-control.checkbox.text-left .check2,
+.metro .input-control.radio.text-left .check2 {
   margin: 0 0 0 5px;
 }
 .metro .input-control.checkbox:hover .check,
 .metro .input-control.radio:hover .check {
   border-color: #919191;
 }
+.metro .input-control.checkbox:hover .check2,
+.metro .input-control.radio:hover .check2 {
+  border-color: #919191;
+}
 .metro .input-control.checkbox .check:active,
 .metro .input-control.radio .check:active {
+  border-color: #1e1e1e;
+}
+.metro .input-control.checkbox .check2:active,
+.metro .input-control.radio .check2:active {
   border-color: #1e1e1e;
 }
 .metro .input-control.checkbox .check:focus,
 .metro .input-control.radio .check:focus {
   border-color: #919191;
 }
+.metro .input-control.checkbox .check2:focus,
+.metro .input-control.radio .check2:focus {
+  border-color: #919191;
+}
 .metro .input-control.checkbox .check:after,
 .metro .input-control.radio .check:after {
+  position: absolute;
+  font-family: metroSysIcons;
+  font-size: 9pt;
+  line-height: 9pt;
+}
+.metro .input-control.checkbox .check2:after,
+.metro .input-control.radio .check2:after {
   position: absolute;
   font-family: metroSysIcons;
   font-size: 9pt;
@@ -2554,6 +2597,16 @@ a {
 .metro .input-control.radio input[type="radio"]:checked ~ .check:after {
   content: "\e003";
   margin: 2px;
+  top: 0;
+  color: #1d1d1d;
+}
+
+.metro .input-control.checkbox input[type="checkbox"]:checked ~ .check2:after,
+.metro .input-control.radio input[type="checkbox"]:checked ~ .check2:after,
+.metro .input-control.checkbox input[type="radio"]:checked ~ .check2:after,
+.metro .input-control.radio input[type="radio"]:checked ~ .check2:after {
+  content: "\e003";
+  margin: 9px;
   top: 0;
   color: #1d1d1d;
 }
