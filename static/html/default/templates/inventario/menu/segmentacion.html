@@ -28,12 +28,22 @@
 <script type="text/javascript">
 	
 	$(document).ready(function(){
+		
 		var urlHandler = new url_handler();
+		
 		urlHandler.initialize();
 
 		if(urlHandler.isKey('tab')){
+			var not = $.Notify({
+	    		caption: "Inserción exitosa",
+	        	content: "El registro fue almacenado de forma correcta",
+	        	timeout: 3000,
+				style: {background: 'green', color: 'white'}
+	    	});
 			cargar(urlHandler.getValue('tab'));
 		}
+		
+		 
 	});
 
 	function cargar(categoria){

@@ -657,7 +657,7 @@ class inventarioView {
             template()->buildFromTemplates('template_nofixed.html');
             page()->setTitle('Catalogos');
             page()->addEstigma("username", $usuario);
-            page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
             page()->addEstigma("TITULO", 'Catálogos');
             template()->addTemplateBit('content', 'inventario/catalogo.html');
             template()->parseOutput();
@@ -833,7 +833,7 @@ class inventarioView {
             page()->setTitle('Mantenimiento de bodegas');
             page()->addEstigma("username", $usuario);
             page()->addEstigma("empleados", array('SQL', $cache[0]));
-            page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
             page()->addEstigma("TITULO", 'Bodegas');
             template()->addTemplateBit('content', 'inventario/bodegas.html');
             template()->parseOutput();

@@ -106,6 +106,429 @@ function _updatedata($object, $tblname = '') {
     endif;
 }
 
+function actualizarLinea($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('linea');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->$id;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE linea = $val";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarColor($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('color');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->$id;
+            $queryCheck = "SELECT count(*) as cant FROM color_producto WHERE color = $val";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarGenero($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('genero');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->$id;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE genero = $val";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarMarca($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('marca');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->$id;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE marca = $val";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarGrupo($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('grupo');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->nombre;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE grupo = '{$val}'";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarConcepto($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('concepto');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->nombre;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE concepto = '{$val}'";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarTacon($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('tacon');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->nombre;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE tacon = '{$val}'";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarSuela($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('suela');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->nombre;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE suela = '{$val}'";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
+function actualizarMaterial($object) {
+    header('Content-type:text/javascript;charset=UTF-8');
+    $tblname = addslashes('material');
+    $json = json_decode(stripslashes($_POST["_gt_json"]));
+    if ($json->{'action'} == 'save'):
+        $sql = "";
+        $params = array();
+        $errors = "";
+
+        //deal with those deleted
+        $deletedRecords = $json->{'deletedRecords'};
+        foreach ($deletedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $val = $value->nombre;
+            $queryCheck = "SELECT count(*) as cant FROM producto WHERE material = '{$val}'";
+            data_model()->executeQuery($queryCheck);
+            $row = data_model()->getResult()->fetch_assoc();
+            if($row['cant']<=0):
+                $object->model->get_child($tblname)->delete($value->$id, $id);
+            endif;
+        endforeach;
+
+        //deal with those updated
+        $updatedRecords = $json->{'updatedRecords'};
+        foreach ($updatedRecords as $value):
+            $id = $object->model->get_child($tblname)->getId();
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data[$id]);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        //deal with those inserted
+        $insertedRecords = $json->{'insertedRecords'};
+        foreach ($insertedRecords as $value):
+            $data = get_object_vars($value);
+            $model = $object->model->get_child($tblname);
+            $model->get($data['id']);
+            $model->change_status($data);
+            $model->save();
+        endforeach;
+
+        $ret = "{success : true,exception:''}";
+    endif;
+}
+
 function _updatedata_cd($object, $tblname, $field, $val) {
     header('Content-type:text/javascript;charset=UTF-8');
     $tblname = addslashes($tblname);

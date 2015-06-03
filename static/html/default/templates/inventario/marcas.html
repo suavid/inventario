@@ -1,4 +1,4 @@
-<script>
+<script type="text/javascript">
     var grid_marca_id = "marca_grid";
 
     var dsOption_marca = {
@@ -10,16 +10,16 @@
     }
 
     var colsOption_marca = [
-        {id: 'id', header: "Id", width: 80},
-        {id: 'nombre', header: "Marcas", width: 515, editor: {type: 'text'}}
+        {id: 'id', header: "Id", width: 92},
+        {id: 'nombre', header: "Marcas", width: 525, editor: {type: 'text'}}
     ];
 
     var gridOption_marca = {
         id: grid_marca_id,
         loadURL: '/{systemModuleName}/grid_tables/marca_grid_1',
-        saveURL: '/{systemModuleName}/inventario/actualizar?tblname=marca',
-        width: "600", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        saveURL: '/{systemModuleName}/inventario/_actualizarMarca',
+        width: "620", //"100%", // 700,
+        height: "280", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
@@ -43,28 +43,47 @@
 <div id="page-container">
     <div id="content" class="span8">
         <form action="/{systemModuleName}/inventario/guardar_marca" method="post">
-            <div class="input-control checkbox">
-                <label>
-                    <input type="checkbox" name="rellenar"  />
-                    <span class="check"></span>
-                    Reutilizar ID
-                </label>
-            </div>
-            <br/>
-            <br/>
-            <h3>Nueva marca:</h3> 
-            <div class="input-control text">
-                <input type="text" autofocus name="nombre" required/> 
-            </div>
-            <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>
+            <table>
+                <tr>
+                        <td><h3>Nueva marca:</h3></td>
+                        <td><h3>Reutilizar ID</h3></td>
+                    </tr>
+                <tr>
+                <tr>
+                        <td>
+                            <div class="input-control text">
+                                <input type="text" autofocus name="nombre" required/> 
+                            </div>
+                                <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>
+                        </td>
+                        <td>
+                            <div class="input-control checkbox">
+                                <label>
+                                    <input type="checkbox" name="rellenar"  />
+                                    <span class="check2"></span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                <tr>
+            </table>
         </form>
     </div>
-    <br/>
-    <br/>
-    <div id="bigbox" style="margin:15px;display:!none;">
+     <div class="input-control text span8">
+        <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
+        <button class="btn-search" type="button"></button>
+    </div>
+    <div id="bigbox" style="margin:0px;display:!none;">
         <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-        </div>
+         </div>
     </div>
     <div style="clear: both;"></div>
 </div>
+<script type="text/javascript">
+    function filtrarResultados(e){
+        var term = $(e.target).val();
+        var grid = Sigma.$grid("marca_grid");
+        grid.loadURL = '/{systemModuleName}/grid_tables/marca_grid_1?term='+term;
+    	grid.reload();
+    }
+</script>

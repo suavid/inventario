@@ -3107,9 +3107,56 @@ class inventarioController extends controller {
         header('Content-type:text/javascript;charset=UTF-8');
         $json = json_decode(stripslashes($_POST["_gt_json"]));
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
-        $pageSize = 10; //10 rows per page
+        $pageSize = 15; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(estilo) as cnt from producto";
+        
+        $fin = "";
+        
+        if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
+            $filtros   = $_POST['filtros'];
+            $temp = explode(',', $filtros);
+            $filtros = array();
+            foreach ($temp as $parts) {
+                $tt = explode(':', $parts);
+                $filtros[$tt[0]] = $tt[1];
+            }
+    
+            /* CADENA DE CONDICION */
+            //*/
+            $fin = " WHERE  ";
+            $keys = array_keys($filtros);
+            $values = array_values($filtros);
+            $str_ct = implode(' = \'$\' ? ', $keys);
+            $str_ct.= ' = \'$ \'';
+            $art = explode('?', $str_ct);
+            for ($i = 0; $i < count($art); $i++):
+                $art[$i] = str_replace('$', $values[$i], $art[$i]);
+            endfor;
+            $fin .= implode(' AND ', $art);
+        }
+        
+        if(!empty($_POST['del'])){
+            if(strlen($fin)==0){
+                $fin = " WHERE ";
+            }else{
+                $fin = " AND ";
+            }
+            
+            $str = "";
+            if(!empty($_POST['al'])){
+                $del = $_POST['del'];
+                $al = $_POST['al'];
+                
+                $str = " (fecha_ingreso >= '{$del}' AND fecha_ingreso <=  '{$al}')";
+            }else{
+                $del = $_POST['del'];
+                $str = " fecha_ingreso = '{$del}'";
+            }
+            
+            $fin.= $str;
+        }
+        
+        $sql = "select count(*) as cnt from producto $fin";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -3120,7 +3167,7 @@ class inventarioController extends controller {
         endif;
 
         if ($json->{'action'} == 'load'):
-            $sql = "select estilo, linea, codigo_origen, catalogo, n_pagina, descripcion, fecha_ingreso from producto limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
+            $sql = "select estilo, linea, codigo_origen, catalogo, n_pagina, descripcion, fecha_ingreso from producto $fin limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -3154,6 +3201,42 @@ class inventarioController extends controller {
     public function actualizar() {
         $tblname = $_POST['tblname'];
         _updatedata($this, $tblname);
+    }
+    
+    public function _actualizarLinea(){
+        actualizarLinea($this);
+    }
+    
+    public function _actualizarColor(){
+        actualizarColor($this);
+    }
+    
+    public function _actualizarGenero(){
+        actualizarGenero($this);
+    }
+    
+    public function _actualizarMarca(){
+        actualizarMarca($this);
+    }
+    
+    public function _actualizarGrupo(){
+        actualizarGrupo($this);
+    }
+    
+    public function _actualizarConcepto(){
+        actualizarConcepto($this);
+    }
+    
+    public function _actualizarTacon(){
+        actualizarTacon($this);
+    }
+    
+    public function _actualizarSuela(){
+        actualizarSuela($this);
+    }
+    
+    public function _actualizarMaterial(){
+        actualizarMaterial($this);
     }
 
     public function actualizar_cd() {

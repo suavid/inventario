@@ -1,4 +1,49 @@
 <script>
+    
+    var patron_dui = new Array(8, 1);
+    var patron_nit = new Array(4, 6, 3, 1);
+    var patron_telefono = new Array(4, 4);
+    var patron_fecha = new Array(4, 2, 2);
+
+    function mascara(d, sep, pat, nums) {
+        if (d.valant != d.value) {
+            val = d.value
+            largo = val.length
+            val = val.split(sep)
+            val2 = ''
+            for (r = 0; r < val.length; r++) {
+                val2 += val[r]
+            }
+            if (nums) {
+                for (z = 0; z < val2.length; z++) {
+                    if (isNaN(val2.charAt(z))) {
+                        letra = new RegExp(val2.charAt(z), "g")
+                        val2 = val2.replace(letra, "")
+                    }
+                }
+            }
+            val = ''
+            val3 = new Array()
+            for (s = 0; s < pat.length; s++) {
+                val3[s] = val2.substring(0, pat[s])
+                val2 = val2.substr(pat[s])
+            }
+            for (q = 0; q < val3.length; q++) {
+                if (q == 0) {
+                    val = val3[q]
+                }
+                else {
+                    if (val3[q] != "") {
+                        val += sep + val3[q]
+                    }
+                }
+            }
+            
+            d.value = val
+            d.valant = val
+        }
+    }
+    
     var grid_demo_id = "producto_grid";
     
     var dsOption = {
@@ -23,10 +68,10 @@
     var colsOption = [
         {id: 'estilo', header: "Estilo", width :60},
         {id: 'linea', header: "Linea", width  :50},
-        {id: 'codigo_origen', header: "Codigo de origen", width :110},
-        {id: 'descripcion', header: "Descripcion", width :250},
+        {id: 'codigo_origen', header: "Código de origen", width :110},
+        {id: 'descripcion', header: "Descripción", width :250},
         {id: 'catalogo', header: "Catálogo", width :70},
-        {id: 'n_pagina', header: "N. Pagina", width :70},
+        {id: 'n_pagina', header: "N. Página", width :70},
         {id: 'fecha_ingreso', header: "Ingresa el", width :150}
     ];
     
@@ -35,7 +80,7 @@
         loadURL : '/{systemModuleName}/inventario/cargarResumenProd',
         saveURL : '',
         width: "762", //"100%", // 700,
-        height: "360", //"100%", // 330,
+        height: "380", //"100%", // 330,
         container : 'gridbox',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
@@ -45,7 +90,7 @@
         allowHide : true,
         allowGroup  : true,
         clickStartEdit : false,
-        pageSize:10,
+        pageSize:15,
         remotePaging: true,
         remoteSort: true,
         autoLoad: true,
@@ -59,11 +104,280 @@
     Sigma.Util.onLoad(function(){
         mygrid.render()
     });
+    
+    
+    $(document).ready(function(){
+        
+        $('#estilo').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+            if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#linea').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+             if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#codigo_origen').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+             if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#catalogo').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+             if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#descripcion').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+            if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#pagina').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+            if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#del').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+             if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+       
+       $('#al').bind('change', function(){
+
+            // obtiene tanto la linea como el estilo
+            var linea = $('#linea').val().trim();
+            var estilo = $('#estilo').val().trim();
+            var codigo_origen = $('#codigo_origen').val().trim();
+            var descripcion = $('#descripcion').val().trim();
+            var catalogo = $('#catalogo').val().trim();
+            var pagina = $('#pagina').val().trim();
+            var del = $('#del').val().trim();
+            var al = $('#al').val().trim();
+            
+            var filtros = [];
+
+             if (linea != "") filtros.push(['linea', linea].join(":"));
+            if (estilo != "") filtros.push(['estilo', estilo].join(":"));
+            if (codigo_origen != "") filtros.push(['codigo_origen', codigo_origen].join(":"));
+            if (descripcion != "") filtros.push(['descripcion', descripcion].join(":"));
+            if (catalogo != "") filtros.push(['catalogo', catalogo].join(":"));
+            if (pagina != "") filtros.push(['n_pagina', pagina].join(":"));
+            
+    
+
+            // aplicamos el filtro
+            var grid = Sigma.$grid("producto_grid");
+            grid.loadURL = '/{systemModuleName}/inventario/cargarResumenProd?filtros=' + filtros+'&del='+del+'&al='+al;
+            grid.reload();
+
+       });
+        
+    });
 
 </script>
 
 <h2>Productos registrados en el sistema</h2>
 <br/>
+<div class="input-control text span1">
+    <input id="estilo" type="text" placeholder="Estilo"/>
+</div>
+<div class="input-control text span1">
+    <input id="linea" type="text" placeholder="Linea"/>
+</div>
+<div class="input-control text span2">
+    <input id="codigo_origen" type="text" placeholder="Código de origen"/>
+</div>
+<div class="input-control text span3">
+    <input id="descripcion" type="text" placeholder="Descripción"/>
+</div>
+<div class="input-control text span2">
+    <input id="catalogo" type="text" placeholder="Catálogo"/>
+</div>
+<div class="input-control text span1">
+    <input id="pagina" type="text" placeholder="Página"/>
+</div>
+<div class="input-control text span2">
+    <input id="del" type="text" placeholder="Del"  onkeyup="mascara(this, '/', patron_fecha, true)" maxlength="10"/>
+</div>
+<div class="input-control text span2">
+    <input id="al" type="text" placeholder="Al"  onkeyup="mascara(this, '/', patron_fecha, true)" maxlength="10"/>
+</div>
 <div id="bigbox" style="margin:15px;display:!none;">
     <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 

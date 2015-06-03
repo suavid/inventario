@@ -35,10 +35,10 @@
         columns: colsOption,
         allowCustomSkin: true,
         skin: 'mac',
-        clickStartEdit: true,
+        clickStartEdit: false,
         defaultRecord: {'id': "00", 'nombre': ""},
         pageSize: 10,
-        toolbarContent: 'reload | filter | nav state'
+        toolbarContent: 'reload | nav state'
     };
 
 
@@ -118,6 +118,13 @@
             $('#propietario').attr("disabled", "disabled");
         }
     }
+    
+    function filtrarResultados(e){
+        var term = $(e.target).val();
+        var grid = Sigma.$grid("bodega_grid");
+        grid.loadURL = '/{systemModuleName}/grid_tables/bodega_grid_1?term='+term;
+    	grid.reload();
+    }
 
 </script>
 <style>
@@ -180,6 +187,10 @@
         <div style="margin-left: 30px; float: left;">
             <h2>Mis bodegas</h2>
             <hr/>
+            <div class="input-control text span8">
+                <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
+                <button class="btn-search" type="button"></button>
+            </div>
             <div id="bigbox" style="margin:15px;display:!none;margin:0 auto;left:0px;right:0px;">
                 <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;margin:0 auto;left:0px;right:0px;" >
 

@@ -12,8 +12,8 @@
     }
 
     var colsOption = [
-        {id: 'id', header: "Id", width: 80},
-        {id: 'nombre', header: "Linea", width: 515, editor: {type: 'text'}}
+        {id: 'id', header: "Id", width: 92},
+        {id: 'nombre', header: "Linea", width: 525, editor: {type: 'text'}}
 
     ];
 
@@ -21,9 +21,9 @@
     var gridOption = {
         id: grid_demo_id,
         loadURL: '/{systemModuleName}/grid_tables/linea_grid_1',
-        saveURL: '/{systemModuleName}/inventario/actualizar?tblname=linea',
-        width: "600", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        saveURL: '/{systemModuleName}/inventario/_actualizarLinea',
+        width: "620", //"100%", // 700,
+        height: "280", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
@@ -34,40 +34,60 @@
         pageSize: 10,
         allowCustomSkin : true ,
         skin: "mac",
-        toolbarContent: 'reload | del save | filter | nav state'
+        toolbarContent: 'reload | del save | nav state'
     };
 
     var mygrid = new Sigma.Grid(gridOption);
     //Sigma.Util.onLoad(function() {
         mygrid.render();
     //});
+
 </script>
 
 <div id="page-container">
     <div id="content" class="span8">
         <form action="/{systemModuleName}/inventario/guardar_linea" method="post">
-            <div class="input-control checkbox">
-                <label>
-                    <input type="checkbox" name="rellenar"  />
-                    <span class="check"></span>
-                    Reutilizar ID
-                </label>
-            </div>
-            <br/>
-            <br/>
-            <h3>Nueva linea:</h3> 
-            <div class="input-control text">
-                <input type="text" autofocus name="nombre" required/> 
-            </div>
-            <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>
+
+        <table>
+            <tr>
+                    <td><h3>Nueva linea:</h3></td>
+                    <td><h3>Reutilizar ID</h3></td>
+                </tr>
+            <tr>
+                <td>
+                        <div class="input-control text">
+                            <input type="text" autofocus name="nombre" required/> 
+                        </div>
+                        <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>      
+                </td>
+                <td>
+                    <div class="input-control checkbox">
+                            <label>
+                                <input type="checkbox" name="rellenar"  />
+                                <span class="check2"></span>
+                            </label>
+                        </div>
+                </td>
+            </tr>
+        </table>
         </form>
     </div>
-    <br/>
-    <br/>
-    <div id="bigbox" style="margin:15px;display:!none;">
+    <div class="input-control text span8">
+        <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
+        <button class="btn-search" type="button"></button>
+    </div>
+    <div id="bigbox" style="margin:0px;display:!none;">
         <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
          </div>
     </div>
     <div style="clear: both;"></div>
 </div>
+<script type="text/javascript">
+    function filtrarResultados(e){
+        var term = $(e.target).val();
+        var grid = Sigma.$grid("linea_grid");
+        grid.loadURL = '/{systemModuleName}/grid_tables/linea_grid_1?term='+term;
+    	grid.reload();
+    }
+</script>

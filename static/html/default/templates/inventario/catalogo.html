@@ -146,6 +146,10 @@
             <p>
                 <br /><br />
             </p>
+            <div class="input-control text span8">
+                <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);" />
+                <button class="btn-search" type="button"></button>
+            </div>
             <div id="bigbox" style="margin:15px;display:!none;">
                 <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
@@ -160,3 +164,11 @@
     </div>
 
 </section>
+<script type="text/javascript">
+    function filtrarResultados(e){
+        var term = $(e.target).val();
+        var grid = Sigma.$grid("catalogo_grid");
+        grid.loadURL = '/{systemModuleName}/grid_tables/catalogo_grid_1?term='+term;
+    	grid.reload();
+    }
+</script>

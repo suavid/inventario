@@ -24,7 +24,7 @@
     <hr/>
     <nav class="horizontal-menu compact">
     <ul>
-        <li><a href="javascript: void(0);" onclick="NuevoDocumento(event);"><i class="icon-new"></i> Nuevo</a></li>
+        <li><a href="javascript: void(0);" onclick="NuevoDocumento(event);"><i class="icon-new"></i> Nuevo producto</a></li>
         <li><a href="javascript: void(0);" onclick="Historia(event);"><i class="icon-history"></i> Historial</a></li>
         <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-clipboard-2"></i> Mis productos</a></li>
         <li><a href="/{systemModuleName}/inventario/cambiarPrecios"><i class="icon-cycle"></i> Actualizar productos</a></li>
@@ -67,11 +67,11 @@
             <td>{propietario}</td>
             <td>
                 <a class="button link" href="/{systemModuleName}/inventario/doc_productos?documento={id_documento}">
-                    Editar 
+                    Registrar productos
                 </a>  
             
                 <a class="button link" href="javascript: void(0);" onclick="confirmar({id_documento});">
-                    Confirmar  
+                    Confirmar cambios de forma permanente
                 </a>
             </td>
         </tr>

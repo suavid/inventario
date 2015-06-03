@@ -24,7 +24,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from bodega WHERE nombre is not null AND nombre !=''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (bodega.nombre LIKE '%{$term}') OR (bodega.nombre LIKE '{$term}%') OR (bodega.nombre LIKE '%{$term}%')  OR bodega.id = '{$term}' OR  empleado.usuario = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -33,7 +41,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * ,bodega.id as id from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -55,7 +63,16 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from color WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        
+        $sql = "select count(*) as cnt from color WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -64,7 +81,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from color WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from color WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -204,7 +221,16 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from linea WHERE nombre is not null AND nombre != ''";
+        
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from linea WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -213,7 +239,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from linea WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from linea WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -233,7 +259,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from grupo WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from grupo WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -242,7 +276,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from grupo WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from grupo WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -262,7 +296,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from concepto WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from concepto WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -271,7 +313,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from concepto WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from concepto WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -349,7 +391,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from suela WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from suela WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -358,7 +408,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from suela WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from suela WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -378,7 +428,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from tacon WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from tacon WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -387,7 +445,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from tacon WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from tacon WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -436,7 +494,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from genero WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from genero WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -445,7 +511,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from genero WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from genero WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -465,7 +531,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from material WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from material WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -474,7 +548,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from material WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from material WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -522,8 +596,16 @@ class grid_tablesController extends controller {
         $json = json_decode(stripslashes($_POST["_gt_json"]));
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
         //to get how many records totally.
-        $sql = "select count(*) as cnt from catalogo WHERE nombre is not null AND nombre != ''";
+        $sql = "select count(*) as cnt from catalogo WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -532,7 +614,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from catalogo WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from catalogo WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -552,7 +634,15 @@ class grid_tablesController extends controller {
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
-        $sql = "select count(*) as cnt from marca WHERE nombre is not null AND nombre != ''";
+        
+        $condQ = "";
+        
+        if(isset($_POST['term'])&&!empty($_POST['term'])){
+            $term = $_POST['term'];
+            $condQ = " AND ( (nombre LIKE '%{$term}') OR (nombre LIKE '{$term}%') OR (nombre LIKE '%{$term}%')  OR id = '{$term}' )";
+        }
+        
+        $sql = "select count(*) as cnt from marca WHERE nombre is not null AND nombre != '' $condQ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $row->cnt;
@@ -561,7 +651,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * from marca WHERE nombre is not null AND nombre != '' limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * from marca WHERE nombre is not null AND nombre != '' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
