@@ -12,7 +12,7 @@ require_once('scripts/encryption.php'); # funciones de proteccion de datos
 import('core.bm_engine');
 
 date_default_timezone_set(TIMEZONE);
-
+//test
 import('core.engine.database');
 import('core.engine.template');
 import('core.engine.page');
