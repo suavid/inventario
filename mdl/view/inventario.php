@@ -13,14 +13,20 @@ class inventarioView {
     }
 
     public function acceso_restringido(){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Error 403');
-        template()->addTemplateBit('content', 'e403.html');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "proveedores", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Error 403');
+            template()->addTemplateBit('content', 'e403.html');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
     
     public function principal(){
@@ -82,15 +88,23 @@ class inventarioView {
     }
 
     public function segmentacion(){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Control de inventario');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/inventario/inventario/principal');
-        page()->addEstigma("TITULO", 'Inventario');
-        template()->addTemplateBit('content', 'inventario/menu/segmentacion.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+
+        if(verifyAccess("inventario", "inventario", "segmentacion", Session::singleton()->getUser())){
+
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Control de inventario');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
+            page()->addEstigma("TITULO", 'Inventario');
+            template()->addTemplateBit('content', 'inventario/menu/segmentacion.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function kits(){
@@ -105,28 +119,40 @@ class inventarioView {
     }
     
     public function hoja_retaceo(){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Creación de hojas de retaceo');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/inventario/inventario/principal');
-        template()->addTemplateBit('content', 'inventario/hoja_retaceo.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "hoja_retaceo", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Creación de hojas de retaceo');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
+            template()->addTemplateBit('content', 'inventario/hoja_retaceo.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
     
     public function editar_hoja_retaceo($id_hoja, $total, $detalle){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Editar hoja de retaceo');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("id_hoja", $id_hoja);
-        page()->addEstigma("total", $total);
-        page()->addEstigma("detalle", array('SQL', $detalle));
-        page()->addEstigma("back_url", '/inventario/inventario/hoja_retaceo');
-        template()->addTemplateBit('content', 'inventario/editar_hoja_retaceo.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "hoja_retaceo", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Editar hoja de retaceo');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("id_hoja", $id_hoja);
+            page()->addEstigma("total", $total);
+            page()->addEstigma("detalle", array('SQL', $detalle));
+            page()->addEstigma("back_url", '/inventario/inventario/hoja_retaceo');
+            template()->addTemplateBit('content', 'inventario/editar_hoja_retaceo.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
     
     public function ver_hoja_retaceo($id_hoja, $total, $detalle){
@@ -144,14 +170,20 @@ class inventarioView {
     }
 
     public function movKardex(){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Kardex');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/inventario/inventario/principal');
-        template()->addTemplateBit('content', 'inventario/mov_kardex.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "movKardex", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Kardex');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
+            template()->addTemplateBit('content', 'inventario/mov_kardex.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function noKardex(){
@@ -166,16 +198,22 @@ class inventarioView {
     }
 
     public function productosSugeridos($lineas){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Productos sugeridos');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-        page()->addEstigma("TITULO", 'Inventario');
-        page()->addEstigma("linea", array('SQL', $lineas));
-        template()->addTemplateBit('content', 'inventario/producto_sugerido.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "productosSugeridos", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Productos sugeridos');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+            page()->addEstigma("TITULO", 'Inventario');
+            page()->addEstigma("linea", array('SQL', $lineas));
+            template()->addTemplateBit('content', 'inventario/producto_sugerido.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function detalle_de_producto($estilo, $general, $n, $lineas, $cache_stock, $cache_transito, $cache_sugeridos){
@@ -220,16 +258,22 @@ class inventarioView {
     }
 
     public function actualizarFoto($lineas){
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Control de inventario');
-        page()->addEstigma("username", Session::singleton()->getUser());
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-        page()->addEstigma("TITULO", 'Inventario');
-        page()->addEstigma("lineas", array('SQL', $lineas));
-        template()->addTemplateBit('content', 'inventario/actualizar_foto.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "actualizarFoto", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Control de inventario');
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+            page()->addEstigma("TITULO", 'Inventario');
+            page()->addEstigma("lineas", array('SQL', $lineas));
+            template()->addTemplateBit('content', 'inventario/actualizar_foto.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function segmentacionLinea(){
@@ -313,15 +357,21 @@ class inventarioView {
     }
 
     public function listadoTraslado($usuario) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Traslados');
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
-        page()->addEstigma("TITULO", 'Traslados');
-        template()->addTemplateBit('content', 'inventario/traslado_listado.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "listadoTraslado", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Traslados');
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
+            page()->addEstigma("TITULO", 'Traslados');
+            template()->addTemplateBit('content', 'inventario/traslado_listado.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function listadoConsigna($usuario) {
@@ -405,50 +455,62 @@ class inventarioView {
     }
 
     public function detalle_traslado($usuario, $id, $id_bodega, $nombre_bodega, $id_bodega_, $nombre_bodega_, $transaccion, $total_costo, $total_pares, $cache, $cliente, $consigna, $tolerancia, $proveedor) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Traslado No.' . $id);
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("idencabezado", $id);
-        page()->addEstigma("idcliente", $cliente);
-        page()->addEstigma("idb", $id_bodega);
-        page()->addEstigma("nb", $nombre_bodega);
-        page()->addEstigma("idb_", $id_bodega_);
-        page()->addEstigma("nb_", $nombre_bodega_);
-        page()->addEstigma("totalcosto", $total_costo);
-        page()->addEstigma("consigna", $consigna);
-        page()->addEstigma("tolerancia", $tolerancia);
-        page()->addEstigma("totalpares", $total_pares);
-        page()->addEstigma("proveedor", $proveedor);
-        page()->addEstigma("tipoTransaccion", $transaccion);
-        page()->addEstigma("lineas", array('SQL', $cache[0]));
-        if ($consigna == 0)
-            page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
-        else
-            page()->addEstigma("back_url", '/'.MODULE.'/inventario/consigna');
-        page()->addEstigma("TITULO", 'Traslados');
-        template()->addTemplateBit('content', 'inventario/traslado_detalle.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "detalle_traslado", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Traslado No.' . $id);
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("idencabezado", $id);
+            page()->addEstigma("idcliente", $cliente);
+            page()->addEstigma("idb", $id_bodega);
+            page()->addEstigma("nb", $nombre_bodega);
+            page()->addEstigma("idb_", $id_bodega_);
+            page()->addEstigma("nb_", $nombre_bodega_);
+            page()->addEstigma("totalcosto", $total_costo);
+            page()->addEstigma("consigna", $consigna);
+            page()->addEstigma("tolerancia", $tolerancia);
+            page()->addEstigma("totalpares", $total_pares);
+            page()->addEstigma("proveedor", $proveedor);
+            page()->addEstigma("tipoTransaccion", $transaccion);
+            page()->addEstigma("lineas", array('SQL', $cache[0]));
+            if ($consigna == 0)
+                page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
+            else
+                page()->addEstigma("back_url", '/'.MODULE.'/inventario/consigna');
+            page()->addEstigma("TITULO", 'Traslados');
+            template()->addTemplateBit('content', 'inventario/traslado_detalle.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function traslados($usuario, $cache) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Traslados');
-        template()->addTemplateBit('content', 'inventario/traslados.html');
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
-        page()->addEstigma("TITULO", 'Traslados');
-        page()->addEstigma("proveedor1", array('SQL', $cache[0]));
-        page()->addEstigma("proveedor2", array('SQL', $cache[1]));
-        page()->addEstigma("bodega1", array('SQL', $cache[2]));
-        page()->addEstigma("bodega2", array('SQL', $cache[3]));
-        page()->addEstigma("transacciones", array('SQL', $cache[4]));
-        page()->addEstigma("retaceos", array('SQL', $cache[5]));
-        page()->addEstigma("fecha", date("Y-m-d"));
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "traslados", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Traslados');
+            template()->addTemplateBit('content', 'inventario/traslados.html');
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+            page()->addEstigma("TITULO", 'Traslados');
+            page()->addEstigma("proveedor1", array('SQL', $cache[0]));
+            page()->addEstigma("proveedor2", array('SQL', $cache[1]));
+            page()->addEstigma("bodega1", array('SQL', $cache[2]));
+            page()->addEstigma("bodega2", array('SQL', $cache[3]));
+            page()->addEstigma("transacciones", array('SQL', $cache[4]));
+            page()->addEstigma("retaceos", array('SQL', $cache[5]));
+            page()->addEstigma("fecha", date("Y-m-d"));
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function cargar_tabla($tipoQuery, $cache) {
@@ -590,15 +652,21 @@ class inventarioView {
     }
 
     public function catalogos($usuario) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Catalogos');
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
-        page()->addEstigma("TITULO", 'Catálogos');
-        template()->addTemplateBit('content', 'inventario/catalogo.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "catalogos", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Catalogos');
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
+            page()->addEstigma("TITULO", 'Catálogos');
+            template()->addTemplateBit('content', 'inventario/catalogo.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function resumenGeneralProducto($usuario) {
@@ -679,20 +747,25 @@ class inventarioView {
     }
 
     public function inventarioHistorial($user, $cache, $pag) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Historial');
-        page()->addEstigma("username", $user);
-        page()->addEstigma("paginacion", $pag);
-        page()->addEstigma("modulo", "inventario");
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-        page()->addEstigma("TITULO", 'Historial de eventos');
-        template()->addTemplateBit('content', 'inventario/historial.html');
-        page()->addEstigma('historial', array('SQL', $cache[0]));
-        page()->addEstigma('1', 'Aplicado');
-        page()->addEstigma('0', 'Pendiente');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "inventarioHistorial", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Historial');
+            page()->addEstigma("username", $user);
+            page()->addEstigma("paginacion", $pag);
+            page()->addEstigma("modulo", "inventario");
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+            page()->addEstigma("TITULO", 'Historial de eventos');
+            template()->addTemplateBit('content', 'inventario/historial.html');
+            page()->addEstigma('historial', array('SQL', $cache[0]));
+            page()->addEstigma('1', 'Aplicado');
+            page()->addEstigma('0', 'Pendiente');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function stockHistorial($user, $cache, $pag) {
@@ -735,29 +808,40 @@ class inventarioView {
     }
 
     public function nuevo_producto($usuario, $cache) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Mantenimiento de productos');
-        page()->addEstigma("TITULO", 'Nuevo producto');
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("documentos", array('SQL', $cache[0]));
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
-        template()->addTemplateBit('content', 'inventario/documentoProducto.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "nuevo_producto", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Mantenimiento de productos');
+            page()->addEstigma("TITULO", 'Nuevo producto');
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("documentos", array('SQL', $cache[0]));
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+            template()->addTemplateBit('content', 'inventario/documentoProducto.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function mantenimiento_de_bodegas($usuario, $cache) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Mantenimiento de bodegas');
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("empleados", array('SQL', $cache[0]));
-        page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
-        page()->addEstigma("TITULO", 'Bodegas');
-        template()->addTemplateBit('content', 'inventario/bodegas.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "bodegas", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Mantenimiento de bodegas');
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("empleados", array('SQL', $cache[0]));
+            page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
+            page()->addEstigma("TITULO", 'Bodegas');
+            template()->addTemplateBit('content', 'inventario/bodegas.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function mantenimiento_de_colores($usuario) {
@@ -797,16 +881,22 @@ class inventarioView {
     }
 
     public function mantenimiento_de_proveedores($usuario, $paises) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Mantenimiento de proveedores');
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("paises", array('SQL', $paises));
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/destroyProv');
-        page()->addEstigma("TITULO", 'Proveedores');
-        template()->addTemplateBit('content', 'inventario/proveedores.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "proveedores", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Mantenimiento de proveedores');
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("paises", array('SQL', $paises));
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/destroyProv');
+            page()->addEstigma("TITULO", 'Proveedores');
+            template()->addTemplateBit('content', 'inventario/proveedores.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function mantenimiento_de_generos($usuario) {
@@ -894,33 +984,39 @@ class inventarioView {
     }
 
     public function doc_mantenimiento_de_productos($cache, $doc, $usuario) {
-        template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Productos');
-        template()->addTemplateBit('content', 'inventario/doc_productos.html');
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-        //page()->addEstigma('linea', array('SQL', $cache[0]));
-        //page()->addEstigma('marca', array('SQL', $cache[1]));
-        //page()->addEstigma('proveedor', array('SQL', $cache[2]));
-        page()->addEstigma('color', array('SQL', $cache[3]));
-        //page()->addEstigma('genero', array('SQL', $cache[4]));
-        page()->addEstigma('lineas_', array('SQL', $cache[5]));
-        page()->addEstigma('marca_', array('SQL', $cache[6]));
-        page()->addEstigma('proveedor_', array('SQL', $cache[7]));
-        page()->addEstigma('genero_', array('SQL', $cache[9]));
-        page()->addEstigma('tacon_', array('SQL', $cache[12]));
-        page()->addEstigma('suela_', array('SQL', $cache[13]));
-        page()->addEstigma('material_', array('SQL', $cache[14]));
-        page()->addEstigma('concepto_', array('SQL', $cache[15]));
-        page()->addEstigma('grupo_', array('SQL', $cache[16]));
-        //page()->addEstigma('catalogo_', array('SQL', $cache[10]));
-        page()->addEstigma('catalogo', array('SQL', $cache[11]));
-        page()->addEstigma("documento", $doc);
-        page()->addEstigma("fecha", date("Y-m-d"));
-        page()->addEstigma("username", $usuario);
-        page()->addEstigma("TITULO", 'Producto');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "doc_productos", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_nofixed.html');
+            page()->setTitle('Productos');
+            template()->addTemplateBit('content', 'inventario/doc_productos.html');
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+            //page()->addEstigma('linea', array('SQL', $cache[0]));
+            //page()->addEstigma('marca', array('SQL', $cache[1]));
+            //page()->addEstigma('proveedor', array('SQL', $cache[2]));
+            page()->addEstigma('color', array('SQL', $cache[3]));
+            //page()->addEstigma('genero', array('SQL', $cache[4]));
+            page()->addEstigma('lineas_', array('SQL', $cache[5]));
+            page()->addEstigma('marca_', array('SQL', $cache[6]));
+            page()->addEstigma('proveedor_', array('SQL', $cache[7]));
+            page()->addEstigma('genero_', array('SQL', $cache[9]));
+            page()->addEstigma('tacon_', array('SQL', $cache[12]));
+            page()->addEstigma('suela_', array('SQL', $cache[13]));
+            page()->addEstigma('material_', array('SQL', $cache[14]));
+            page()->addEstigma('concepto_', array('SQL', $cache[15]));
+            page()->addEstigma('grupo_', array('SQL', $cache[16]));
+            //page()->addEstigma('catalogo_', array('SQL', $cache[10]));
+            page()->addEstigma('catalogo', array('SQL', $cache[11]));
+            page()->addEstigma("documento", $doc);
+            page()->addEstigma("fecha", date("Y-m-d"));
+            page()->addEstigma("username", $usuario);
+            page()->addEstigma("TITULO", 'Producto');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
     public function nuevo_documento($usuario) {
@@ -943,17 +1039,23 @@ class inventarioView {
     }
 
     public function cambiarPrecios($user, $cache) {
-        template()->buildFromTemplates('template_table.html');
-        page()->addEstigma("TITULO", 'Cambios');
-        page()->setTitle('Cambios');
-        page()->addEstigma("username", $user);
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-        //page()->addEstigma("l_proveedor", array('SQL', $cache[0]));
-        page()->addEstigma("l_catalogos", array('SQL', $cache[0]));
-        template()->addTemplateBit('content', 'inventario/cambiarPrecios.html');
-        template()->parseOutput();
-        template()->parseExtras();
-        print page()->getContent();
+        import('scripts.secure');
+        if(verifyAccess("inventario", "inventario", "cambiarPrecios", Session::singleton()->getUser())){
+            template()->buildFromTemplates('template_table.html');
+            page()->addEstigma("TITULO", 'Cambios');
+            page()->setTitle('Cambios');
+            page()->addEstigma("username", $user);
+            page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+            //page()->addEstigma("l_proveedor", array('SQL', $cache[0]));
+            page()->addEstigma("l_catalogos", array('SQL', $cache[0]));
+            template()->addTemplateBit('content', 'inventario/cambiarPrecios.html');
+            template()->parseOutput();
+            template()->parseExtras();
+            print page()->getContent();
+        }else{
+
+            HttpHandler::redirect('/inventario/error/e403');
+        }
     }
 
 }

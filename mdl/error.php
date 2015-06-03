@@ -10,8 +10,12 @@ class ErrorController {
     }
 
     public function e403() {
-        BM::singleton()->getObject('temp')->buildFromTemplates('forbiden.html');
+        BM::singleton()->getObject('temp')->buildFromTemplates('template_nofixed.html');
+        template()->addTemplateBit('content', 'e403.html');
+        BM::singleton()->getObject('temp')->getPage()->setTitle("Acceso restringido");
+        BM::singleton()->getObject('temp')->getPage()->addEstigma("username", Session::singleton()->getUser());
         BM::singleton()->getObject('temp')->parseExtras();
+        BM::singleton()->getObject('temp')->parseOutput();
         print BM::singleton()->getObject('temp')->getPage()->getContent();
     }
 

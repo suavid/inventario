@@ -1322,18 +1322,14 @@ class inventarioController extends controller {
     }
 
     public function inventarioHistorial() {
-        $this->validar();
-        if (Session::singleton()->getLevel() != 1):
-            HttpHandler::redirect('/'.MODULE.'/error/e403');
-        else:
-            import('scripts.paginacion');
-            $numeroRegistros = $this->model->get_child('documento')->quantify();
-            $url_filtro = "/'.MODULE.'/inventario/inventarioHistorial?";
-            list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
-            $cache = array();
-            $cache[0] = $this->model->get_child('documento')->documentos($limitInf, $tamPag);
-            $this->view->inventarioHistorial(Session::singleton()->getUser(), $cache, $paginacion_str);
-        endif;
+        
+        import('scripts.paginacion');
+        $numeroRegistros = $this->model->get_child('documento')->quantify();
+        $url_filtro = "/'.MODULE.'/inventario/inventarioHistorial?";
+        list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
+        $cache = array();
+        $cache[0] = $this->model->get_child('documento')->documentos($limitInf, $tamPag);
+        $this->view->inventarioHistorial(Session::singleton()->getUser(), $cache, $paginacion_str);
     }
 
     public function reporteDocumentoPr(){
