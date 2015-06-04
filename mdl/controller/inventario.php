@@ -1127,7 +1127,7 @@ class inventarioController extends controller {
         $bodega = $this->model->get_child('bodega');
         if ($bodega->exists($id)) {
             $bodega->delete($id);
-            HttpHandler::redirect('/'.MODULE.'/inventario/bodegas');
+            HttpHandler::redirect('/'.MODULE.'/inventario/bodegas?del=true');
         } else {
             HttpHandler::redirect('/'.MODULE.'/inventario/bodegas?err_no=404');
         }
@@ -1156,7 +1156,7 @@ class inventarioController extends controller {
             $bodega_model->change_status($data);
             $bodega_model->save();
 
-            HttpHandler::redirect('/'.MODULE.'/inventario/bodegas');
+            HttpHandler::redirect('/'.MODULE.'/inventario/bodegas?insert=true');
         else:
             HttpHandler::redirect('/'.MODULE.'/inventario/bodegas');
         endif;
@@ -1322,13 +1322,58 @@ class inventarioController extends controller {
     }
 
     public function inventarioHistorial() {
-        
         import('scripts.paginacion');
-        $numeroRegistros = $this->model->get_child('documento')->quantify();
-        $url_filtro = "/'.MODULE.'/inventario/inventarioHistorial?";
-        list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
-        $cache = array();
-        $cache[0] = $this->model->get_child('documento')->documentos($limitInf, $tamPag);
+        $filtrar = false;
+        $filtrar = $filtrar || (isset($_GET['doc'])&&!empty($_GET['doc']));
+        $filtrar = $filtrar || (isset($_GET['propietario'])&&!empty($_GET['propietario']));
+        $filtrar = $filtrar || (isset($_GET['fecha'])&&!empty($_GET['fecha']));
+        $filtrar = $filtrar || (isset($_GET['estado'])&& (strlen($_GET['estado'])>0) && $_GET['estado']!=3 );
+        
+        if($filtrar){
+            
+            if(isset($_GET['fecha'])&&!empty($_GET['fecha'])){
+                $fecha = str_replace('.','-',$_GET['fecha']);
+                $fecha_ps = explode('-',$fecha);
+                $tmp = $fecha_ps[0];
+                $fecha_ps[0] = $fecha_ps[2];
+                $fecha_ps[2] = $tmp;
+                $fecha = implode('-',$fecha_ps);
+            }
+            
+            
+            if(isset($data['estado'])){
+              if(empty($data['estado'])){
+                  $data['estado'] = "{0}";
+              }  
+            }
+            
+            $data = array();
+            if(isset($_GET['doc'])&&!empty($_GET['doc'])) $data["doc"] = data_model()->sanitizeData($_GET['doc']);
+            if(isset($_GET['propietario'])&&!empty($_GET['propietario'])) $data["propietario"] = data_model()->sanitizeData($_GET['propietario']);
+            if(isset($_GET['fecha'])&&!empty($_GET['fecha'])) $data["fecha_creacion"] = data_model()->sanitizeData($fecha);
+            if(isset($_GET['estado'])&& (strlen($_GET['estado'])>0)) $data["estado"] = data_model()->sanitizeData($_GET['estado']);
+            
+             
+            
+            $url_str = "";
+            if(isset($_GET['doc'])&&!empty($_GET['doc'])) $url_str.="doc=".$data['doc']."&";
+            if(isset($_GET['propietario'])&&!empty($_GET['propietario'])) $url_str.="propietario=".$data['propietario']."&";
+            if(isset($_GET['fecha'])&&!empty($_GET['fecha'])) $url_str.="fecha=".$_GET['fecha']."&";
+            if(isset($_GET['estado'])&&!empty($_GET['estado'])) $url_str.="estado=".$data['estado']."&";
+           
+            $numeroRegistros = $this->model->get_child('documento')->MultyQuantify($data);
+            $url_filtro = "/inventario/inventario/inventarioHistorial?".$url_str;
+            list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
+            
+            $cache[0] = $this->model->get_child('documento')->Multyfilter($data, $limitInf, $tamPag);
+        }else{
+            $numeroRegistros = $this->model->get_child('documento')->quantify();
+            $url_filtro = "/inventario/inventario/inventarioHistorial?";
+            list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
+            $cache = array();
+            $cache[0] = $this->model->get_child('documento')->documentos($limitInf, $tamPag);   
+        }
+        
         $this->view->inventarioHistorial(Session::singleton()->getUser(), $cache, $paginacion_str);
     }
 

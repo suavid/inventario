@@ -17,67 +17,67 @@
             location.href='/{systemModuleName}/inventario/actualizar_productos?documento='+id;
     }
 </script>
-<section>
-    <p>
-        <br />
-    </p>
-    <hr/>
-    <nav class="horizontal-menu compact">
-    <ul>
-        <li><a href="javascript: void(0);" onclick="NuevoDocumento(event);"><i class="icon-new"></i> Nuevo producto</a></li>
-        <li><a href="javascript: void(0);" onclick="Historia(event);"><i class="icon-history"></i> Historial</a></li>
-        <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-clipboard-2"></i> Mis productos</a></li>
-        <li><a href="/{systemModuleName}/inventario/cambiarPrecios"><i class="icon-cycle"></i> Actualizar productos</a></li>
-        <li><a href="/{systemModuleName}/inventario/actualizarFoto"><i class="icon-pictures"></i> Imagen del producto</a></li>
-        <li><a href="/{systemModuleName}/inventario/productosSugeridos"><i class="icon-bookmark-3"></i> Productos sugeridos</a></li>
-    </ul>
-    </nav>
-    <hr/>
-    <p>
-        <br />
-    </p>
-    <h2>Mis documentos</h2>
-    <p>
-        <br />
-    </p>
-    <table class="table span12" style="text-align:center;">
-        <thead>
-            <tr>
-                <th>
-                    Id
-                </th>
-                <th>
-                    Fecha de creaci&oacute;n
-                </th>
-                <th>
-                    Propietario
-                </th>
-                <th>
-                    
-                </th>
-                <th>
-                    
-                </th>
-            </tr>
-        </thead>
-        <!-- START documentos -->
-        <tr>
-            <td>{id_documento}</td>
-            <td>{fecha_creacion}</td>
-            <td>{propietario}</td>
-            <td>
-                <a class="button link" href="/{systemModuleName}/inventario/doc_productos?documento={id_documento}">
-                    Registrar productos
-                </a>  
-            
-                <a class="button link" href="javascript: void(0);" onclick="confirmar({id_documento});">
-                    Confirmar cambios de forma permanente
-                </a>
-            </td>
-        </tr>
-        <!-- END documentos -->
-    </table>
-</section>
+<h2>Mantenimiento de productos</h2>
 <p>
-    <br />
+    <br/>
 </p>
+<section>
+    <nav class="horizontal-menu compact">
+        <ul>
+            <li><a href="javascript: void(0);" onclick="NuevoDocumento(event);"><i class="icon-new"></i> Crear nuevo documento</a></li>
+            <li><a href="javascript: void(0);" onclick="Historia(event);"><i class="icon-history"></i> Historial de documentos aplicados</a></li>
+            <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-clipboard-2"></i> Catálogo de productos</a></li>
+            <li><a href="/{systemModuleName}/inventario/cambiarPrecios"><i class="icon-cycle"></i> Actualizar productos</a></li>
+            <li><a href="/{systemModuleName}/inventario/actualizarFoto"><i class="icon-pictures"></i> Imagen de producto</a></li>
+            <li><a href="/{systemModuleName}/inventario/productosSugeridos"><i class="icon-bookmark-3"></i> Productos sugeridos</a></li>
+        </ul>
+    </nav>
+    <p>
+        <br/><br/>
+    </p>
+    <div class="panel span12" style="margin: 0 auto;">
+        <div class="panel-header">
+            Mis documentos
+        </div>
+        <div class="panel-content">
+            <table class="table" style="text-align:center;">
+                <thead>
+                    <tr>
+                        <th>
+                            # Documento
+                        </th>
+                        <th>
+                            Fecha de creaci&oacute;n
+                        </th>
+                        <th>
+                            Propietario
+                        </th>
+                        <th>
+                            
+                        </th>
+                        <th>
+                            
+                        </th>
+                    </tr>
+                </thead>
+            <!-- START documentos -->
+                <tr>
+                    <td>{id_documento}</td>
+                    <td>{fecha_creacion}</td>
+                    <td>{propietario}</td>
+                    <td>
+                        <a class="button link" href="/{systemModuleName}/inventario/doc_productos?documento={id_documento}">
+                            Registrar productos en este documento
+                        </a>  
+                    
+                        <a class="button link" href="javascript: void(0);" onclick="confirmar({id_documento});">
+                            Confirmar cambios de forma permanente
+                        </a>
+                    </td>
+                </tr>
+                <!-- END documentos -->
+            </table>  
+        </div>
+    </div>
+</section>
+<p><br/><br/><br/></p>

@@ -32,16 +32,16 @@ class grid_tablesController extends controller {
             $condQ = " AND ( (bodega.nombre LIKE '%{$term}') OR (bodega.nombre LIKE '{$term}%') OR (bodega.nombre LIKE '%{$term}%')  OR bodega.id = '{$term}' OR  empleado.usuario = '{$term}' )";
         }
         
-        $sql = "select count(*) as cnt from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' $condQ";
+        $sql = "select count(DISTINCT bodega.id) as cnt from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' $condQ GROUP BY bodega.id";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
-        $totalRec = $row->cnt;
+        $totalRec = mysqli_num_rows($handle);
         //make sure pageNo is inbound
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select * ,bodega.id as id from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' $condQ limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select * ,bodega.id as id from bodega LEFT JOIN empleado on encargado = empleado.id_datos WHERE nombre is not null AND nombre !='' $condQ GROUP BY bodega.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):

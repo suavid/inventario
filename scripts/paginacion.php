@@ -31,29 +31,29 @@ function paginar($numeroRegistros, $url) {
         }
     }
 
-    $paginacion_str = '<span class="paginacion">';
+    $paginacion_str = '<div class="pagination"><ul>';
 
     /* genera una cadea con html para establecer los enlaces de la paginacion */
     if ($pagina > 1) {
-        $paginacion_str.= "<a href='{$url}pag=" . ($pagina - 1) . "'>";
-        $paginacion_str.= "anterior";
-        $paginacion_str.= "</a> ";
+        $paginacion_str.= "<li class='prev'><a href='{$url}pag=" . ($pagina - 1) . "'>";
+        $paginacion_str.= "<i class='icon-previous'></i>";
+        $paginacion_str.= "</a></li>";
     }
 
     for ($i = $inicio; $i <= $final; $i++) {
         if ($i == $pagina) {
-            $paginacion_str.= "<b>" . $i . "</b>";
+            $paginacion_str.= "<li class='active'><a>" . $i . "</a></li>";
         } else {
-            $paginacion_str.= "<a href='{$url}pag=" . $i . "'>";
-            $paginacion_str.= "&nbsp;" . $i . "</a> ";
+            $paginacion_str.= "<li><a href='{$url}pag=" . $i . "'>";
+            $paginacion_str.= "&nbsp;" . $i . "</a> </li>";
         }
     }
     if ($pagina < $numPags) {
-        $paginacion_str.= " <a href='{$url}pag=" . ($pagina + 1) . "'>";
-        $paginacion_str.= "siguiente</a>";
+        $paginacion_str.= " <li class='next'><a href='{$url}pag=" . ($pagina + 1) . "'>";
+        $paginacion_str.= "<i class='icon-next'></i></a></li>";
     }
 
-    $paginacion_str.="</span>";
+    $paginacion_str.="</ul></div>";
 
     # devuelve la cedena, el limite inferior y el tamaño de pagina para la consulta sql
     return array($paginacion_str, $limitInf, $tamPag);

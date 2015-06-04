@@ -278,7 +278,7 @@ abstract class object {
         for ($i = 0; $i < count($art); $i++):
             $art[$i] = str_replace('$', $values[$i], $art[$i]);
         endfor;
-        $fin = implode(' OR ', $art);
+        $fin = implode(' AND ', $art);
         $query = "SELECT * FROM $tblname WHERE $fin " . $limit_str;
         return data_model()->cacheQuery($query);
     }
@@ -293,7 +293,7 @@ abstract class object {
         for ($i = 0; $i < count($art); $i++):
             $art[$i] = str_replace('$', $values[$i], $art[$i]);
         endfor;
-        $fin = implode(' OR ', $art);
+        $fin = implode(' AND ', $art);
         $query = "SELECT * FROM $tblname WHERE $fin ";
         data_model()->executeQuery($query);
         return data_model()->getNumRows();

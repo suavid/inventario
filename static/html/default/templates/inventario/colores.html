@@ -1,5 +1,4 @@
-<script type="text/javascript" src="../static/js/colorpicker.js"></script>
-<script type="text/javascript">
+<script type="text/javascript" >
 
     var grid_demo_id = "color_grid";
 
@@ -14,7 +13,8 @@
 
     var colsOption = [
         {id: 'id', header: "Id", width: 92},
-        {id: 'nombre', header: "Color", width: 525, editor: {type: 'text'}},
+        {id: 'nombre', header: "Color", width: 285, editor: {type: 'text'}}
+
     ];
 
 
@@ -22,7 +22,7 @@
         id: grid_demo_id,
         loadURL: '/{systemModuleName}/grid_tables/color_grid_1',
         saveURL: '/{systemModuleName}/inventario/_actualizarColor',
-        width: "620", //"100%", // 700,
+        width: "380", //"100%", // 700,
         height: "280", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
@@ -37,49 +37,59 @@
         toolbarContent: 'reload | del save | nav state'
     };
 
-
     var mygrid = new Sigma.Grid(gridOption);
     //Sigma.Util.onLoad(function() {
         mygrid.render();
     //});
-</script>
 
+</script>
+<h3>Segmentación</h3>
+<p class="text-muted">Defina la forma en que se clasificarán sus productos</p>
+<hr/>
 <div id="page-container">
-    <div id="content" class="span8">
-        <form action="/{systemModuleName}/inventario/guardar_color" method="post">
-        <table>
-            <tr>
-                    <td><h3>Nuevo Color:</h3></td>
-                    <td><h3>Reutilizar ID</h3></td>
-                </tr>
-            <tr>
-                <td>
-                        <div class="input-control text"> 
-                			<input type="text" autofocus name="nombre" required/> 
-            			</div>
-            				<button type="submit" class="big"><i class="icon-save"></i>Agregar</button>    
-                </td>
-                <td>
-                    <div class="input-control checkbox">
+    <div id="content" class="grid">
+        <div class="row">
+            <div class="panel span6">
+                <div class="panel-header">Colores</div>
+                <div class="panel-content">
+                    <div class="input-control text span5">
+                        <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
+                        <button class="btn-search" type="button"></button>
+                    </div>
+                    <br/>
+                    <div id="bigbox" style="margin:0px;display:!none;">
+                        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+                
+                         </div>
+                    </div>
+                    <div style="clear: both;"></div>  
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+            <div class="panel span4">
+                <div class="panel-header">
+                    Crear un nuevo color
+                </div>
+                <div class="panel-content">
+                     <form action="/{systemModuleName}/inventario/guardar_color" method="post">
+                        <div class="input-control checkbox">
                             <label>
-                                <input type="checkbox" name="rellenar"  />
-                    			<span class="check2"></span>
+                                    <input type="checkbox" name="rellenar"  />
+                                    <span class="check"></span>
                             </label>
                         </div>
-                </td>
-            </tr>
-        </table>
-        </form>
+                        Reutilizar correlativos
+                        <div class="input-control text">
+                                <input type="text" placeholder="Nombre del nuevo color"  name="nombre" required autofocus/> 
+                        </div>
+                        <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>        
+                    </form>
+                </div>
+            </div> 
+         </div>   
     </div>
-     <div class="input-control text span8">
-        <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);" />
-        <button class="btn-search" type="button"></button>
-    </div>
-    <div id="bigbox" style="margin:0px;display:!none;">
-        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-         </div>
-    </div>
-    <div style="clear: both;"></div>
 </div>
 <script type="text/javascript">
     function filtrarResultados(e){
@@ -89,4 +99,3 @@
     	grid.reload();
     }
 </script>
-

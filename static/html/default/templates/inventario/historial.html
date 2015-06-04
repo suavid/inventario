@@ -1,16 +1,33 @@
-<br/>
-<br/>
 <h3>Historial de documentos</h3>
-<br/>
-<br/>
-{paginacion}
-<br/>
-<br/>
-<br/>
-<table class="table span11" style="text-align:center;">
+<hr/>
+<form>
+    <div class="input-control text span2">
+        # Documento 
+        <input type="text" name="doc"/>
+    </div>
+    <div class="input-control text span2">
+        Propietario 
+        <input type="text" name="propietario"/>
+    </div>
+    <div class="input-control text span3" data-role="datepicker"/> 
+        <input type="text" name="fecha" required />
+        <button type="button" class="btn-date"></button>
+    </div>
+    <div class="input-control text span4"></div>
+    <div class="input-control select span2">
+        Estado 
+        <select name="estado">
+            <option value="3">Todos</option>
+            <option value="0">Pendiente</option>
+            <option value="1">Aplicado</option>
+        </select>
+    </div>
+    <button class="button">Buscar</button>
+</form>
+<table class="table span12" style="text-align:center;">
     <thead>
         <tr>
-            <th>ID</th>
+            <th># Documento</th>
             <th>
                 Propietario
             </th>
@@ -20,15 +37,13 @@
             <th>
                 Creado el
             </th>
-            <th>
-                Módulo
-            </th>
+            <th></th>
         </tr>
     </thead>
     <!-- START historial -->
     <tr>
         <td>
-            <a href="/{systemModuleName}/inventario/reporteDocumentoPr?id={id_documento}" target="_blank">{id_documento}</a>
+           {id_documento}
         </td>
         <td>
             {propietario}
@@ -40,8 +55,10 @@
             {fecha_creacion}
         </td>
         <td>
-            {modulo}
+             <a href="/{systemModuleName}/inventario/reporteDocumentoPr?id={id_documento}" target="_blank">Imprimir</a>
         </td>
     </tr>
     <!-- END historial -->
 </table>
+<br/>
+{paginacion}

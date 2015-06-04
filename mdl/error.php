@@ -4,8 +4,12 @@ class ErrorController {
 
     public function not_found() {
         proveedor_activo();
-        BM::singleton()->getObject('temp')->buildFromTemplates('error.html');
+        BM::singleton()->getObject('temp')->buildFromTemplates('template_nofixed.html');
+        template()->addTemplateBit('content', 'error.html');
+        BM::singleton()->getObject('temp')->getPage()->setTitle("Recurso no encontrado");
+        BM::singleton()->getObject('temp')->getPage()->addEstigma("username", Session::singleton()->getUser());
         BM::singleton()->getObject('temp')->parseExtras();
+        BM::singleton()->getObject('temp')->parseOutput();
         print BM::singleton()->getObject('temp')->getPage()->getContent();
     }
 

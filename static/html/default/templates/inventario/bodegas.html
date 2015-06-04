@@ -14,10 +14,10 @@
     }
 
     var colsOption = [
-        {id: 'id', header: "Id", width: 80},
+        {id: 'id', header: "Código", width: 50},
         {id: 'nombre', header: "Nombre", width: 250},
-        {id: 'usuario', header: "Encargado", width: 150},
-        {id: 'descripcion', header: "Descripcion", width: 250}
+        {id: 'usuario', header: "Encargado", width: 100},
+        {id: 'descripcion', header: "Descripcion", width: 217}
 
     ];
 
@@ -26,7 +26,7 @@
         id: grid_demo_id,
         loadURL: '/{systemModuleName}/grid_tables/bodega_grid_1',
         saveURL: '',
-        width: "733", //"100%", // 700,
+        width: "620", //"100%", // 700,
         height: "280", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
@@ -57,8 +57,38 @@
         url_parser.initialize();
         if (url_parser.isKey('err_no')) {
             if (url_parser.getValue('err_no') == 404) {
-                alert('la bodega no existe');
+                var not = $.Notify({
+	    		caption: "Error",
+	        	content: "La bodega no existe",
+	        	timeout: 3000,
+				style: {background: 'red', color: 'white'}
+	    	});
             }
+        }
+        
+        if(url_parser.isKey('insert')){
+            var not = $.Notify({
+	    		caption: "Actualización exitosa",
+	        	content: "Los datos se han escrito en la base de datos",
+	        	timeout: 3000,
+				style: {background: 'green', color: 'white'}
+	    	});
+        }
+        if(url_parser.isKey('modify')){
+            var not = $.Notify({
+	    		caption: "Modificación exitosa",
+	        	content: "El registro fue actualizado de forma correcta",
+	        	timeout: 3000,
+				style: {background: 'green', color: 'white'}
+	    	});
+        }
+        if(url_parser.isKey('del')){
+            var not = $.Notify({
+	    		caption: "Modificación exitosa",
+	        	content: "El registro fue eliminado de forma correcta",
+	        	timeout: 3000,
+				style: {background: 'green', color: 'white'}
+	    	});
         }
     });
 
@@ -135,68 +165,88 @@
 <div id="page-container">
     <div id="content">
         <h3>Administración de bodegas</h3>
+        <p class="text-muted">
+            Gestione las unidades de almacenamiento de productos en su empresa
+        </p>
         <hr/>
-        <h2>Nueva bodega</h2>
-        <form action="/{systemModuleName}/inventario/guardar_bodega" method="post" style="float: left;">
-            <div style="border:solid 1px #D3D3D3; margin-right:20px;padding:20px;display:table;">
-                <div style="margin-left:20px;">
-                    <div style="text-align:right;padding-right:70px;">
-                        <br/>
-                        Rellenar correlativos vacíos <input type="checkbox" name="rellenar" id="rellenar" /> 
+        <div class="grid fuild">
+            <div class="row">
+                <div class="panel span9" data-role="panel">
+                    <div class="panel-header">Bodegas</div>
+                    <div class="panel-content">
+                        <div class="input-control text span8">
+                            <input type="text" placeholder="Introduzca el nombre o el código de una bodega" onkeyup="filtrarResultados(event);"/>
+                            <button class="btn-search" type="button"></button>
+                        </div>
+                        <div id="bigbox" style="margin:15px;display:!none;margin:0 auto;left:0px;right:0px;">
+                            <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;margin:0 auto;left:0px;right:0px;" >
+            
+                            </div>
+                        </div>
+                        <p>
+                            <br/>
+                            <br/>
+                        </p>
+                        <div style="clear:both;"></div>
                     </div>
-                    <br/>
-                    Id (0 = Nueva bodega): 
-                    <div class="input-control text">
-                        <input type="text" style="width:300px;" name="id" id="id_" value="0" />
-                    </div>
-                    <br/>
-                    <span class="fg-red">*</span> Nombre:
-                    <div class="input-control text"  id="n_bodega"> 
-                        <input type="text" style="width:300px;" name="nombre" id="nombre" required/>
-                    </div> 
-                    <br/> 
-                    Encargado:
-                    <div class="input-control select" id="encargadoc">
-                        <select style="width:300px;" name="encargado" id="encargado">
-                            <!-- START empleados -->
-                            <option value="{id_datos}">{usuario}</option>
-                            <!-- END empleados -->
-                        </select>
-                    </div>
-                    <div class="input-control select" id="propietarioc" style="display:none;">
-                        <select style="width:300px;" name="encargado" id="propietario" disabled="disabled">
-                            <!-- START clientes -->
-                            <option value="{codigo_afiliado}">{primer_nombre} {primer_apellido} [{codigo_afiliado}]</option>
-                            <!-- END clientes -->
-                        </select>
-                    </div>
-                    <br/>
-                    <span class="fg-red">*</span> Descripci&oacute;n: 
-                    <div class="input-control textarea">
-                        <textarea style="width:300px;" name="descripcion" id="descripcion" required></textarea>
-                    </div>
-                    <br/>
-                    <br/>
-                    <button type="submit" class="info">Guardar</button>
-                    <button type="button" id="btnBorrar"><i class="icon-cancel"></i> Eliminar</button>
-                    <br /><br />
+                    <div style="clear:both;"></div>
                 </div>
-                <div style="clear: both;"></div>
-            </div>
-        </form>
-        <div style="margin-left: 30px; float: left;">
-            <h2>Mis bodegas</h2>
-            <hr/>
-            <div class="input-control text span8">
-                <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
-                <button class="btn-search" type="button"></button>
-            </div>
-            <div id="bigbox" style="margin:15px;display:!none;margin:0 auto;left:0px;right:0px;">
-                <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;margin:0 auto;left:0px;right:0px;" >
-
+                <div class="panel span5" data-role="panel">
+                    <div class="panel-header">Crear bodega</div>
+                    <div class="panel-content">
+                        <form action="/{systemModuleName}/inventario/guardar_bodega" method="post" style="float: left;">
+                            <div>
+                                <input type="checkbox" name="rellenar" id="rellenar" />
+                                Rellenar correlativos vacíos  
+                            </div>
+                            <br/> 
+                            <div class="input-control text">
+                                Código (0 = Nueva bodega)
+                                <br/>
+                                <input type="text" style="width:300px;" name="id" id="id_" value="0" />
+                            </div>
+                            <br/>
+                            <br/>
+                            <div class="input-control text"  id="n_bodega"> 
+                                <span class="fg-red">*</span> Nombre
+                                <br/>
+                                <input type="text" style="width:300px;" name="nombre" id="nombre" required/>
+                            </div> 
+                            <br/>
+                            <br/> 
+                            <div class="input-control select" id="encargadoc">
+                                Encargado
+                                <br/>
+                                <select style="width:300px;" name="encargado" id="encargado">
+                                    <!-- START empleados -->
+                                    <option value="{id_datos}">{usuario}</option>
+                                    <!-- END empleados -->
+                                </select>
+                            </div>
+                            <br/>
+                            <div class="input-control select" id="propietarioc" style="display:none;">
+                                <select style="width:300px;" name="encargado" id="propietario" disabled="disabled">
+                                    <!-- START clientes -->
+                                    <option value="{codigo_afiliado}">{primer_nombre} {primer_apellido} [{codigo_afiliado}]</option>
+                                    <!-- END clientes -->
+                                </select>
+                            </div>
+                            <br/>
+                            <div class="input-control textarea">
+                                <span class="fg-red">*</span> Descripción
+                                <br/>
+                                <textarea style="width:300px;" name="descripcion" id="descripcion" required></textarea>
+                            </div>
+                            <br/>
+                            <br/>
+                            <button type="submit" class="info">Guardar</button>
+                            <button type="button" id="btnBorrar"><i class="icon-cancel"></i> Eliminar</button>
+                            <br /><br />
+                        </form>
+                    </div>
+                    <div style="clear:both;"></div>
                 </div>
             </div>
         </div>
-        <div style="clear: both;"></div>
     </div>
 </div>

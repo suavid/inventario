@@ -13,7 +13,7 @@
 
     var colsOption = [
         {id: 'id', header: "Id", width: 92},
-        {id: 'nombre', header: "Material", width: 525, editor: {type: 'text'}}
+        {id: 'nombre', header: "Material", width: 285, editor: {type: 'text'}}
 
     ];
 
@@ -22,7 +22,7 @@
         id: grid_demo_id,
         loadURL: '/{systemModuleName}/grid_tables/material_grid_1',
         saveURL: '/{systemModuleName}/inventario/_actualizarMaterial',
-        width: "620", //"100%", // 700,
+        width: "380", //"100%", // 700,
         height: "280", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
@@ -41,45 +41,55 @@
     //Sigma.Util.onLoad(function() {
         mygrid.render();
     //});
+
 </script>
-
+<h3>Segmentación</h3>
+<p class="text-muted">Defina la forma en que se clasificarán sus productos</p>
+<hr/>
 <div id="page-container">
-    <div id="content" class="span8">
-        <form action="/{systemModuleName}/inventario/guardar_material" method="post">
-            <table>
-            <tr>
-                    <td><h3>Nuevo material:</h3></td>
-                    <td><h3>Reutilizar ID</h3></td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="input-control text">
-                        <input type="text" autofocus name="nombre" required/> 
+    <div id="content" class="grid">
+        <div class="row">
+            <div class="panel span6">
+                <div class="panel-header">Materiales</div>
+                <div class="panel-content">
+                    <div class="input-control text span5">
+                        <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
+                        <button class="btn-search" type="button"></button>
                     </div>
-                    <button type="submit" class="big"><i class="icon-save"></i>Agregar</button> 
-                </td>
-                <td>
-                    <div class="input-control checkbox">
-                        <label>
-                            <input type="checkbox" name="rellenar"  />
-                            <span class="check2"></span>
-                        </label>
-                    </div>   
-                </td>
-            </tr> 
-            </table>
-        </form>
+                    <br/>
+                    <div id="bigbox" style="margin:0px;display:!none;">
+                        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+                
+                         </div>
+                    </div>
+                    <div style="clear: both;"></div>  
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+            <div class="panel span4">
+                <div class="panel-header">
+                    Crear un nuevo material
+                </div>
+                <div class="panel-content">
+                     <form action="/{systemModuleName}/inventario/guardar_material" method="post">
+                        <div class="input-control checkbox">
+                            <label>
+                                    <input type="checkbox" name="rellenar"  />
+                                    <span class="check"></span>
+                            </label>
+                        </div>
+                        Reutilizar correlativos
+                        <div class="input-control text">
+                                <input type="text" placeholder="Nombre del nuevo material"  name="nombre" required autofocus/> 
+                        </div>
+                        <button type="submit" class="big"><i class="icon-save"></i>Agregar</button>        
+                    </form>
+                </div>
+            </div> 
+         </div>   
     </div>
-     <div class="input-control text span8">
-        <input type="text" placeholder="Buscar" onkeyup="filtrarResultados(event);"/>
-        <button class="btn-search" type="button"></button>
-    </div>
-    <div id="bigbox" style="margin:0px;display:!none;">
-        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-         </div>
-    </div>
-    <div style="clear: both;"></div>
 </div>
 <script type="text/javascript">
     function filtrarResultados(e){
