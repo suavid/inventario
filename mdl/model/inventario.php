@@ -142,7 +142,7 @@ class inventarioModel extends object {
     }
 
     public function general_producto($estilo){
-        $query = "SELECT producto.descripcion, linea.id as id_linea, catalogo.nombre as catalogo, linea.nombre as linea, n_pagina,  grupo.nombre as grupo FROM producto INNER JOIN linea on linea.id = producto.linea INNER JOIN catalogo on catalogo.id = producto.catalogo LEFT JOIN grupo on grupo.id = producto.grupo  WHERE estilo='{$estilo}'";
+        $query = "SELECT producto.descripcion, linea.id as id_linea, catalogo.nombre as catalogo, linea.nombre as linea, n_pagina,  grupo.nombre as grupo FROM producto LEFT JOIN linea on linea.id = producto.linea LEFT JOIN catalogo on catalogo.id = producto.catalogo LEFT JOIN grupo on grupo.id = producto.grupo  WHERE estilo='{$estilo}'";
         return data_model()->cacheQuery($query);
     }
 

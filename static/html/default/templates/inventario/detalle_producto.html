@@ -1,102 +1,111 @@
 <h3>Detalle del producto</h3>
 
-<p style="color: #636363; font-style: italic;">Se encontró {n} resultado/s del producto {estilo}</p>
+<p style="color: #636363; font-style: italic;">Se encontraron {n} resultado/s del producto {estilo}</p>
 <p>
 	<br/><br/>
 </p>
 <!-- START general -->
 	<hr/>
-	<div>
-		<img class="span6" style="float: left; margin-right: 40px;"  src="../static/img/productos/thumbnail_{id_linea}_{estilo}.jpg" alt="Sin asignar"/>
-		<div class="panel span6" style="float: left;">
-		    <div class="panel-header">
-		        Detalle del producto
-		    </div>
-		    <div class="panel-content">
-		        <table class="table span5" style="text-align: center;">
-		        	<tr>
-						<td><strong>Descripcion</strong></td>
-						<td>{descripcion}</td>
-					</tr>
-					<tr>
-						<td><strong>Linea</strong></td>
-						<td>{linea}</td>
-					</tr>
-					<tr>	
-						<td><strong>Catálogo</strong></td>
-						<td>{catalogo}</td>
-					</tr>
-					<tr>
-						<td><strong>No. Página</strong></td>
-						<td>{n_pagina}</td>
-					</tr>
-					<tr>
-						<td><strong>Grupo</strong></td>
-						<td>{grupo}</td>
-					</tr>
-					<tr>
-						<td><strong>Productos relacionados</strong></td>
-						<td>
-							<!-- START producto_sugerido_{id_linea} -->
-								<a href="/nymsa/inventario/detalle_de_producto?estilo={estilo_sugerencia}"> [{estilo_sugerencia}] </a>
-							<!-- END producto_sugerido_{id_linea} -->						
-						</td>
-					</tr>
-				</table>
-		    </div>
-		</div>
-		<div style="clear: both;"></div>
-	</div>
-
-	<div style="margin-top: 40px;">
-		<div class="panel span6" style=" margin-right: 40px; float: left;">
-		    <div class="panel-header">
-		        Estado de inventario
-		    </div>
-		    <div class="panel-content">
-		        <table class="table" style="text-align: center;">
-					<tr>
-						<th>Color</th>
-						<th>Talla</th>
-						<th>Stock</th>
-						<th>Precio</th>
-					</tr>
-					<!-- START estado_bodega_{id_linea} -->
-						<tr>
-							<td>{eb_color}</td>
-							<td>{eb_talla}</td>
-							<td>{eb_stock}</td>
-							<td>${eb_precio}</td>
+	<div class="grid">
+		<div class="row">
+			<div class="panel span6">
+				<div class="panel-header">
+					<i class="icon-pictures"></i> Imagen del producto
+				</div>
+				<div class="panel-content">
+					<img class="span5"  src="../static/img/productos/thumbnail_{id_linea}_{estilo}.jpg" onerror="imagenPorDefecto(event);" alt="Sin asignar"/>	
+				</div>
+			</div>
+			<div class="panel span6">
+			    <div class="panel-header">
+			        <i class="icon-list"></i> Detalle del producto
+			    </div>
+			    <div class="panel-content">
+			        <table class="table bordered">
+			        	<tr>
+							<td><strong>Descripcion</strong></td>
+							<td>{descripcion}</td>
 						</tr>
-					<!-- END estado_bodega_{id_linea} -->
-				</table>
-		    </div>
-		</div>
-		
-
-		<div class="panel span6" style="float: left;">
-		    <div class="panel-header">
-		        Inventario en tránsito
-		    </div>
-		    <div class="panel-content">
-		        <table class="table striped" style="text-align: center;">
-					<tr>
-						<th>Color</th>
-						<th>Talla</th>
-						<th>Cantidad</th>
-						<th>Se espera el</th>
-					</tr>
-					<!-- START producto_transito_{id_linea} -->
 						<tr>
-							<td>{ptr_color}</td>
-							<td>{ptr_talla}</td>
-							<td>{ptr_cantidad}</td>
-							<td>{ptr_fecha_espera}</td>
+							<td><strong>Linea</strong></td>
+							<td>{linea}</td>
 						</tr>
-					<!-- END producto_transito_{id_linea} -->
-				</table>
-		    </div>
+						<tr>	
+							<td><strong>Catálogo</strong></td>
+							<td>{catalogo}</td>
+						</tr>
+						<tr>
+							<td><strong>No. Página</strong></td>
+							<td>{n_pagina}</td>
+						</tr>
+						<tr>
+							<td><strong>Grupo</strong></td>
+							<td>{grupo}</td>
+						</tr>
+						<tr>
+							<td><strong>Productos relacionados</strong></td>
+							<td>
+								<!-- START producto_sugerido_{id_linea} -->
+									<a href="/nymsa/inventario/detalle_de_producto?estilo={estilo_sugerencia}"> [{estilo_sugerencia}] </a>
+								<!-- END producto_sugerido_{id_linea} -->						
+							</td>
+						</tr>
+					</table>
+			    </div>
+			</div>	
 		</div>
-		<div style="clear: both;"></div>
+		<div class="row">
+			<div class="panel span6">
+			    <div class="panel-header">
+					<i class="icon-database"></i> Estado de inventario
+			    </div>
+			    <div class="panel-content">
+			        <table class="table" style="text-align: center;">
+						<tr>
+							<th>Color</th>
+							<th>Talla</th>
+							<th>Stock</th>
+							<th>Precio</th>
+						</tr>
+						<!-- START estado_bodega_{id_linea} -->
+							<tr>
+								<td>{eb_color}</td>
+								<td>{eb_talla}</td>
+								<td>{eb_stock}</td>
+								<td>${eb_precio}</td>
+							</tr>
+						<!-- END estado_bodega_{id_linea} -->
+					</table>
+			    </div>
+			</div>
+			<div class="panel span6">
+			    <div class="panel-header">
+			        <i class="icon-clock"></i> Inventario en tránsito
+			    </div>
+			    <div class="panel-content">
+			        <table class="table striped" style="text-align: center;">
+						<tr>
+							<th>Color</th>
+							<th>Talla</th>
+							<th>Cantidad</th>
+							<th>Se espera el</th>
+						</tr>
+						<!-- START producto_transito_{id_linea} -->
+							<tr>
+								<td>{ptr_color}</td>
+								<td>{ptr_talla}</td>
+								<td>{ptr_cantidad}</td>
+								<td>{ptr_fecha_espera}</td>
+							</tr>
+						<!-- END producto_transito_{id_linea} -->
+					</table>
+			    </div>
+			</div>
+		</div>
 	</div>
 <!-- END general -->
+<script type="text/javascript">
+	function imagenPorDefecto(e){
+		$(e.target).attr('src', '../static/img/no_disponible.gif');
+	}
+</script>

@@ -409,7 +409,7 @@
         id : grid_demo2_id,
         loadURL : '/{systemModuleName}/inventario/cargar_cfd?tblname=detalle_traslado&field=id_ref&value={idencabezado}',
         saveURL : '',
-        width: "100%", //"100%", // 700,
+        width: "645", //"100%", // 700,
         height: "260", //"100%", // 330,
         container : 'gridbox2',
         replaceContainer : true,
@@ -572,32 +572,33 @@
 
 </script>
 
-<div style="text-align:right;padding-right: 40px;">
+<div style="padding-right: 40px;">
     <!--Consigna <input type="checkbox" id="iConsigna" disabled="disabled" />-->
     <button type="button" onclick="imprimir();" ><i class="icon-printer"></i> Imprimir </button>
+    <button class="success" id="btnGuardar" onclick="commit_tran();">Aplicar</button>
 </div>
-
+<br/>
 <div style="display:table;">
     <div style="float:left;">
-        <div style="width:150px;text-align:right;">
+        <div style="width:200px;">
             Costo
-            <div class="input-control text" style="width:100px">
-                <input type="text" value="" disabled="disabled"/>
+            <div class="input-control text">
+                <input type="text" value="" readonly/>
             </div>
             Precio
-            <div class="input-control text" style="width:100px">
-                <input type="text" value="" disabled="disabled"/>
+            <div class="input-control text">
+                <input type="text" value="" readonly/>
             </div>
             Margen
-            <div class="input-control text" style="width:100px">
-                <input type="text" value="" id="smargen" disabled="disabled"/>
+            <div class="input-control text">
+                <input type="text" value="" id="smargen" readonly/>
             </div>
         </div>
         <div style="width:200px;height:200px;overflow:hidden;border:solid 1px #D3D3D3;">
 
         </div>
     </div>
-    <div style="float:left;text-align:right;margin-left:15px;">
+    <div style="float:left;text-align:right;margin-left:35px;">
         Origen
         <div class="input-control select disabled"  style="width:150px">
             <select disabled="disabled" id="bOrigen">
@@ -638,7 +639,7 @@
             <input type="text" id="stalla" value=""/>
         </div>
         <br/>
-        <button class="large primary" id="btnAplicar" onclick="commit();">Aplicar</button>
+        <button class="primary" id="btnAplicar" onclick="commit();">Aplicar</button>
         <br/>
         <br/>
         Proveedor
@@ -651,15 +652,18 @@
         <div class="input-control select disabled" style="width:150px">
             <select disabled="disabled" id="scatalogo"></select>
         </div>
-        <div class="input-control text" style="width:50px">
+        <br/>
+        Página
+        <div class="input-control text" style="width:150px">
             <input type="text" value="" id="spagina" disabled="disabled" />
         </div>
     </div>
 
-    <div style="float:left;width:630px; margin-left: 30px;">
+    <div class="panel span9" style="float:left; margin-left: 30px;">
 
     <!-- GRID PRINCIPAL -->
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;Tipo de transaccion: {tipoTransaccion}</p>
+        <div class="panel-header">&nbsp;&nbsp;&nbsp;&nbsp;Tipo de transaccion: {tipoTransaccion}</div>
+            <div class="panel-content">
         <div id="bigbox" style="margin:15px;display:!none;">
             <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
@@ -685,14 +689,28 @@
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;Saldo: <input type="text" id="t_saldo" value="0.0"	readonly="readonly" />
         </div>
-
+    </div>
+    <br/>
     </div>
 </div>
-
+<div style="clear: both;"></div>
+<br/>
+<br/>
 <!-- DETALLE -->
-<div id="bigbox2" style="margin:15px;display:!none;">
-    <button class="success" id="btnGuardar" onclick="commit_tran();">Guardar</button>
-    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
+<div class="grid">
+    <div class="row">
+        <div class="span6"></div>
+        <div class="panel span9">
+            <div class="panel-header">
+                Detalle
+            </div>
+            <div class="panel-content">
+                <div id="bigbox2" style="margin:15px;display:!none;">
+                    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+                
+                    </div>
+                </div>  
+            </div>
+        </div>
     </div>
 </div>

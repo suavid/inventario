@@ -29,6 +29,12 @@
 			return false;
 		}
 	}
+	
+	
+	function imagenPorDefecto(e){
+		$(e.target).attr('src', '../static/img/no_disponible.gif');
+	}
+
 
 	function cargarEstilos(){
 		var uri  = "/{systemModuleName}/inventario/obtenerEstilos";
@@ -54,57 +60,68 @@
 		$('#ilinea').val(linea);
 		$('#iestilo').val(estilo);
 		$('#foto').html("");
-		$('#foto').append('<img style="width: 400px; border: solid 1px #d3d3d3; padding: 10px;" src="../static/img/productos/thumbnail_'+linea+'_'+estilo+'.jpg" alt="Sin asignar"/>')
+		$('#foto').append('<img style="width: 400px; border: solid 1px #d3d3d3; padding: 10px;" onerror="imagenPorDefecto(event);" src="../static/img/productos/thumbnail_'+linea+'_'+estilo+'.jpg" alt="Sin asignar"/>')
 	}
 </script>
-<br/>
-<br/>
-<table style="text-align: center; float: left; margin-top: 15px;">
-	<tr>
-		<td>Seleccione una linea</td>
-		<td>Seleccione un estilo</td>
-	</tr>
-	<tr>
-		<td>
-			<div class="input-control select span4">
-				<select id="linea">
-					<!-- START lineas -->
-					<option value="{id}">{nombre}</option>
-					<!-- END lineas -->
-				</select>
-			</div>
-		</td>
-		<td>
-			<div class="input-control select span4">
-				<select id="estilo">
-					
-				</select>
-			</div>
-		</td>
-	</tr>
-</table>
-<div style="float: left; margin-left: 70px;">
-	<h2>Actualizar foto del producto</h2>
-	<br/>
-	<form id="formArchivo" enctype="multipart/form-data" action="/{systemModuleName}/inventario/actualizarFotoProducto" method="post">
-		    <div class="input-control file span4">
-		    	<input type="file" name="archivo" />
-		    	<button class="btn-file"></button>
-		    </div>
-		<input type="hidden" id="ilinea" name="linea"/>
-		<input type="hidden" id="iestilo" name="estilo"/>
-		<br/>
-		<br/>
-		<input type="submit" value="Guardar" />
-	</form>
-</div>
-<div style="clear: both;"></div>
+<h3>Actualizar la imagen del producto</h3>
+<p class="text-muted">Puede mostrar a sus clientes como son sus productos por medio de imágenes</p>
 <hr/>
-<div style="text-align: center;">
-	<h3>Imagen actual</h3>
-	<br /><br />
-	<div id="foto">
-		
+<div class="grid">
+	<div class="row">
+		<div class="panel span5">
+					<div class="panel-header">
+						Selección del producto
+					</div>
+					<div class="panel-content">
+						Seleccione una linea
+						<div class="input-control select">
+							<select id="linea">
+								<!-- START lineas -->
+								<option value="{id}">{nombre}</option>
+								<!-- END lineas -->
+							</select>
+						</div>
+						<div class="input-control select">
+							Seleccione un estilo
+							<select id="estilo">
+								
+							</select>
+						</div>
+						<br/>
+						<br/>
+					</div>
+		</div>		
+		<div class="panel span5">
+					<div class="panel-header">
+						Seleccione una nueva foto
+					</div>
+					<div class="panel-content">
+						<br/>
+						<form id="formArchivo" enctype="multipart/form-data" action="/{systemModuleName}/inventario/actualizarFotoProducto" method="post">
+						    <div class="input-control file">
+						    	<input type="file" name="archivo" />
+						    	<button class="btn-file"></button>
+						    </div>
+							<input type="hidden" id="ilinea" name="linea"/>
+							<input type="hidden" id="iestilo" name="estilo"/>
+							<br/>
+							<br/>
+							<input type="submit" value="Guardar" />
+						</form>	
+	 		</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="panel span5">
+			<div class="panel-header">
+				Imagen actual
+			</div>
+			<div class="panel-content">
+				<div id="foto">
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
+
 

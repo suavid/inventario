@@ -210,7 +210,11 @@
     }
 </style>
 <section>
-    <h2>Traslado de producto</h2>
+    <h3>Traslados</h3>
+    <p class="text-muted">
+        Ingrese, saque o mueva productos de sus bodegas. Cada transacción es registrada automáticamente en el Kardex
+    </p>
+    <hr/>
     <form id="fg" style="display:table;" method="post" action="/{systemModuleName}/inventario/salvar_traslado">
         <div style="width:400px; float:left;"> 
             <!--<div class="input-control checkbox">
@@ -352,7 +356,6 @@
             <br/>
             <br/>
             <button type="submit" class="button large success">Siguiente</button>
-            <button type="button" class="button large" onclick="location.href = '/{systemModuleName}/inventario/listadoTraslado'"><i class="icon-list"></i> Ver traslados</button>
         </div>
     </form>
 </section>

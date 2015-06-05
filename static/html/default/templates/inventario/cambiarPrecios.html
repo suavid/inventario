@@ -1,18 +1,3 @@
-<style>
-    #bigbox{
-        position: absolute;
-        width: 40%;
-        top: 370px;
-        right: 0px;
-    }
-
-    #bigbox2{
-        position: absolute;
-        width: 40%;
-        top: 100px;
-        right: 0px;
-    }
-</style>
 <script>
 
     var grid_demo_id = "stock_grid";
@@ -115,7 +100,7 @@
         loadURL: '/{systemModuleName}/inventario/cargar_stock2',
         saveURL: '',
         width: "100%", //"100%", // 700,
-        height: "250", //"100%", // 330,
+        height: "280", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
@@ -134,7 +119,7 @@
         loadURL: '/{systemModuleName}/inventario/cargar?tblname=producto',
         saveURL: '',
         width: "100%", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        height: "280", //"100%", // 330,
         container: 'gridbox2',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
@@ -518,148 +503,214 @@
     }
 
 </script>
-<section style="width:60%; overflow:auto;">
-    <div style="display:table;">
-        <h2>Filtrar productos</h2>
-        <br />
-        <br />
-        <div class="input-control text span3"> 
-            <input type="text" name="linea" id="linea" placeholder="Linea"/>
+<h3>Actualizar productos</h3>
+<p class="text-muted">
+    Mantenga actualizados los datos de sus productos
+</p>
+<hr/>
+<div class="grid">
+    <div class="row">
+        <div class="panel span8">
+            <div class="panel-header">
+                <i class="icon-filter"></i> Filtrar productos
+            </div>
+            <div class="panel-content">
+                <br />
+                <label>Datos del producto</label>
+                <div class="input-control text span3"> 
+                    <input type="text" name="linea" id="linea" placeholder="Linea"/>
+                </div>
+                <br />
+                <br />
+                <br />
+                <div class="input-control text span3">
+                    <input type="text" name="estilo" id="estilo" placeholder="Estilo"/>
+                </div>
+                <br />
+                <br />
+                <br />
+                <div class="input-control text span3">        
+                    <input type="text" name="color" id="color" placeholder="Color"/>
+                </div>
+                <br />
+                <br />
+                <br />
+                <label>Corrida</label>
+                <div class="input-control text span3">
+                    <input type="text" name="talla" id="talla" placeholder=" desde"/>  
+                </div>
+                <br />
+                <br />
+                <br />
+                <div class="input-control text span3">
+                    <input type="text" name="talla2" id="talla2" placeholder="hasta"/>
+                </div> 
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+            </div>
         </div>
-        <br />
-        <div class="input-control text span3">
-            <input type="text" name="estilo" id="estilo" placeholder="Estilo"/>
+        <div class="panel span8">
+            <div class="panel-header">
+                <i class="icon-cycle"></i> Actualizar datos
+            </div>
+            <div class="panel-content">
+                <div style="display: table; text-align:right;">
+                    <form style="float:left;">
+                        <table style="width:200px;" class="table bordered" >
+                            <caption>
+                                <p>
+                                    Datos anteriores
+                                </p>
+                            </caption>
+                            <tr>
+                                <td colspan="2"> 
+                                    <div class="input-control text">
+                                        <input type="text" name="precio" id="precio" readonly placeholder="Precio actual"/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"> 
+                                    <div class="input-control text">
+                                        <input type="text" name="catalogo" id="catalogo" placeholder="Catálogo actual" readonly/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"> 
+                                    <div class="input-control text">
+                                        <input type="text" name="pagina" id="pagina" placeholder="Página de catálogo" readonly/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="input-control select"> 
+                                        <select name="propiedad" id="propiedad" disabled="disabled">
+                                            <option value="1">Liquidacion</option>
+                                            <option value="2">Comprado</option>
+                                            <option value="3">Consignacion</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+            
+            
+            
+                    <form style="float:left;" id="selecciones">
+                        <table style="width:350px;" class="table bordered">
+                            <caption>
+                                <p>
+                                    Datos nuevos
+                                </p>
+                            </caption>
+                            <tr>
+                                <td> 
+                                    <div class="input-control text">
+                                        <input type="text" name="nprecio" id="nprecio" placeholder="Nuevo precio"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    Modificar? 
+                                    <input type="checkbox" name="_precio" id="_precio" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="input-control select"> 
+                                        <select name="ncatalogo" id="ncatalogo" style="padding: 7.5px;" />
+                                        <!-- START l_catalogos -->
+                                        <option value="{id}">{nombre} (ID:{id})</option>
+                                        <!-- END l_catalogos -->
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    Modificar?
+                                    <input type="checkbox" name="_catalogo" id="_catalogo" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="input-control text"> 
+                                        <input type="text" name="npagina" id="npagina" placeholder="Nueva página de catálogo"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    Modificar?
+                                    <input type="checkbox" name="_pagina" id="_pagina" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="input-control select"> 
+                                        <select name="npropiedad" id="npropiedad">
+                                            <option value="1">Liquidacion</option>
+                                            <option value="2">Comprado</option>
+                                            <option value="3">Consignacion</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    Modificar?
+                                    <input type="checkbox" name="_propiedad" id="_propiedad" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                    <p style="text-align:right;">
+                        <button class="primary" id="btnCambios">Guardar los cambios realizados</button>
+                    </p>
+                    </form>
+                </div>
+            </div>
+        </div>   
+        
+    </div>
+    <div class="row">
+        <div class="panel span8">
+            <div class="panel-header">
+                <i class="icon-database"></i> Productos
+            </div>
+            <div class="panel-content">
+                <div id="bigbox" style="margin:15px;display:!none;">
+                    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+            
+                    </div>
+                </div>
+            </div>
         </div>
-        <br />
-        <div class="input-control text span3">        
-            <input type="text" name="color" id="color" placeholder="Color"/>
-        </div>
-        <br />
-        <div class="input-control text span3">
-            <input type="text" name="talla" id="talla" placeholder="Corrida desde"/>  
-        </div>
-        <div class="input-control text span3">
-            <input type="text" name="talla2" id="talla2" placeholder="hasta"/>
+        <div class="panel span8">
+            <div class="panel-header">
+                <i class="icon-list"></i> Detalle
+            </div>
+            <div class="panel-content">
+                <div id="bigbox2" style="margin:15px;display:!none;">
+                    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+            
+                    </div>
+                </div>
+            </div>
         </div> 
-        <!--
-        <div style="width:150px; min-height:150px; border:solid 1px #D3D3D3; float:left; margin-left:50px; padding:5px">
-            <img src="" alt="No disponible" style="width:140px; min-height:140px;" id="prev"/>
+    </div>
+</div>
+    
+
+
+<div>  
+    <div id="bigbox3" style="margin:15px;display:!none;">
+        <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+
         </div>
-        -->
     </div>
-    <br /><br />
-    <h2>Seleccione para aplicar los cambios</h2>
-    <br />
-    <br />
-    <div style="display: table; text-align:right;">
-        <form style="float:left;">
-            <table style="width:200px;" class="table hovered" >
-                <caption>
-                    <p>
-                        Datos anteriores
-                    </p>
-                </caption>
-                <tr>
-                    <td colspan="2"> 
-                        <div class="input-control text">
-                            <input type="text" name="precio" id="precio" readonly placeholder="Precio actual"/>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"> 
-                        <div class="input-control text">
-                            <input type="text" name="catalogo" id="catalogo" placeholder="Catálogo actual" readonly/>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"> 
-                        <div class="input-control text">
-                            <input type="text" name="pagina" id="pagina" placeholder="Página de catálogo" readonly/>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="input-control select"> 
-                            <select name="propiedad" id="propiedad" disabled="disabled">
-                                <option value="1">Liquidacion</option>
-                                <option value="2">Comprado</option>
-                                <option value="3">Consignacion</option>
-                            </select>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </form>
+    <div id="bigbox4" style="margin:15px;display:!none;">
+        <div id="gridbox4" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
 
-
-
-        <form style="float:left;" id="selecciones">
-            <table style="width:350px;" class="table hovered">
-                <caption>
-                    <p>
-                        Datos nuevos
-                    </p>
-                </caption>
-                <tr>
-                    <td> 
-                        <div class="input-control text">
-                            <input type="text" name="nprecio" id="nprecio" placeholder="Nuevo precio"/>
-                        </div>
-                    </td>
-                    <td>
-                        Modificar? 
-                        <input type="checkbox" name="_precio" id="_precio" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="input-control select"> 
-                            <select name="ncatalogo" id="ncatalogo" style="padding: 7.5px;" />
-                            <!-- START l_catalogos -->
-                            <option value="{id}">{nombre} (ID:{id})</option>
-                            <!-- END l_catalogos -->
-                            </select>
-                        </div>
-                    </td>
-                    <td>
-                        Modificar?
-                        <input type="checkbox" name="_catalogo" id="_catalogo" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="input-control text"> 
-                            <input type="text" name="npagina" id="npagina" placeholder="Nueva página de catálogo"/>
-                        </div>
-                    </td>
-                    <td>
-                        Modificar?
-                        <input type="checkbox" name="_pagina" id="_pagina" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="input-control select"> 
-                            <select name="npropiedad" id="npropiedad">
-                                <option value="1">Liquidacion</option>
-                                <option value="2">Comprado</option>
-                                <option value="3">Consignacion</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td>
-                        Modificar?
-                        <input type="checkbox" name="_propiedad" id="_propiedad" />
-                    </td>
-                </tr>
-            </table>
-        </form>
-        <p style="text-align:right;">
-            <button class="bg-color-blue fg-color-white" id="btnCambios">Guardar</button>
-        </p>
-        </form>
+        </div>
     </div>
-</section>
+</div>

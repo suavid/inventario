@@ -101,54 +101,64 @@
 </p>
 
 <!-- FORMULARIO DE FILTRADO -->
-<form style="float: left; display: block;" class="span12">
-	<div class="input-control checkbox">
-		<label>
-			<input type="checkbox" id="entradas" checked="checked"/>
-			<span class="check"></span>
-			Entradas
-		</label>
+<div class="panel">
+	<div class="panel-header"><i class="icon-filter"></i> Filtrar resultados del kardex</div>
+	<div class="panel-content">
+		<form style="display: block;">
+			<div class="input-control checkbox">
+				<label>
+					<input type="checkbox" id="entradas" checked="checked"/>
+					<span class="check"></span>
+					Entradas
+				</label>
+			</div>
+			<div class="input-control checkbox">
+				<label>
+					<input type="checkbox" id="salidas" checked="checked" />
+					<span class="check"></span>
+					Salidas
+				</label>
+			</div>
+			<br/><br/>
+		    <div class="input-control text span1">
+		    	<input type="text" id="linea" placeholder="Linea"/>
+		    </div>
+		    <div class="input-control text span2">
+		    	<input type="text" id="estilo" placeholder="Estilo"/>
+		    </div>
+		    <div class="input-control text span1">
+		    	<input type="text" id="color" placeholder="Color"/>
+		    </div>
+		    <div class="input-control text span1">
+		    	<input type="text" id="talla" placeholder="Talla"/>
+		    </div>
+			<div class="input-control text span2">
+		    	<input type="text" id="proveedor" placeholder="Proveedor"/>
+		    </div>
+			<div id="limitInf" class="input-control text span3">
+		    	<input type="text" id="fe_limitInf" />
+		    	<button type="button" class="btn-date"></button>
+		    </div>
+		    <div id="limitSup" class="input-control text span3">
+		    	<input type="text" id="fe_limitSup"/>
+		    	<button type="button" class="btn-date"></button>
+		    </div>
+			
+		    <button type="button" class="primary" onclick="generar_kardex();"> Consultar </button>
+		</form>
 	</div>
-	<div class="input-control checkbox">
-		<label>
-			<input type="checkbox" id="salidas" checked="checked" />
-			<span class="check"></span>
-			Salidas
-		</label>
-	</div>
-	<br/><br/>
-    <div class="input-control text span1">
-    	<input type="text" id="linea" placeholder="Linea"/>
-    </div>
-    <div class="input-control text span2">
-    	<input type="text" id="estilo" placeholder="Estilo"/>
-    </div>
-    <div class="input-control text span1">
-    	<input type="text" id="color" placeholder="Color"/>
-    </div>
-    <div class="input-control text span1">
-    	<input type="text" id="talla" placeholder="Talla"/>
-    </div>
-	<div class="input-control text span2">
-    	<input type="text" id="proveedor" placeholder="Proveedor"/>
-    </div>
-	<div id="limitInf" class="input-control text span3">
-    	<input type="text" id="fe_limitInf" />
-    	<button type="button" class="btn-date"></button>
-    </div>
-    <div id="limitSup" class="input-control text span3">
-    	<input type="text" id="fe_limitSup"/>
-    	<button type="button" class="btn-date"></button>
-    </div>
-	
-    <button type="button" class="primary" onclick="generar_kardex();"> Consultar </button>
-</form>
+</div>
 <!-- FIN FORMULARIO DE FILTRADO -->
-
-<div style="clear: both;"></div>
 <p>
 	<br /><br />
 </p>
-<div id="kardex_content">
-
+<div class="panel">
+	<div class="panel-header">
+		<i class="icon-clock"></i> Transacciones 
+	</div>
+	<div class="panel-content">
+		<div id="kardex_content">
+		
+		</div>
+	</div>
 </div>

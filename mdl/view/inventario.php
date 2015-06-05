@@ -362,7 +362,7 @@ class inventarioView {
             template()->buildFromTemplates('template_nofixed.html');
             page()->setTitle('Traslados');
             page()->addEstigma("username", $usuario);
-            page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
             page()->addEstigma("TITULO", 'Traslados');
             template()->addTemplateBit('content', 'inventario/traslado_listado.html');
             template()->parseOutput();
@@ -673,7 +673,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Productos');
         page()->addEstigma("username", $usuario);
-        page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
+        page()->addEstigma("back_url", '/inventario/inventario/principal');
         page()->addEstigma("TITULO", 'Resumen general');
         template()->addTemplateBit('content', 'inventario/resumenGeneralProducto.html');
         template()->parseOutput();
@@ -1041,7 +1041,7 @@ class inventarioView {
     public function cambiarPrecios($user, $cache) {
         import('scripts.secure');
         if(verifyAccess("inventario", "inventario", "cambiarPrecios", Session::singleton()->getUser())){
-            template()->buildFromTemplates('template_table.html');
+            template()->buildFromTemplates('template_nofixed.html');
             page()->addEstigma("TITULO", 'Cambios');
             page()->setTitle('Cambios');
             page()->addEstigma("username", $user);

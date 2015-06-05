@@ -345,24 +345,24 @@ class inventarioController extends controller {
     }
 
     public function detalle_de_producto(){
-        if(isset($_GET['estilo']) && !empty($_GET['estilo']) ){
-            $general = $this->model->general_producto($_GET['estilo']);
-            $n = $this->model->c_general_producto($_GET['estilo']);
-            $lineas = $this->model->l_general_producto($_GET['estilo']);
+        if(isset($_GET['estilo']) ){
+            $general = $this->model->general_producto(data_model()->sanitizeData($_GET['estilo']));
+            $n = $this->model->c_general_producto(data_model()->sanitizeData($_GET['estilo']));
+            $lineas = $this->model->l_general_producto(data_model()->sanitizeData($_GET['estilo']));
             $cache_stock     = array();
             $cache_transito  = array();
             $cache_sugeridos = array();
             
             foreach ($lineas as $linea) {
-                $cache_stock[$linea] = $this->model->detalle_producto_stock($linea, $_GET['estilo']);
+                $cache_stock[$linea] = $this->model->detalle_producto_stock($linea, data_model()->sanitizeData($_GET['estilo']));
             }
 
             foreach ($lineas as $linea) {
-                $cache_transito[$linea] = $this->model->detalle_producto_transito($linea, $_GET['estilo']);
+                $cache_transito[$linea] = $this->model->detalle_producto_transito($linea, data_model()->sanitizeData($_GET['estilo']));
             }
 
             foreach ($lineas as $linea) {
-                $cache_sugeridos[$linea] = $this->model->get_child('productos_sugeridos')->obtener_productos_sugeridos($linea, $_GET['estilo']);
+                $cache_sugeridos[$linea] = $this->model->get_child('productos_sugeridos')->obtener_productos_sugeridos($linea, data_model()->sanitizeData($_GET['estilo']));
             }
 
             $this->view->detalle_de_producto($_GET['estilo'], $general, $n, $lineas, $cache_stock, $cache_transito, $cache_sugeridos);
@@ -1348,18 +1348,18 @@ class inventarioController extends controller {
             }
             
             $data = array();
-            if(isset($_GET['doc'])&&!empty($_GET['doc'])) $data["doc"] = data_model()->sanitizeData($_GET['doc']);
+            if(isset($_GET['doc'])&&!empty($_GET['doc'])) $data["id_documento"] = data_model()->sanitizeData($_GET['doc']);
             if(isset($_GET['propietario'])&&!empty($_GET['propietario'])) $data["propietario"] = data_model()->sanitizeData($_GET['propietario']);
             if(isset($_GET['fecha'])&&!empty($_GET['fecha'])) $data["fecha_creacion"] = data_model()->sanitizeData($fecha);
-            if(isset($_GET['estado'])&& (strlen($_GET['estado'])>0)) $data["estado"] = data_model()->sanitizeData($_GET['estado']);
+            if(isset($_GET['estado'])&& (strlen($_GET['estado'])>0) && $_GET['estado']!=3 ) $data["estado"] = data_model()->sanitizeData($_GET['estado']);
             
              
             
             $url_str = "";
-            if(isset($_GET['doc'])&&!empty($_GET['doc'])) $url_str.="doc=".$data['doc']."&";
+            if(isset($_GET['doc'])&&!empty($_GET['doc'])) $url_str.="doc=".$data['id_documento']."&";
             if(isset($_GET['propietario'])&&!empty($_GET['propietario'])) $url_str.="propietario=".$data['propietario']."&";
             if(isset($_GET['fecha'])&&!empty($_GET['fecha'])) $url_str.="fecha=".$_GET['fecha']."&";
-            if(isset($_GET['estado'])&&!empty($_GET['estado'])) $url_str.="estado=".$data['estado']."&";
+            if(isset($_GET['estado'])&&!empty($_GET['estado'])&& $_GET['estado']!=3) $url_str.="estado=".$data['estado']."&";
            
             $numeroRegistros = $this->model->get_child('documento')->MultyQuantify($data);
             $url_filtro = "/inventario/inventario/inventarioHistorial?".$url_str;

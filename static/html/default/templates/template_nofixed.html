@@ -152,8 +152,21 @@
                     <a class="element" href="/{systemModuleName}/inventario/segmentacion"><i class="icon-list"></i> Segmentación</a>
                     <a class="element" href="/{systemModuleName}/inventario/proveedores"><i class="icon-user-2"></i> Proveedores</a>
                     <a class="element" href="/{systemModuleName}/inventario/bodegas"><i class="icon-box"></i> Bodegas</a>
-                    <a class="element" href="/{systemModuleName}/inventario/nuevo_producto"><i class="icon-basket"></i> Productos</a>
-                    <a class="element" href="/{systemModuleName}/inventario/traslados"><i class="icon-tab"></i> Traslados</a>
+                    <div class="element">    
+                        <a class="dropdown-toggle" href="#"><i class="icon-basket"></i> Productos</a>
+                        <ul class="dropdown-menu" data-role="dropdown">
+                            <li><a href="/{systemModuleName}/inventario/nuevo_producto"><i class="icon-equalizer"></i> Mantenimiento</a></li>
+                            <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-book"></i> Catálogo</a></li>
+                        </ul>
+                    </div>
+                    <div class="element">
+                        <a class="dropdown-toggle" href="#"><i class="icon-tab"></i> Transacciones</a>
+                        <ul class="dropdown-menu" data-role="dropdown">
+                            <li><a href="/{systemModuleName}/inventario/traslados">Traslados</a></li>
+                            <li><a href="/{systemModuleName}/inventario/listadoTraslado">Historial de traslados</a></li>
+                        </ul>    
+                    </div>
+                    
                     <!--<a class="element" href="/{systemModuleName}/inventario/orden_compra"><i class="icon-clipboard"></i> Compras</a>-->
                     <div class="element">
                         <a class="dropdown-toggle" href="#"><i class="icon-plus-2"></i> Más</a>

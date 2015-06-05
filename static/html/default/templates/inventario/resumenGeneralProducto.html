@@ -353,33 +353,130 @@
 </script>
 
 <h2>Productos registrados en el sistema</h2>
-<br/>
-<div class="input-control text span1">
-    <input id="estilo" type="text" placeholder="Estilo"/>
-</div>
-<div class="input-control text span1">
-    <input id="linea" type="text" placeholder="Linea"/>
-</div>
-<div class="input-control text span2">
-    <input id="codigo_origen" type="text" placeholder="Código de origen"/>
-</div>
-<div class="input-control text span3">
-    <input id="descripcion" type="text" placeholder="Descripción"/>
-</div>
-<div class="input-control text span2">
-    <input id="catalogo" type="text" placeholder="Catálogo"/>
-</div>
-<div class="input-control text span1">
-    <input id="pagina" type="text" placeholder="Página"/>
-</div>
-<div class="input-control text span2">
-    <input id="del" type="text" placeholder="Del"  onkeyup="mascara(this, '/', patron_fecha, true)" maxlength="10"/>
-</div>
-<div class="input-control text span2">
-    <input id="al" type="text" placeholder="Al"  onkeyup="mascara(this, '/', patron_fecha, true)" maxlength="10"/>
-</div>
-<div id="bigbox" style="margin:15px;display:!none;">
-    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
+<p class="text-muted">Consulte el catálogo de productos</p>
+<hr/>
+<div class="grid">
+    <div class="row">
+        <div class="panel span10">
+            <div class="panel-header"> 
+                <i class="icon-filter"></i> Filtrar registros del catálogo 
+            </div>
+            <div class="panel-content">
+                <div class="grid">
+                    <div class="row">
+                        <div class="span2">
+                            <div class="input-control text">
+                                Estilo
+                                <br/>
+                                <input id="estilo" type="text" placeholder="Ej: 1001"/>
+                            </div>    
+                        </div>
+                        <div class="span2">
+                            <div class="input-control text">
+                                Código de linea
+                                <br/>
+                                <input id="linea" type="text" placeholder="Ej: 1"/>
+                            </div>
+                        </div>
+                        <div class="span2">
+                            <div class="input-control text">
+                                Código de origen
+                                <br/>
+                                <input id="codigo_origen" type="text" placeholder="Ej: ATX-001"/>
+                            </div>
+                        </div> 
+                        <div class="span3">
+                            <div class="input-control text">
+                                Descripción
+                                <br/>
+                                <input id="descripcion" type="text" placeholder="Ej: Calzado para caballero"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span2">
+                            <div class="input-control text">
+                                Código de catálogo
+                                <br/>
+                                <input id="catalogo" type="text" placeholder="Ej: 28"/>
+                            </div>
+                        </div>
+                        <div class="span2">
+                            <div class="input-control text">
+                                No. Pag
+                                <br/>
+                                <input id="pagina" type="text" placeholder="Página"/>
+                            </div>
+                        </div>
+                        <div class="span2">
+                            <div class="input-control text">
+                                Ingresado del
+                                <br/>
+                                <input id="del" type="text" placeholder="aaaa/mm/dd"  onkeyup="mascara(this, '/', patron_fecha, true)" maxlength="10"/>
+                            </div>    
+                        </div>
+                        <div class="span2">
+                            <div class="input-control text">
+                                Al
+                                <br/>
+                                <input id="al" type="text" placeholder="aaaa/mm/dd"  onkeyup="mascara(this, '/', patron_fecha, true)" maxlength="10"/>
+                            </div>    
+                        </div>
+                    </div>
+                </div>         
+            </div>
+        </div> 
+        <div class="span5">
+            <div class="panel">
+                <div class="panel-header">
+                    <i class="icon-info"></i> Consejo
+                </div>
+                <div class="panel-content">
+                    <p>
+                        Para aplicar los filtros escriba los parámetros de búsqueda sobre los campos de la izquierda.
+                        Una vez haya cambiado el valor presione la tecla tabulador en su teclado  (<i class="icon-tab-2"></i>) y el filtro
+                        se aplicará de forma automática. 
+                    </p>    
+                </div>
+            </div>
+        </div> 
     </div>
 </div>
+<br/>
+<div class="grid">
+    <div class="row">
+        <div class="span10">
+            <div class="panel">
+               <div class="panel-header">
+                   <i class="icon-database"></i> Productos
+               </div>
+               <div class="panel-content">
+                  <div id="bigbox" style="margin:0px;display:!none;">
+                    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+                
+                    </div>
+                </div> 
+               </div>
+            </div>
+        </div>
+        <div class="span5">
+            <div class="panel">
+                <div class="panel-header">
+                    <i class="icon-info"></i> Consejo
+                </div>
+                <div class="panel-content">
+                    <p>
+                        Si desea más información sobre un producto digite el estilo del producto
+                        en la barra de búsqueda y presione el botón de búsqueda para obtener información
+                        detallada.
+                    </p>    
+                    <p>
+                        <br/>   
+                        <img src="../static/img/barra.png" />
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
