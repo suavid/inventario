@@ -8,6 +8,11 @@
             talla = record['talla'];
             return '<a href="javascript: void(0);" onclick="asignarOferta(' + linea + ',\'' + estilo + '\',' + color + ',' + talla + ');"> Agregar oferta </a>';
     }
+    
+    function porcentaje(value, record, columnObj, grid, colNo, rowNo)
+    {
+            return (record['descuento'] * 100) + "%";
+    }
 
     function cancelacion(value, record, columnObj, grid, colNo, rowNo)
     {
@@ -27,7 +32,7 @@
                 "color": color,
                 "talla": talla
             };
-            uri = "/nymsa/inventario/borrarOferta";
+            uri = "/inventario/inventario/borrarOferta";
             rt = $.post(uri, data, function(data){
                 var grid = Sigma.$grid("oferta_producto_grid");
                 grid.reload(); 
@@ -46,7 +51,7 @@
     {
 
         htmlContent = [                     "<h3>Seleccione la oferta que desea aplicar:</h3>",
-            "<form id='frmEnv' action='/nymsa/inventario/guardarProductoOferta ' method='post'>",
+            "<form id='frmEnv' action='/inventario/inventario/guardarProductoOferta ' method='post'>",
             "<br/>",
             "<input type='hidden' name='linea' value='" + linea + "'/> ",
             "<input type='hidden' name='estilo' value='" + estilo + "'/> ",
@@ -114,11 +119,11 @@
 
 
     var colsOption_catalogo = [
-        {id: 'id', header: "Id", width :30 },
+        {id: 'id', header: "Id", width :40 },
         {id: 'nombre', header: "Nombre", width :250 },
-        {id: 'inicio', header: "Fecha de inicio", width :150  },
-        {id: 'fin', header: "Fecha de final", width :150 },
-        {id: 'descuento', header: "Descuento", width :70 }
+        {id: 'inicio', header: "Fecha de inicio", width :145  },
+        {id: 'fin', header: "Fecha de final", width :145 },
+        {id: 'descuento', header: "Descuento", width :73, renderer:porcentaje }
     ];
             
     var colsOption_detalle = [
@@ -140,10 +145,10 @@
             
     var gridOption_catalogo = {
         id : grid_catalogo_id,
-        loadURL : '/nymsa/grid_tables/oferta_grid_1',
+        loadURL : '/inventario/grid_tables/oferta_grid_1',
         saveURL : '',
         width: "656", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        height: "280", //"100%", // 330,
         container : 'gridbox',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
@@ -152,15 +157,17 @@
         clickStartEdit : true,
         defaultRecord : {'id':"00", 'nombre':""},
         pageSize:10,
+        allowCustomSkin:true,
+        skin:'mac',
         toolbarContent : 'reload | nav state'
     };
     
     var gridOption_detalle = {
         id : grid_detalle_id,
-        loadURL : '/nymsa/inventario/cargarNoOfer',
+        loadURL : '/inventario/inventario/cargarNoOfer',
         saveURL : '',
         width: "580", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        height: "280", //"100%", // 330,
         container : 'gridbox2',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
@@ -169,15 +176,17 @@
         clickStartEdit : true,
         defaultRecord : {'id':"00", 'nombre':""},
         pageSize:10,
+        allowCustomSkin:true,
+        skin:'mac',
         toolbarContent : 'reload filter nav state'
     };
      
     var gridOption_op = {
         id : grid_op_id,
-        loadURL : '/nymsa/grid_tables/ofertados_grid_1',
+        loadURL : '/inventario/grid_tables/ofertados_grid_1',
         saveURL : '',
         width: "480", //"100%", // 700,
-        height: "260", //"100%", // 330,
+        height: "280", //"100%", // 330,
         container : 'gridbox3',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
@@ -186,6 +195,8 @@
         clickStartEdit : true,
         defaultRecord :{'id':"00", 'nombre':""},
         pageSize:10,
+        allowCustomSkin:true,
+        skin:'mac',
         toolbarContent : 'reload filter nav state'
     };
     
@@ -196,7 +207,7 @@
         
     var mygrid2 = new Sigma.Grid(gridOption_detalle);
     Sigma.Util.onLoad(function(){
-        mygrid2.render();
+        //mygrid2.render();
     });
     
     var mygrid3 = new Sigma.Grid(gridOption_op);
@@ -212,7 +223,7 @@
     $(function(){
         $('#idNOferta').bind('change', function(){
             id_oferta = $(this).val();
-            uri = "/nymsa/inventario/datos_oferta";
+            uri = "/inventario/inventario/datos_oferta";
             data = {"id": id_oferta };
             rest = $.post(uri, data, function(data){
                 if (data.status){
@@ -255,17 +266,109 @@
         else
         {
             if (confirm("Esta seguro?")){
-                location.href = "/nymsa/inventario/eliminar_oferta/" + id_oferta;
+                location.href = "/inventario/inventario/eliminar_oferta/" + id_oferta;
             }
         }
     }
 
 </script>
+<h3>Preparación de ofertas</h3>
+<p class="text-muted">
+    Prepare ofertas para impulsar la venta de sus productos
+</p>
+<hr/>
 <div style="display:table;">
-    <div  class="panel" style="width:300px;float:left;">
-        <div class="panel-header">Nueva Oferta</div>
+    <div style="width:600px;float:left;">
+        <div class="panel span9" data-role="panel">
+            <div class="panel-header"><i class="icon-database"></i> Listado de ofertas</div>
+            <div class="panel-content">
+                <div id="bigbox" style="margin:15px;display:!none;">
+                    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p><br/></p>
+        <div class="panel span9" data-role="panel">
+            <div class="panel-header"><i class="icon-cart"></i> Ofertar productos</div>
+            <div class="panel-content">
+                <h5>Por género</h5>
+                Género: 
+                <br/>
+                <div class="input-control select span3">
+                    <select id="sGenero">
+                        <!-- START genero -->
+                        <option value="{id}">
+                            {nombre}
+                        </option>
+                        <!-- END genero -->
+                    </select>
+                </div>  
+                <br/>
+                Oferta:
+                <br/> 
+                <div class="input-control select span3">
+                    <select id="sOferta">
+                        <!-- START aOferta -->
+                        <option value="{id}">
+                            {nombre}
+                        </option>
+                        <!-- END aOferta -->
+                    </select>
+                </div> 
+                <button type="button" onclick="g_aplicar_oferta()">Aplicar</button>
+                <br/>
+                <br/>
+                <hr/>
+                <h5>Detallado</h5>
+                <div class="input-control select span3">
+                    Oferta: <select id="voferta">
+                        <!-- START vOferta -->
+                        <option value="{id}">
+                            {nombre}
+                        </option>
+                        <!-- END vOferta -->
+                    </select>
+                </div> 
+                <div class="input-control text span1"> Linea<br/><input type="text" id="vlinea" onchange="f_linea();"  /> </div>
+                <div class="input-control text span1"> Estilo<br/> <input type="text" id="vestilo" onchange="f_estilo();"  /> </div>
+                <div class="input-control text span1"> Color<br/><input type="text" id="vcolor" onchange="f_color();"  /> </div>
+                <div class="input-control text span1">Talla <br/><input type="text" id="vtalla" onchange="f_talla();"  /> </div>
+                <button type="button" onclick="d_aplicar_oferta();" onblur="d_aplicar_oferta();">Aplicar</button>
+                <p class="text-muted">
+                    <br/>
+                    Dejar el campo en blanco para aplicar a todos los valores
+                    <br/>
+                </p>
+            </div>
+        </div>
+        <p>
+            <br/>
+        </p>
+        <div class="panel span9" data-role="panel">
+            <div class="panel-header"><i class="icon-database"></i> Ofertas asignadas </div>
+            <div class="panel-content">
+                <!--<div id="bigbox2" style="margin:15px;display:!none; float: left;">
+                    <h3>Productos no ofertados</h3>
+                    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+        
+                    </div>
+                </div>-->
+        
+                <div id="bigbox3" style="margin:15px;display:!none; float: left;">
+                    <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+        
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </div>
+    <div  class="panel span5" style="float:left;margin-left: 150px;" data-role="panel">
+        <div class="panel-header"><i class="icon-basket"></i> Nueva Oferta</div>
         <div class="panel-content">
-            <form id="frmNuevaOferta" action="/nymsa/inventario/salvar_oferta" method="post">
+            <form id="frmNuevaOferta" action="/inventario/inventario/salvar_oferta" method="post">
                 Id (0 = Nueva oferta) : 
                 <div class="input-control text">
                     <input id="idNOferta" name="id" type="text" value="0" />
@@ -292,91 +395,20 @@
                 <div class="input-control text">
                     <input id="descuento" name="descuento" type="text" required />
                 </div>
-                <button type="submit">Crear</button>
+                <button type="submit" class="primary">Crear</button>
                 <button type="button" onclick="eliminar_oferta();"><i class="icon-cancel"></i> Eliminar</button>
             </form>
         </div>
     </div>
-    <div style="width:600px;float:left;margin-left:50px;">
-        <h3>Listado de ofertas</h3>
-        <div id="bigbox" style="margin:15px;display:!none;">
-            <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-            </div>
-        </div>
-        <div style="border:solid 1px #D3D3D3;padding:50px; margin-left: 15px; width: 655px;">
-            <h3>Ofertado masivo</h3>
-
-            Género: 
-            <div class="input-control select span2">
-                <select id="sGenero">
-                    <!-- START genero -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END genero -->
-                </select>
-            </div>  
-            Oferta: 
-            <div class="input-control select span3">
-                <select id="sOferta">
-                    <!-- START aOferta -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END aOferta -->
-                </select>
-            </div> 
-            <button type="button" onclick="g_aplicar_oferta()">Aplicar</button>
-            <br/>
-            <br/>
-            <hr/>
-            <div class="input-control select">
-                Oferta: <select id="voferta">
-                    <!-- START vOferta -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END vOferta -->
-                </select>
-            </div> 
-            <br/>
-            <br/>
-            Linea: <div class="input-control text span1"><input type="text" id="vlinea" onchange="f_linea();"  /> </div>
-            Estilo: <div class="input-control text span1"><input type="text" id="vestilo" onchange="f_estilo();"  /> </div>
-            Color: <div class="input-control text span1"><input type="text" id="vcolor" onchange="f_color();"  /> </div>
-            Talla:  <div class="input-control text span1"><input type="text" id="vtalla" onchange="f_talla();"  /> </div>
-            <button type="button" onclick="d_aplicar_oferta();" onblur="d_aplicar_oferta();">Aplicar</button>
-        </div>
-    </div>
 </div>
 
-<div class="panel" style="margin: 30px;">
-    <div class="panel-header"> Estado </div>
-    <div class="panel-content">
-        <div id="bigbox2" style="margin:15px;display:!none; float: left;">
-            <h3>Productos no ofertados</h3>
-            <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-            </div>
-        </div>
-
-        <div id="bigbox3" style="margin:15px;display:!none; float: left;">
-            <h3>Ofertas asignadas</h3>
-            <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-            </div>
-        </div>
-        <div style="clear: both;"></div>
-    </div>
-<div>
 
 <script type="text/javascript">
     function g_aplicar_oferta()
     {
         i_genero = $('#sGenero').val();
         i_oferta = $('#sOferta').val();
-        s_uri = "/nymsa/inventario/oferta_x_genero";
+        s_uri = "/inventario/inventario/oferta_x_genero";
         o_data = {
             "genero": i_genero,
             "oferta": i_oferta
@@ -395,7 +427,7 @@
         i_color = $('#vcolor').val();
         i_talla = $('#vtalla').val();
         i_oferta = $('#voferta').val();
-        s_uri = "/nymsa/inventario/oferta_x_detalle";
+        s_uri = "/inventario/inventario/oferta_x_detalle";
         o_data = {
             "linea": i_linea,
             "estilo": i_estilo,

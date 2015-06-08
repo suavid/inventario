@@ -627,6 +627,7 @@ class inventarioView {
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Comparativo');
         page()->addEstigma("username", $usuario);
+        $this->load_settings();
         page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Comparativo');
         template()->addTemplateBit('content', 'inventario/creacion_comparativo.html');
@@ -649,6 +650,29 @@ class inventarioView {
         template()->parseOutput();
         template()->parseExtras();
         print page()->getContent();
+    }
+    
+    public function reporte_inventario() {
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Reporte - inventarios');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+        page()->addEstigma("TITULO", 'Reporte - inventarios');
+        template()->addTemplateBit('content', 'inventario/reporte_inventarios.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+    
+    public function imprimir_reporteInventario() {
+        require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
+        template()->buildFromTemplates('report/template.html');
+        
+        template()->parseOutput();
+        template()->parseExtras();
+        $html2pdf = new HTML2PDF('P', 'letter', 'es');
+        $html2pdf->WriteHTML(page()->getContent());
+        $html2pdf->Output('inventario.pdf');
     }
 
     public function catalogos($usuario) {

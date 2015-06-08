@@ -50,6 +50,7 @@
         var grid         = Sigma.$grid("producto2_grid"); 
         var grid2        = Sigma.$grid("producto3_grid"); 
         var http_request = $.post(rq_url, {estilo:nuevo_estilo, doc:{documento}, linea: $('#linea').val()}, function(data){
+            alert(JSON.stringify(data));
             if (data.found){
                 if(data.auth){
                     clearColorContainer();
@@ -66,17 +67,28 @@
                     $('#dias_garantia').val(data.data.garantia);
                     $('#fecha_ingreso').val(data.data.fecha_ingreso);
                     $('#observacion').val(data.data.observacion);
-                    $("#linea option[value=" + data.data.linea + "]").attr("selected", true);
-                    $("#proveedor option[value=" + data.data.proveedor + "]").attr("selected", true);
-                    $("#tacon option[value=" + data.data.tacon + "]").attr("selected", true);
-                    $("#suela option[value=" + data.data.suela + "]").attr("selected", true);
-                    $("#grupo option[value=" + data.data.grupo + "]").attr("selected", true);
-                    $("#material option[value=" + data.data.material + "]").attr("selected", true);
-                    $("#concepto option[value=" + data.data.concepto + "]").attr("selected", true);
-                    $("#catalogo option[value=" + data.data.catalogo + "]").attr("selected", true); 
-                    $("#genero option[value=" + data.data.genero + "]").attr("selected", true);
-                    $("#marca option[value=" + data.data.marca + "]").attr("selected", true);
-                    $("#propiedad option[value=" + data.data.propiedad + "]").attr("selected", true); 
+                    if(data.data.linea!=null && data.data.linea.trim()!="")
+                        $("#linea option[value=" + data.data.linea + "]").attr("selected", true);
+                    if(data.data.proveedor!=null && data.data.proveedor.trim()!="")
+                        $("#proveedor option[value=" + data.data.proveedor + "]").attr("selected", true);
+                    if(data.data.tacon!=null && data.data.tacon.trim()!="")
+                        $("#tacon option[value=" + data.data.tacon + "]").attr("selected", true);
+                    if(data.data.suela!=null && data.data.suela.trim()!="")
+                        $("#suela option[value=" + data.data.suela + "]").attr("selected", true);
+                    if(data.data.grupo!=null && data.data.grupo.trim()!="")
+                        $("#grupo option[value=" + data.data.grupo + "]").attr("selected", true);
+                    if(data.data.material!=null && data.data.material.trim()!="")
+                        $("#material option[value=" + data.data.material + "]").attr("selected", true);
+                    if(data.data.concepto!=null && data.data.concepto.trim()!="")
+                        $("#concepto option[value=" + data.data.concepto + "]").attr("selected", true);
+                    if(data.data.catalogo!=null && data.data.catalogo.trim()!="")
+                        $("#catalogo option[value=" + data.data.catalogo + "]").attr("selected", true); 
+                    if(data.data.genero!=null && data.data.genero.trim()!="")
+                        $("#genero option[value=" + data.data.genero + "]").attr("selected", true);
+                    if(data.data.marca!=null && data.data.marca.trim()!="")
+                        $("#marca option[value=" + data.data.marca + "]").attr("selected", true);
+                    if(data.data.propiedad!=null && data.data.propiedad.trim()!="")
+                        $("#propiedad option[value=" + data.data.propiedad + "]").attr("selected", true); 
                     $('#nota').val(data.data.nota); 
 
                     if(!data.temp){

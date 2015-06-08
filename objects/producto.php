@@ -58,7 +58,7 @@ class productoModel extends object {
             if ($terms !== null):
 				$linea  = $terms['linea'];
 				$estilo = $terms['estilo'];
-                $select = "SELECT * FROM $tblname WHERE linea = $linea AND estilo='sasdasdllcL\''";
+                $select = "SELECT * FROM $tblname WHERE linea = $linea AND estilo='{$estilo}'";
                 if(data_model()->getNumRows()>0):
                     data_model()->executeQuery($select);
                     $data = data_model()->getResult()->fetch_assoc();

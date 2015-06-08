@@ -153,6 +153,16 @@ class inventarioController extends controller {
             HttpHandler::redirect('/inventario/inventario/hoja_retaceo?estado=ok');
         }
     }
+    
+    public function reporte_inventario(){
+        
+        $this->view->reporte_inventario();
+    }
+    
+    public function imprimir_reporteInventario(){
+        
+        $this->view->imprimir_reporteInventario();
+    }
 
     public function kits(){
 
@@ -577,23 +587,23 @@ class inventarioController extends controller {
     public function comparativo_fisico_teorico() {
         $this->validar();
         $cache    = array();
-        $cache[0] = $this->model->get_child('bodega')->get_list();
-        $activo   = $this->model->comparativo_activo();
+        $cache[0] = $this->model->get_child('bodega')->get_list('','',array('nombre'));
+        //$activo   = $this->model->comparativo_activo();
 
-        if (!$activo) {
+        /*if (!$activo) {
             if (isset($_GET['new'])) {
                 $action = true;
                 $this->model->crear_comparativo();
             }
-        }
+        }*/
 
-        if ($activo){
-            $this->model->crear_comparativo();
+        //if ($activo){
+        //    $this->model->crear_comparativo();
             $this->view->comparativo_fisico_teorico(Session::singleton()->getUser(), $cache);
-        }
-        else{
-            $this->view->creacion_comparativo(Session::singleton()->getUser());
-        }
+        //}
+        //else{
+        //    $this->view->creacion_comparativo(Session::singleton()->getUser());
+        //}
     }
 
     public function actualizar_fisico() {

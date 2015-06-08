@@ -166,18 +166,25 @@
                             <li><a href="/{systemModuleName}/inventario/listadoTraslado">Historial de traslados</a></li>
                         </ul>    
                     </div>
-                    
-                    <!--<a class="element" href="/{systemModuleName}/inventario/orden_compra"><i class="icon-clipboard"></i> Compras</a>-->
+                 
                     <div class="element">
                         <a class="dropdown-toggle" href="#"><i class="icon-plus-2"></i> Más</a>
                         <ul class="dropdown-menu" data-role="dropdown">
                             <li><a href="/{systemModuleName}/inventario/catalogos"><i class="icon-broadcast"></i> Campañas</a></li>
-                            <!--<li><a href="/{systemModuleName}/inventario/kits"><i class="icon-layers"></i> Kits</a></li>-->
                             <li><a href="/{systemModuleName}/inventario/hoja_retaceo"><i class="icon-clipboard-2"></i> Hoja de retaceo</a></li>
                             <li><a href="/{systemModuleName}/inventario/movKardex"><i class="icon-clipboard"></i> Kardex</a></li>
-                            <!--<li><a href="/{systemModuleName}/inventario/ofertas"><i class="icon-tag"></i> Ofertas</a></li> -->
-                            <!--<li><a href="/{systemModuleName}/inventario/cambio_de_linea"> Cambio de linea</a></li>
-                            <li><a href="/{systemModuleName}/inventario/cambio_de_grupo"> Cambio de grupo</a></li>-->       
+                            <li><a href="/{systemModuleName}/inventario/comparativo_fisico_teorico"> Recuento de inventario</a></li>
+                            <li><a href="/{systemModuleName}/inventario/ofertas"> Preparación de ofertas</a></li>
+                            <li><a href="#" class="dropdown-toggle"> Reportes</a>
+                                <ul class="dropdown-menu" data-role="dropdown">
+                                    <li><a href="">Cuadre mensual</a></li>
+                                    <li><a href="">Devolución sobre venta</a></li>
+                                    <li><a href="/{systemModuleName}/inventario/reporte_inventario">Inventarios</a></li>
+                                    <li><a href="">Kardex</a></li>
+                                    <li><a href="">Entradas y salidas (mes)</a></li>
+                                    <li><a href="">Ventas</a></li>
+                                </ul>
+                            </li> 
                         </ul>
                     </div>
                     
@@ -204,14 +211,6 @@
                     <button class="element place-right">
                         Has iniciado sesión como: <strong>{username}</strong>
                     </button>
-                    <!--<div class="element place-right" >
-                        <a href="javascript: void(0);" class="dropdown-toggle" onclick="inboxPreview();"><i class="icon-mail"></i></a>
-                        <span id="inboxPending" class="fg-white" style="background: red; border-radius: 100px; width: 18px; height: 18px; display: blocK;text-align: center; font-size: 12px;font-weight: bold; float: right; position: relative; left: -14px;display:none; ">0</span>
-                        <ul class="dropdown-menu place-right" id="bandeja" data-role="dropdown" style="padding: 10px; ">
-                             <li onclick="location.href='/nymsa/modulo/inboxRead?inboxId=0&Compose=true'"><i class="icon-plus-2"></i> Redactar mensaje </li>   
-                            <img id="loader" src="../static/img/loader.gif" />
-                        </ul>   
-                    </div>-->
                 </nav>
             </nav> 
             <br/>
