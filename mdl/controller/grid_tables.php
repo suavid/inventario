@@ -95,6 +95,216 @@ class grid_tablesController extends controller {
         endif;
     }
 
+    public function reporteInventario_bodega() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega GROUP BY bodega";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega GROUP BY bodega limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function reporteInventario_linea() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id GROUP BY bodega, linea.id";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id GROUP BY bodega, linea.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function reporteInventario_proveedor() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT producto.proveedor, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function reporteInventario_estilo() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function reporteInventario_color() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT e.color, color.nombre as nombre_color, producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function reporteInventario_talla() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT e.color, e.talla, color.nombre as nombre_color, producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+    
+    public function reporteInventario_provmar() {
+        header('Content-type:text/javascript;charset=UTF-8');
+        $json = json_decode(stripslashes($_POST["_gt_json"]));
+        $pageNo = $json->{'pageInfo'}->{'pageNum'};
+        $pageSize = 10; //10 rows per page
+        //to get how many records totally.
+        
+        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) LEFT JOIN marca ON producto.marca = marca.id GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla, marca.id";
+        $handle = mysqli_query(conManager::getConnection(), $sql);
+        $row = mysqli_fetch_object($handle);
+        $totalRec = $handle->num_rows;
+        //make sure pageNo is inbound
+        if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
+            $pageNo = 1;
+        endif;
+        if ($json->{'action'} == 'load'):
+            $sql = "SELECT marca.nombre as nombre_marca, e.color, e.talla, color.nombre as nombre_color, producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) LEFT JOIN marca ON producto.marca = marca.id GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla, marca.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $handle = mysqli_query(conManager::getConnection(), $sql);
+            $retArray = array();
+            while ($row = mysqli_fetch_object($handle)):
+                $retArray[] = array_map('utf8_encode', (array) $row);
+            endwhile;
+            $data = json_encode($retArray);
+            $ret = "{data:" . $data . ",\n";
+            $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
+            $ret .= "recordType : 'object'}";
+            echo $ret;
+        endif;
+    }
+
     public function oferta_grid_1() {
         header('Content-type:text/javascript;charset=UTF-8');
         $json = json_decode(stripslashes($_POST["_gt_json"]));
