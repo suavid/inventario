@@ -160,8 +160,62 @@ class inventarioController extends controller {
     }
     
     public function imprimir_reporteInventario(){
-        
-        $this->view->imprimir_reporteInventario();
+        if(isset($_GET['typeReport'])&&!empty($_GET['typeReport'])){
+            $tipo = $_GET['typeReport'];
+            $query = "";
+            $cache = array();
+            $data = array();
+            
+            switch($tipo){
+                case "bodega":
+                    $query = "SELECT bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) GROUP BY bodega.id ORDER BY no DESC";
+                    $cache[0] = data_model()->cacheQuery($query);
+                    break;
+                case "linea":
+                    $data['bodegas'] = array();
+                    $bodegaQ = "SELECT bodega FROM kardex GROUP BY bodega";
+                    data_model()->executeQuery($bodegaQ);
+                    while($row = data_model()->getResult()->fetch_assoc()){
+                        $data['bodegas'][] = $row['bodega'];
+                        $cache["bodega_".$row['bodega']] = data_model()->cacheQuery("SELECT  linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." GROUP BY bodega.id, linea.id ORDER BY no DESC"); 
+                    }
+                    
+                    $cache['bodegas'] = data_model()->cacheQuery("SELECT bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex JOIN bodega on (kardex.bodega = bodega.id) GROUP BY kardex.bodega");
+                    
+                    break;
+                case "proveedor":
+                    $data['bodegasylineas'] = array();
+                    $bodegaQ = "SELECT bodega, linea FROM kardex JOIN articulo ON codigo=articulo.id GROUP BY bodega, linea";
+                    data_model()->executeQuery($bodegaQ);
+                    while($row = data_model()->getResult()->fetch_assoc()){
+                        $data['bodegasylineas'][] = $row;
+                        
+                        $cache["bodega_".$row['bodega']."_".$row['linea']] = data_model()->cacheQuery("SELECT  proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,(SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." GROUP BY bodega.id, linea.id ORDER BY no DESC"); 
+                    }
+                    
+                    $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex JOIN bodega on (kardex.bodega = bodega.id) JOIN articulo ON articulo.id = codigo JOIN linea ON articulo.linea = linea.id GROUP BY kardex.bodega, articulo.linea");
+                    
+                    break;
+                case "estilo":
+                    $data['bodegasylineas'] = array();
+                    $bodegaQ = "SELECT bodega, articulo.linea as linea, proveedor.id as proveedor FROM kardex JOIN articulo ON codigo=articulo.id JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) JOIN proveedor on producto.proveedor=proveedor.id GROUP BY bodega, linea, proveedor.id";
+                    data_model()->executeQuery($bodegaQ);
+                    while($row = data_model()->getResult()->fetch_assoc()){
+                        $data['bodegasylineas'][] = $row;
+                        
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,(SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' GROUP BY bodega.id, linea.id ORDER BY no DESC"); 
+                    }
+                    
+                    $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex JOIN bodega on (kardex.bodega = bodega.id) JOIN articulo ON articulo.id = codigo JOIN linea ON articulo.linea = linea.id JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) JOIN proveedor on producto.proveedor=proveedor.id GROUP BY kardex.bodega, articulo.linea, estilo");
+                    
+                    break;    
+            }
+            
+            $system = $this->model->get_child('system');
+            $system->get(1);
+            
+            $this->view->imprimir_reporteInventario($cache, $tipo, $system, $data);   
+        }
     }
 
     public function kits(){
@@ -467,8 +521,9 @@ class inventarioController extends controller {
 
         $bodegas = array();
         $bds     = $this->model->get_child('bodega');
-        $bodegas = $bds->get_list_array();
-        echo json_encode($bodegas);
+        $bodegas = $bds->get_list_array('','', array("nombre"));
+       
+        echo safe_json_encode($bodegas);
     }
 
     public function movKardex(){
@@ -1041,11 +1096,8 @@ class inventarioController extends controller {
         $id_bodega = 0; // destino
         $nombre_bodega = "";
         $oConsigna = $this->model->get_child('traslado');
-        data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
-        data_model()->setActiveConnection(1);
         $system = $this->model->get_child('system');
         $system->get(1);
-        data_model()->setActiveConnection(0);
 
         if ($oConsigna->exists($id) && !empty($id)) {
 
@@ -1389,11 +1441,11 @@ class inventarioController extends controller {
 
     public function reporteDocumentoPr(){
         $docDetail = $this->model->detalleDocumento($_GET['id']);
-        data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
-        data_model()->setActiveConnection(1);
+        
+        
         $system = $this->model->get_child('system');
         $system->get(1);
-        data_model()->setActiveConnection(0);
+        
         $this->view->reporteDocumentoPr($docDetail, $_GET['id'], $system);
     }
 

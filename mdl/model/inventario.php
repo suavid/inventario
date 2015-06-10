@@ -1203,14 +1203,14 @@ class inventarioModel extends object {
                 $prov = $this->get_child('proveedor');
                 $prov->get($prod->proveedor);
 
-                data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
-                data_model()->setActiveConnection(1);
+                
+               
 
                 $system = $this->get_child('system');
                 $system->get(1);
 
-                data_model()->newConnection(HOST, USER, PASSWORD, "db_kardex");
-                data_model()->setActiveConnection(2);
+                
+                
                 $kardex   = connectTo("kardex", "mdl.model.kardex", "kardex");
                 $articulo = connectTo("kardex", "objects.articulo", "articulo");
                 $articulo->nuevo_articulo($linea, $estilo, $color, $talla);
@@ -1250,7 +1250,7 @@ class inventarioModel extends object {
 
                 list($kcantidad, $kcosto_unitario, $kcosto_total) = $kardex->estado_actual($articulo->no_articulo($linea, $estilo, $color, $talla), $bodega_destino); 
 
-                data_model()->setActiveConnection(0);
+                
 
                 $this->get_child('control_precio')->cambiar_costo($linea, $estilo, $color, $talla, $kcosto_unitario);
             }
@@ -1339,14 +1339,14 @@ class inventarioModel extends object {
                     $prov = $this->get_child('proveedor');
                     $prov->get($prod->proveedor);
 
-                    data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
-                    data_model()->setActiveConnection(1);
+                   
+                    
 
                     $system = $this->get_child('system');
                     $system->get(1);
 
-                    data_model()->newConnection(HOST, USER, PASSWORD, "db_kardex");
-                    data_model()->setActiveConnection(2);
+                    
+                    
                     $kardex   = connectTo("kardex", "mdl.model.kardex", "kardex");
                     $articulo = connectTo("kardex", "objects.articulo", "articulo");
                     $articulo->nuevo_articulo($linea, $estilo, $color, $talla);
@@ -1382,7 +1382,7 @@ class inventarioModel extends object {
                         $bodega_origen
                     );        
 
-                    data_model()->setActiveConnection(0);
+                    
                 }
 
                 $up = "UPDATE estado_bodega SET stock = (stock - $cantidad) WHERE id=$id_origen ";
@@ -1495,14 +1495,14 @@ class inventarioModel extends object {
                     $prov = $this->get_child('proveedor');
                     $prov->get($prod->proveedor);
 
-                    data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
-                    data_model()->setActiveConnection(1);
+                   
+                    
 
                     $system = $this->get_child('system');
                     $system->get(1);
 
-                    data_model()->newConnection(HOST, USER, PASSWORD, "db_kardex");
-                    data_model()->setActiveConnection(2);
+                    
+                    
                     $kardex   = connectTo("kardex", "mdl.model.kardex", "kardex");
                     $articulo = connectTo("kardex", "objects.articulo", "articulo");
                     $articulo->nuevo_articulo($linea, $estilo, $color, $talla);
@@ -1564,7 +1564,7 @@ class inventarioModel extends object {
 
                     list($kcantidad, $kcosto_unitario, $kcosto_total) = $kardex->estado_actual($articulo->no_articulo($linea, $estilo, $color, $talla), $bodega_destino); 
 
-                    data_model()->setActiveConnection(0);
+                   
 
                     $this->get_child('control_precio')->cambiar_costo($linea, $estilo, $color, $talla, $kcosto_unitario);
                 }
@@ -1697,14 +1697,9 @@ class inventarioModel extends object {
                     $prov = $this->get_child('proveedor');
                     $prov->get($prod->proveedor);
 
-                    data_model()->newConnection(HOST, USER, PASSWORD, "db_system");
-                    data_model()->setActiveConnection(1);
-
                     $system = $this->get_child('system');
                     $system->get(1);
 
-                    data_model()->newConnection(HOST, USER, PASSWORD, "db_kardex");
-                    data_model()->setActiveConnection(2);
                     $kardex   = connectTo("kardex", "mdl.model.kardex", "kardex");
                     $articulo = connectTo("kardex", "objects.articulo", "articulo");
                     $articulo->nuevo_articulo($linea, $estilo, $color, $talla);
@@ -1743,8 +1738,6 @@ class inventarioModel extends object {
                     );        
 
                     list($kcantidad, $kcosto_unitario, $kcosto_total) = $kardex->estado_actual($articulo->no_articulo($linea, $estilo, $color, $talla), $bodega_destino); 
-
-                    data_model()->setActiveConnection(0);
 
                     $this->get_child('control_precio')->cambiar_costo($linea, $estilo, $color, $talla, $kcosto_unitario);
                 }

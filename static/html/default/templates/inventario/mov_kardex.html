@@ -76,11 +76,11 @@
 			$('#kardex_content table').addClass('hovered');
 
 			var url = "/inventario/inventario/obtenerBodegas";
-
+			
 			$.post(url, {}, function(d){
 
 				for(var i = 0; i < d.length; i++){
-
+					
 					$('.kardexBodega_'+d[i].id).html(d[i].nombre);
 				}
 

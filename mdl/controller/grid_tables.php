@@ -102,7 +102,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega GROUP BY bodega";
+        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) GROUP BY bodega.id ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -111,7 +111,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega GROUP BY bodega limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) GROUP BY bodega.id ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -132,7 +132,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id GROUP BY bodega, linea.id";
+        $sql = "SELECT  count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) GROUP BY bodega.id, linea.id ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -141,7 +141,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id GROUP BY bodega, linea.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT  linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) GROUP BY bodega.id, linea.id ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -162,7 +162,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor";
+        $sql = "SELECT  count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) GROUP BY bodega.id, linea.id ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -171,7 +171,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT producto.proveedor, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT  proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,(SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) GROUP BY bodega.id, linea.id ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -192,7 +192,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo";
+        $sql = "SELECT  count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) GROUP BY bodega.id, linea.id, articulo.estilo ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -201,7 +201,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT  exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) GROUP BY bodega.id, linea.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -222,7 +222,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id";
+        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) GROUP BY bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -231,7 +231,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT e.color, color.nombre as nombre_color, producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT  color.id, color.nombre as nombre_color, exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) GROUP BY bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -252,7 +252,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla";
+        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) GROUP BY articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -261,7 +261,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT e.color, e.talla, color.nombre as nombre_color, producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT  articulo.talla as talla,color.id, color.nombre as nombre_color, exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) GROUP BY articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -282,7 +282,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $sql = "SELECT count(*) as cnt FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) LEFT JOIN marca ON producto.marca = marca.id GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla, marca.id";
+        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN marca on (marca.id = p.marca) LEFT JOIN color on (articulo.color = color.id) GROUP BY marca.id, articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -291,7 +291,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT marca.nombre as nombre_marca, e.color, e.talla, color.nombre as nombre_color, producto.proveedor, producto.estilo AS estilo, costo AS costo_unitario, proveedor.nombre AS nombre_proveedor, linea.nombre as nombre_linea, linea.id, bodega.nombre as nombre_bodega, bodega, SUM(stock) AS pares, SUM(costo*stock) AS total_costo, SUM(precio*stock) AS total_precio FROM estado_bodega e LEFT JOIN control_precio c ON (c.control_estilo = e.estilo AND c.linea = e.linea AND c.color = e.color AND c.talla = e.talla) LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN linea ON e.linea = linea.id LEFT JOIN producto ON (e.linea = producto.linea AND e.estilo = producto.estilo) LEFT JOIN proveedor ON (proveedor.id = producto.proveedor) LEFT JOIN color ON (color.id = e.color) LEFT JOIN marca ON producto.marca = marca.id GROUP BY bodega, linea.id, proveedor.id, producto.proveedor, producto.estilo, color.id, e.talla, marca.id limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "SELECT  marca.id, marca.nombre as nombre_marca, articulo.talla as talla,color.id, color.nombre as nombre_color, exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, (SUM(ent_costo_total)-SUM(sal_costo_total)) as total_costo, (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto p ON (p.estilo = articulo.estilo AND p.linea = articulo.linea) LEFT JOIN proveedor ON (p.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN marca on (marca.id = p.marca) LEFT JOIN color on (articulo.color = color.id) GROUP BY marca.id, articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):

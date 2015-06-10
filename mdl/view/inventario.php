@@ -664,12 +664,57 @@ class inventarioView {
         print page()->getContent();
     }
     
-    public function imprimir_reporteInventario() {
+    public function imprimir_reporteInventario($cache, $tipo, $system, $data) {
         require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
         template()->buildFromTemplates('report/template.html');
         
+        switch($tipo){
+            case "bodega":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioBodega.html');
+                page()->addEstigma('titulo_reporte', "Inventario x bodega");
+                page()->addEstigma('contenido', array('SQL', $cache[0]));
+                break;
+            case "linea":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioLinea.html');
+                page()->addEstigma('titulo_reporte', "Inventario x linea");
+                page()->addEstigma('bodegas', array('SQL', $cache['bodegas']));
+                foreach($data['bodegas'] as $bodega){
+                    page()->addEstigma('contenido_b'.$bodega, array('SQL', $cache['bodega_'.$bodega]));
+                }
+                
+                break;   
+            case "proveedor":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioProveedor.html');
+                page()->addEstigma('titulo_reporte', "Inventario x proveedor");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']]));
+                }
+                
+                break;
+                
+             case "estilo":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioEstilo.html');
+                page()->addEstigma('titulo_reporte', "Inventario x estilo");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+                
+                break;       
+        }
+        
+        
+        page()->addEstigma('razon_social', $system->razon_social);
+        page()->addEstigma('telefono', $system->telefono);
+        page()->addEstigma('direccion', $system->direccion);
+        page()->addEstigma('usuario', Session::singleton()->getUser());
+        page()->addEstigma('fecha', date("d/m/Y"));
+        page()->addEstigma('hora', date("h:i:s A"));
+        
         template()->parseOutput();
         template()->parseExtras();
+        
         $html2pdf = new HTML2PDF('P', 'letter', 'es');
         $html2pdf->WriteHTML(page()->getContent());
         $html2pdf->Output('inventario.pdf');

@@ -1,0 +1,59 @@
+<style type="text/css">
+	table{
+		text-align: center;
+		width: 100%;
+	}
+	table td{
+		width: 21%;
+	}
+	
+	table thead tr th{
+		border-bottom: solid 1px #000;
+		border-top: solid 1px #000;
+	}
+	
+	strong{
+		font-size: 12px;
+	}
+</style>
+<!-- START bodegasylineas -->
+<strong>[{bodega}] {bodega_nombre}</strong>
+<br/>
+<strong>[{linea}] {linea_nombre}</strong>
+<br/>
+<strong>[{proveedor}] {proveedor_nombre}</strong>
+<table>
+	<thead>
+		<tr>
+			<th>
+				Estilo
+			</th>
+			<th>
+				Color
+			</th>
+			<th>
+				Pares
+			</th>
+			<th>
+				Total costo
+			</th>
+			<th>
+				Total precio
+			</th>
+			<th>
+				Margen
+			</th>
+		</tr>
+	</thead>
+	<!-- START contenido_bl{bodega}_{linea}_{estilo} -->
+	<tr>
+		<td>{estilo}</td>
+		<td>{nombre_color}</td>
+		<td>{pares}</td>
+		<td>${total_costo}</td>
+		<td>${total_precio}</td>
+	</tr>
+	<!-- END contenido_bl{bodega}_{linea}_{estilo} -->
+</table>
+<br/>
+<!-- END bodegasylineas -->

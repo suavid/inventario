@@ -3,7 +3,7 @@
 	Consulte el estado de sus inventarios
 </p>
 <hr/>
-<a class="button" href="/inventario/inventario/imprimir_reporteInventario" target="_blank"><i class="icon-printer"></i> Imprimir</a>
+<button id="btnReport" class="button"><i class="icon-printer"></i> Imprimir</button>
 <button id="btnPreview" class="button"><i class="icon-eye"></i> Vista previa</button>
 <p>
 	<br/>
@@ -322,6 +322,12 @@
 			var grid = Sigma.$grid(grid_n);
             //grid.loadURL = '/inventario/grid_tables/reporteInventario_'+tipo+'?filtros=' + filtros;
             grid.reload();
+		});
+		
+		$('#btnReport').bind('click', function(){
+			var tipo = $('input:radio[name=tipo]:checked').val();
+			var uri = '/inventario/inventario/imprimir_reporteInventario?typeReport='+tipo;
+			window.open(uri, '_blank');
 		});
 	});
 </script>

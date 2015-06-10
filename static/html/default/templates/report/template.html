@@ -21,11 +21,17 @@
 			<td style="width: 33%;">
 				<img src="static/img/banner.jpg" style="width: 120px;" />
 				<br/>
-				{titulo_reporte}
+				<span style="font-size: 18px;">{titulo_reporte}</span>
 			</td>
 			<td style="width: 33%;">
-				Impreso por: {usuario} {fecha} {hora}
+				IMPRESO POR: 
+				<br/>
+				{usuario} {fecha} {hora}
 			</td>
 		</tr>
 	</table>
+	<p>
+		<br/>
+	</p>
+	{contenido_reporte}
 </body>
