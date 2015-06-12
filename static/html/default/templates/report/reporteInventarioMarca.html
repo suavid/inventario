@@ -4,7 +4,7 @@
 		width: 100%;
 	}
 	table td{
-		width: 18%;
+		width: 13%;
 	}
 	
 	table thead tr th{
@@ -26,10 +26,16 @@
 	<thead>
 		<tr>
 			<th>
+				Marca
+			</th>
+			<th>
 				Estilo
 			</th>
 			<th>
 				Color
+			</th>
+			<th>
+				Talla
 			</th>
 			<th>
 				Pares
@@ -47,8 +53,10 @@
 	</thead>
 	<!-- START contenido_bl{bodega}_{linea}_{proveedor} -->
 	<tr>
+		<td>[{marca}] {nombre_marca}</td>
 		<td>{estilo}</td>
 		<td>[{color}] {nombre_color}</td>
+		<td>{talla}</td>
 		<td>{pares}</td>
 		<td>${total_costo}</td>
 		<td>${total_precio}</td>

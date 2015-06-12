@@ -701,7 +701,34 @@ class inventarioView {
                     page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
                 }
                 
-                break;       
+                break;
+             case "color":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioColor.html');
+                page()->addEstigma('titulo_reporte', "Inventario x color");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+                
+                break;   
+              case "talla":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioTalla.html');
+                page()->addEstigma('titulo_reporte', "Inventario x talla");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+               
+                break; 
+              case "provmar":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioMarca.html');
+                page()->addEstigma('titulo_reporte', "Inventario x marca");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+               
+                break;         
         }
         
         
