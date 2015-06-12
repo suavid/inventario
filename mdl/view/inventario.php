@@ -664,7 +664,7 @@ class inventarioView {
         print page()->getContent();
     }
     
-    public function imprimir_reporteInventario($cache, $tipo, $system, $data) {
+    public function imprimir_reporteInventario($cache, $tipo, $system, $data, $fecha) {
         require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
         template()->buildFromTemplates('report/template.html');
         
@@ -737,6 +737,7 @@ class inventarioView {
         page()->addEstigma('direccion', $system->direccion);
         page()->addEstigma('usuario', Session::singleton()->getUser());
         page()->addEstigma('fecha', date("d/m/Y"));
+        page()->addEstigma('fecha_saldos', $fecha);
         page()->addEstigma('hora', date("h:i:s A"));
         
         template()->parseOutput();

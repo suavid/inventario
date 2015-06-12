@@ -20,14 +20,14 @@
 				</div>
 				<div class="span2">
 					<div id="saldos" class="input-control text">
-						<input type="text"  />
+						<input type="text"  id="fecha"/>
 						<button type="button" class="btn-date"></button>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control checkbox">
 					    <label>
-					        <input type="checkbox" checked/>
+					        <input type="checkbox" id="suprimir_cero" checked/>
 					        <span class="check"></span>
 					        Suprimir existencia 0
 					    </label>
@@ -36,7 +36,7 @@
 				<div class="span2">
 					<div class="input-control checkbox">
 					    <label>
-					        <input type="checkbox" checked/>
+					        <input type="checkbox" id="mostrar_pv" checked/>
 					        <span class="check"></span>
 					        Mostrar PV
 					    </label>
@@ -45,7 +45,7 @@
 				<div class="span2">
 					<div class="input-control checkbox">
 					    <label>
-					        <input type="checkbox" checked/>
+					        <input type="checkbox" id="mostrar_pc" checked/>
 					        <span class="check"></span>
 					        Mostrar PC
 					    </label>
@@ -58,12 +58,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="bodega_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="99"/>
+						<input type="text" id="bodega_2" value="99"/>
 					</div>
 				</div>
 				<div class="span1">
@@ -71,12 +71,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="catalogo_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="999"/>
+						<input type="text" id="catalogo_2" value="999"/>
 					</div>
 				</div>	
 			</div>
@@ -86,12 +86,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="linea_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="999"/>
+						<input type="text" id="linea_2" value="999"/>
 					</div>
 				</div>	
 				<div class="span1">
@@ -99,12 +99,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="pagina_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="999"/>
+						<input type="text" id="pagina_2" value="999"/>
 					</div>
 				</div>
 			</div>
@@ -114,12 +114,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="proveedor_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="999"/>
+						<input type="text" id="proveedor_2" value="999"/>
 					</div>
 				</div>
 				<div class="span1">
@@ -127,12 +127,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="color_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="999"/>
+						<input type="text" id="color_2" value="999"/>
 					</div>
 				</div>	
 			</div>
@@ -142,12 +142,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value=""/>
+						<input type="text" id="estilo_1" value=""/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="ZZZZZZZZZZZZZ"/>
+						<input type="text" id="estilo_2" value="ZZZZZZZZZZZZZ"/>
 					</div>
 				</div>
 				<div class="span1">
@@ -155,12 +155,12 @@
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="1"/>
+						<input type="text" id="talla_1" value="1"/>
 					</div>
 				</div>
 				<div class="span2">
 					<div class="input-control text">
-						<input type="text" value="99.9"/>
+						<input type="text" id="talla_2" value="99.9"/>
 					</div>
 				</div>
 			</div>
@@ -317,16 +317,173 @@
 	
 		$('#btnPreview').bind('click',function(){
 			var filtros = [];
-			var tipo = $('input:radio[name=tipo]:checked').val();
-			var grid_n = tipo+"_grid";
-			var grid = Sigma.$grid(grid_n);
-            //grid.loadURL = '/inventario/grid_tables/reporteInventario_'+tipo+'?filtros=' + filtros;
+			var grid = null;
+	
+            var fecha = $('#fecha').val().trim();
+            var bodega_1 = $('#bodega_1').val().trim();
+            var bodega_2 = $('#bodega_2').val().trim();
+            var linea_1 = $('#linea_1').val().trim();
+            var linea_2 = $('#linea_2').val().trim();
+            var proveedor_1 = $('#proveedor_1').val().trim();
+            var proveedor_2 = $('#proveedor_2').val().trim();
+            var estilo_1 = $('#estilo_1').val().trim();
+			var estilo_2 = $('#estilo_2').val().trim();
+			var catalogo_1 = $('#catalogo_1').val().trim();
+			var catalogo_2 = $('#catalogo_2').val().trim();
+			var pagina_1 = $('#pagina_1').val().trim();
+			var pagina_2 = $('#pagina_2').val().trim();
+			var color_1 = $('#color_1').val().trim();
+			var color_2 = $('#color_2').val().trim();
+			var talla_1 = $('#talla_1').val().trim();
+			var talla_2 = $('#talla_2').val().trim();
+			var seleccionado = "no";
+			var pc = "no";
+			var pv = "no";
+
+			if( $('#suprimir_cero').is(':checked') ) {
+			    seleccionado = "si";
+			}
+			
+			if( $('#mostrar_pc').is(':checked') ) {
+			    pc = "si";
+			}
+			
+			if( $('#mostrar_pv').is(':checked') ) {
+			    pv = "si";
+			}
+
+            if (bodega_1 != "" && bodega_2 != "") {
+				filtros.push([['bodega.id', bodega_1].join(":"),['bodega.id', bodega_2].join(":")].join(";"));
+			}
+			
+            if (linea_1 != "" && linea_2 != "") {
+				filtros.push([['articulo.linea', linea_1].join(":"),['articulo.linea', linea_2].join(":")].join(";"));
+			}
+			
+			if (proveedor_1 != "" && proveedor_2 != "") {
+				filtros.push([['producto.proveedor', proveedor_1].join(":"),['producto.proveedor', proveedor_2].join(":")].join(";"));;
+			}
+			
+			if (estilo_2 != "") {
+				filtros.push([['articulo.estilo', estilo_1].join(":"),['articulo.estilo', estilo_2].join(":")].join(";"));
+			}
+			
+			if (catalogo_1 != "" && catalogo_2 != "") {
+				filtros.push([['producto.catalogo', catalogo_1].join(":"),['producto.catalogo', catalogo_2].join(":")].join(";"));
+			}
+			
+			if (pagina_1 != "" && pagina_2 != "") {
+				filtros.push([['producto.n_pagina', pagina_1].join(":"),['producto.n_pagina', pagina_2].join(":")].join(";"));
+			}
+			
+			if (color_1 != "" && color_2 != "") {
+				filtros.push([['articulo.color', color_1].join(":"),['articulo.color', color_2].join(":")].join(";"));
+			}	
+			
+			if (talla_1 != "" && talla_2 != "") {
+				filtros.push([['articulo.talla', talla_1].join(":"),['articulo.talla', talla_2].join(":")].join(";"));
+			}	
+			
+			
+			
+			grid = Sigma.$grid("bodega_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_bodega?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
             grid.reload();
+			grid = Sigma.$grid("linea_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_linea?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
+            grid.reload();
+			grid = Sigma.$grid("proveedor_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_proveedor?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
+            grid.reload();
+			grid = Sigma.$grid("estilo_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_estilo?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
+            grid.reload();
+			grid = Sigma.$grid("color_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_color?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
+            grid.reload();
+			grid = Sigma.$grid("talla_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_talla?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
+            grid.reload();
+			grid = Sigma.$grid("provmar_grid");
+            grid.loadURL = '/inventario/grid_tables/reporteInventario_provmar?filtros=' + filtros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
+            grid.reload();
+			
 		});
 		
 		$('#btnReport').bind('click', function(){
+			var filtros = [];
+			var grid = null;
+	
+            var fecha = $('#fecha').val().trim();
+            var bodega_1 = $('#bodega_1').val().trim();
+            var bodega_2 = $('#bodega_2').val().trim();
+            var linea_1 = $('#linea_1').val().trim();
+            var linea_2 = $('#linea_2').val().trim();
+            var proveedor_1 = $('#proveedor_1').val().trim();
+            var proveedor_2 = $('#proveedor_2').val().trim();
+            var estilo_1 = $('#estilo_1').val().trim();
+			var estilo_2 = $('#estilo_2').val().trim();
+			var catalogo_1 = $('#catalogo_1').val().trim();
+			var catalogo_2 = $('#catalogo_2').val().trim();
+			var pagina_1 = $('#pagina_1').val().trim();
+			var pagina_2 = $('#pagina_2').val().trim();
+			var color_1 = $('#color_1').val().trim();
+			var color_2 = $('#color_2').val().trim();
+			var talla_1 = $('#talla_1').val().trim();
+			var talla_2 = $('#talla_2').val().trim();
+			var seleccionado = "no";
+			var pc = "no";
+			var pv = "no";
+
+			if( $('#suprimir_cero').is(':checked') ) {
+			    seleccionado = "si";
+			}
+			
+			if( $('#mostrar_pc').is(':checked') ) {
+			    pc = "si";
+			}
+			
+			if( $('#mostrar_pv').is(':checked') ) {
+			    pv = "si";
+			}
+
+            if (bodega_1 != "" && bodega_2 != "") {
+				filtros.push([['bodega.id', bodega_1].join(":"),['bodega.id', bodega_2].join(":")].join(";"));
+			}
+			
+            if (linea_1 != "" && linea_2 != "") {
+				filtros.push([['articulo.linea', linea_1].join(":"),['articulo.linea', linea_2].join(":")].join(";"));
+			}
+			
+			if (proveedor_1 != "" && proveedor_2 != "") {
+				filtros.push([['producto.proveedor', proveedor_1].join(":"),['producto.proveedor', proveedor_2].join(":")].join(";"));;
+			}
+			
+			if (estilo_2 != "") {
+				filtros.push([['articulo.estilo', estilo_1].join(":"),['articulo.estilo', estilo_2].join(":")].join(";"));
+			}
+			
+			if (catalogo_1 != "" && catalogo_2 != "") {
+				filtros.push([['producto.catalogo', catalogo_1].join(":"),['producto.catalogo', catalogo_2].join(":")].join(";"));
+			}
+			
+			if (pagina_1 != "" && pagina_2 != "") {
+				filtros.push([['producto.n_pagina', pagina_1].join(":"),['producto.n_pagina', pagina_2].join(":")].join(";"));
+			}
+			
+			if (color_1 != "" && color_2 != "") {
+				filtros.push([['articulo.color', color_1].join(":"),['articulo.color', color_2].join(":")].join(";"));
+			}	
+			
+			if (talla_1 != "" && talla_2 != "") {
+				filtros.push([['articulo.talla', talla_1].join(":"),['articulo.talla', talla_2].join(":")].join(";"));
+			}	
+			
+			var cadFiltros = JSON.stringify(filtros);
+			
 			var tipo = $('input:radio[name=tipo]:checked').val();
-			var uri = '/inventario/inventario/imprimir_reporteInventario?typeReport='+tipo;
+			
+			var uri = '/inventario/inventario/imprimir_reporteInventario?typeReport='+tipo+'&filtros='+cadFiltros+'&fecha='+fecha+'&suprimir='+seleccionado+'&pc='+pc+'&pv='+pv;
 			window.open(uri, '_blank');
 		});
 	});
