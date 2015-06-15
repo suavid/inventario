@@ -1,0 +1,64 @@
+<style type="text/css">
+	table{
+		text-align: center;
+		width: 100%;
+	}
+	.tab td{
+		border: solid 1px #000;
+	}
+	
+	.tab thead tr th{
+		border-bottom: solid 1px #000;
+		border-top: solid 1px #000;
+	}
+	
+</style>
+<br/>
+<!-- START proveedores -->
+{proveedor}
+<table class="tab">
+	<thead>
+		<tr>
+			<th>
+				Linea
+			</th>
+			<th>
+				Estilo
+			</th>
+			<th>
+				Color
+			</th>
+			<th>
+				Teorico
+			</th>
+			<th>
+				Fisico
+			</th>
+			<th>
+				Diferencia
+			</th>
+		</tr>
+	</thead>
+	<!-- START comparativo_{id_proveedor} -->
+	<tr>
+		<td style="width: 23%;">{linea}</td>
+		<td style="width: 17%;">{estilo}</td>
+		<td style="width: 17%;">{id_color}</td>
+		<td style="width: 14%;">{stock}</td>
+		<td style="width: 14%;"></td>
+		<td style="width: 15%;">-{stock}</td>
+	</tr>
+	<!-- END comparativo_{id_proveedor} -->
+</table>
+<!-- END proveedores -->
+<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!--<strong>Total pares: <span style="text-decoration: underline;"> {total} </span></strong>-->
+<br/>

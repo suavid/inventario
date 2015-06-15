@@ -1,4 +1,30 @@
 <script>
+    $(document).ready(function(){
+        $('#btnImprimirHoja').bind('click', function(){
+            var linea_limitInf = $('#linea_limitInf').val();
+            var linea_limitSup = $('#linea_limitSup').val();
+            var proveedor_limitInf = $('#proveedor_limitInf').val();
+            var proveedor_limitSup = $('#proveedor_limitSup').val();
+            var bodega = $('#bodega').val();
+    
+            /* tipo consulta seleccionado */
+            var tipo_query = $("input[name='t_consulta']:checked").val();
+            /* uri de consulta de inventario */
+            var uri = "/inventario/inventario/imprimir_reporteComparativo";
+    
+            /* data de peticion */
+            var data = {
+                "lineaInf": linea_limitInf,
+                "lineaSup": linea_limitSup,
+                "provInf": proveedor_limitInf,
+                "provSup": proveedor_limitSup,
+                "bodega": bodega
+            };
+            
+            window.open(uri+'?tipo='+tipo_query+'&data='+JSON.stringify(data), '__blank');
+        });
+    });
+    
     $(function() {
         procesar_consulta();
         $('input[type="radio"]').bind('change', function() {
@@ -76,6 +102,8 @@
                 <input type="text" id="proveedor_limitInf" value="1" style="width:100px;"/>
                 <input type="text" id="proveedor_limitSup" value="9999" style="width:100px;"/>
             </div>
+            <br/>
+            <button id="btnImprimirHoja" class="button primary"><i class="icon-printer"></i> Imprimir hoja</button>
         </div>
         <div id="tipo_consultas" style="margin-left:100px;background:#D3D3D3;border:solid 1px #E3E3E3;padding:15px;width:300px;float:left;">
             <div class="input-control radio">
@@ -118,6 +146,7 @@
                 </label>
             </div>
         </div>
+        
     </div>
     Ajuste disponible para filtros específicos
     <div id="tabla_comparativa" style="margin-top:30px;">

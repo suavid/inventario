@@ -15,10 +15,10 @@
     <table id="inv" class="table bordered" style="text-align:center;">
         <thead>
             <tr>
-                <th>Linea</th>
+                <th>Línea</th>
                 <th>Proveedor</th>
-                <th>Teorico</th>
-                <th>Fisico</th>
+                <th>Teórico</th>
+                <th>Físico</th>
                 <th>Diferencia</th>
             </tr>
         </thead>
@@ -31,13 +31,13 @@
                 {proveedor}
             </td>
             <td>
-                <span class="t_{linea}{proveedor}">{stock}</span>
+                <span class="t_{id_linea}{id_proveedor}">{stock}</span>
             </td>
             <td>
-                <input type="text" class="f_{linea}{proveedor}" value="0" onchange="difHandler(event, '{linea}{proveedor}');" />
+                <input type="text" class="f_{id_linea}{id_proveedor}" value="0" onchange="difHandler(event, '{id_linea}{id_proveedor}');" />
             </td>
             <td>
-                <span class="d_{linea}{proveedor}"></span>
+                <span class="d_{id_linea}{id_proveedor}"></span>
             </td>
         </tr>
         <!-- END inventario -->

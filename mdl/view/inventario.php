@@ -664,6 +664,64 @@ class inventarioView {
         print page()->getContent();
     }
     
+    public function imprimir_reporteComparativo($cache, $tipo, $system, $total, $data) {
+        require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
+        template()->buildFromTemplates('report/template.html');
+        
+        switch($tipo){
+            case 1:
+                template()->addTemplateBit('contenido_reporte', 'report/reporteComparativoLinea.html');
+                page()->addEstigma('comparativo', array('SQL', $cache[0]));
+                //page()->addEstigma('total', $total);
+                page()->addEstigma('titulo_reporte', 'Comparativo - lineas');
+                break;
+            case 2:
+                template()->addTemplateBit('contenido_reporte', 'report/reporteComparativoProveedor.html');
+                page()->addEstigma('comparativo', array('SQL', $cache[0]));
+                page()->addEstigma('titulo_reporte', 'Comparativo - proveedor');
+                break;
+            case 3:
+                template()->addTemplateBit('contenido_reporte', 'report/reporteComparativoEstilo.html');
+                page()->addEstigma('proveedores', array('SQL', $cache['proveedores']));
+                foreach($data['proveedores'] as $proveedor){
+                    page()->addEstigma('comparativo_'.$proveedor['id_proveedor'], array('SQL',$cache['proveedor_'.$proveedor['id_proveedor']]));
+                }
+                page()->addEstigma('titulo_reporte', 'Comparativo - estilo');
+                break;
+            case 4:
+                template()->addTemplateBit('contenido_reporte', 'report/reporteComparativoColor.html');
+                page()->addEstigma('proveedores', array('SQL', $cache['proveedores']));
+                foreach($data['proveedores'] as $proveedor){
+                    page()->addEstigma('comparativo_'.$proveedor['id_proveedor'], array('SQL',$cache['proveedor_'.$proveedor['id_proveedor']]));
+                }
+                page()->addEstigma('titulo_reporte', 'Comparativo - color');
+                break;
+            case 5:
+                template()->addTemplateBit('contenido_reporte', 'report/reporteComparativoTalla.html');
+                page()->addEstigma('proveedores', array('SQL', $cache['proveedores']));
+                foreach($data['proveedores'] as $proveedor){
+                    page()->addEstigma('comparativo_'.$proveedor['id_proveedor'], array('SQL',$cache['proveedor_'.$proveedor['id_proveedor']]));
+                }
+                page()->addEstigma('titulo_reporte', 'Comparativo - talla');
+                break;
+        }
+        
+        
+        page()->addEstigma('razon_social', $system->razon_social);
+        page()->addEstigma('telefono', $system->telefono);
+        page()->addEstigma('direccion', $system->direccion);
+        page()->addEstigma('usuario', Session::singleton()->getUser());
+        page()->addEstigma('fecha', date("d/m/Y"));
+        page()->addEstigma('hora', date("h:i:s A"));
+        
+        template()->parseOutput();
+        template()->parseExtras();
+        
+        $html2pdf = new HTML2PDF('P', 'letter', 'es');
+        $html2pdf->WriteHTML(page()->getContent());
+        $html2pdf->Output('comparativo.pdf');
+    }
+    
     public function imprimir_reporteInventario($cache, $tipo, $system, $data, $fecha) {
         require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
         template()->buildFromTemplates('report/template.html');

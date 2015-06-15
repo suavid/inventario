@@ -3,7 +3,7 @@
     function difHandler(event, idInput, linea, estilo, color, talla, costo, bodega)
     {
         cant = $(event.target).val().trim();
-        
+        //alert(cant);   
         if (!isNaN(cant))
         {
 
@@ -120,14 +120,14 @@
         <thead>
             <tr>
                 <th>Bodega</th>
-                <th>Linea</th>
+                <th>Línea</th>
                 <th>Proveedor</th>
                 <th>Estilo</th>
                 <th>Color</th>
                 <th>Talla</th>
                 <th>Costo</th>
-                <th>Teorico</th>
-                <th>Fisico</th>
+                <th>Teórico</th>
+                <th>Físico</th>
                 <th>Diferencia</th>
             </tr>
         </thead>
@@ -155,13 +155,13 @@
                 ${costo}
             </td>
             <td>
-                <span class="t_{linea}{proveedor}{estilo}{color}{talla}">{stock}</span>
+                <span class="t_{id_linea}{id_proveedor}{estilo}{id_color}{talla}">{stock}</span>
             </td>
             <td>
-                <input type="text" class="f_{linea}{proveedor}{estilo}{color}{talla}" value="{fisico}" onchange="parseClass(event); difHandler(event, '{linea}{proveedor}{estilo}{color}{talla}', {id_linea}, {estilo}, {id_color}, {talla}, {costo}, {bodega});" />
+                <input type="text" value="0" class="f_{id_linea}{id_proveedor}{estilo}{id_color}{talla}" onchange="parseClass(event); difHandler(event, '{id_linea}{id_proveedor}{estilo}{id_color}{talla}', {id_linea}, '{estilo}', {id_color}, {talla}, {costo}, {bodega});" />
             </td>
             <td>
-                <span class="d_{linea}{proveedor}{estilo}{color}{talla}"></span>
+                <span class="d_{id_linea}{id_proveedor}{estilo}{id_color}{talla}"></span>
             </td>
             <!--<td>
                 <button class="i_{linea}{proveedor}{estilo}{color}{talla}" onclick="parseClass2(event); ajustar(event, '{linea}{proveedor}{estilo}{color}{talla}', {costo}, {bodega});" >Ajustar</button>

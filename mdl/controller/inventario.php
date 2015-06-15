@@ -159,6 +159,104 @@ class inventarioController extends controller {
         $this->view->reporte_inventario();
     }
     
+    public function imprimir_reporteComparativo(){
+        if(isset($_GET['data'])&&!empty($_GET['data']) && isset($_GET['tipo'])&&!empty($_GET['tipo'])){
+            $json = json_decode($_GET['data']);
+            $Li = $json->{"lineaInf"};
+            $Ls = $json->{"lineaSup"};
+            $Ps = $json->{"provSup"};
+            $Pi = $json->{"provInf"}; 
+            $bodega = $json->{"bodega"};   
+            $tipo = $_GET['tipo'];
+            $cache = array();
+            $query = "";
+            $total = 0;
+            $data = array();
+             
+            switch($tipo){
+                case 1:
+                    if($bodega == 0){
+                        $query = "SELECT  linea.id as id_linea, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) WHERE (articulo.linea >= $Li AND articulo.linea<= $Ls) GROUP BY linea.id ORDER BY no DESC";
+                    }else{
+                        $query = "SELECT  linea.id as id_linea, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) WHERE bodega.id = $bodega AND  (articulo.linea >= $Li AND articulo.linea<= $Ls) GROUP BY linea.id ORDER BY no DESC";
+                    }
+                    
+                    $cache[0] = data_model()->cacheQuery($query);
+                    
+                    break;
+                case 2:
+                    if($bodega == 0){
+                        $query = "SELECT  linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id ORDER BY no DESC";
+                    }else{
+                        $query = "SELECT  linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE bodega.id = $bodega AND (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id ORDER BY no DESC";
+                    }
+                    
+                    $cache[0] = data_model()->cacheQuery($query);
+                    break;
+                case 3:
+                    $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
+                    
+                    $cache['proveedores'] = data_model()->cacheQuery($provQ);
+                    
+                    $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
+                    
+                    data_model()->executeQuery($provQ);
+                    
+                    while($row = data_model()->getResult()->fetch_assoc()){
+                        $data['proveedores'][] = $row;
+                        if($bodega == 0){
+                            $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT  articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND  (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo ORDER BY no DESC");
+                        }else{
+                            $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT  articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND bodega.id = $bodega AND (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo ORDER BY no DESC");
+                        }
+                    }
+                    
+                    break;
+                case 4:
+                    $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
+                    
+                    $cache['proveedores'] = data_model()->cacheQuery($provQ);
+                    
+                    $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
+                    
+                    data_model()->executeQuery($provQ);
+                    
+                    while($row = data_model()->getResult()->fetch_assoc()){
+                        $data['proveedores'][] = $row;
+                        if($bodega == 0){
+                            $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT  articulo.color as id_color, articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND  (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo, articulo.color ORDER BY no DESC");
+                        }else{
+                            $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT  articulo.color as id_color, articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND bodega.id = $bodega AND (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo, articulo.color ORDER BY no DESC");
+                        }
+                    }
+                    break;
+                case 5:
+                    $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
+                    
+                    $cache['proveedores'] = data_model()->cacheQuery($provQ);
+                    
+                    $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
+                    
+                    data_model()->executeQuery($provQ);
+                    
+                    while($row = data_model()->getResult()->fetch_assoc()){
+                        $data['proveedores'][] = $row;
+                        if($bodega == 0){
+                            $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT  articulo.talla as talla, articulo.color as id_color, articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND  (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC");
+                        }else{
+                            $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT articulo.talla as talla, articulo.color as id_color, articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND bodega.id = $bodega AND (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC");
+                        }
+                    }
+                    break;
+            }
+            
+            $system = $this->model->get_child('system');
+            $system->get(1);
+            
+            $this->view->imprimir_reporteComparativo($cache, $tipo, $system, $total, $data);
+        }
+    }
+    
     public function imprimir_reporteInventario(){
         if(isset($_GET['typeReport'])&&!empty($_GET['typeReport'])){
             $tipo = $_GET['typeReport'];
