@@ -80,30 +80,38 @@
 </script>
 <section>
     <div style="display:table;">
-        <div id="filtro_consulta" style="float:left;">
-            Bodega
-            <div class="input-control select">
-                <select id="bodega">
-                    <option value="0">Todas</option>
-                    <!-- START bodegas -->
-                    <option value="{id}">{nombre}</option>
-                    <!-- END bodegas -->
-                </select>
+        <div class="panel span5" id="filtro_consulta" style="float:left;">
+            <div class="panel-header">
+                <i class="icon-filter"></i> 
+                Filtrar resultados
             </div>
-            <br/>
-            Linea
-            <div class="input-control text">
-                <input type="text" id="linea_limitInf" value="1" style="width:100px;" />
-                <input type="text" id="linea_limitSup" value="999" style="width:100px;"/>
+            <div class="panel-content">
+                <label>Bodega</label>
+                <div class="input-control select">
+                    <select id="bodega">
+                        <option value="0">Todas</option>
+                        <!-- START bodegas -->
+                        <option value="{id}">{nombre}</option>
+                        <!-- END bodegas -->
+                    </select>
+                </div>
+                <br/>
+                <label>Linea</label>
+                <div class="input-control text">
+                    <input type="text" id="linea_limitInf" value="1" style="width:100px;" />
+                    <input type="text" id="linea_limitSup" value="999" style="width:100px;"/>
+                </div>
+                <br/>
+                <label>Proveedor</label>
+                <div class="input-control text">
+                    <input type="text" id="proveedor_limitInf" value="1" style="width:100px;"/>
+                    <input type="text" id="proveedor_limitSup" value="9999" style="width:100px;"/>
+                </div>
+                <br/>
+                <div style="text-align: right;">
+                    <button id="btnImprimirHoja" class="button primary"><i class="icon-printer"></i> Imprimir hoja</button>
+                </div>
             </div>
-            <br/>
-            Proveedor
-            <div class="input-control text">
-                <input type="text" id="proveedor_limitInf" value="1" style="width:100px;"/>
-                <input type="text" id="proveedor_limitSup" value="9999" style="width:100px;"/>
-            </div>
-            <br/>
-            <button id="btnImprimirHoja" class="button primary"><i class="icon-printer"></i> Imprimir hoja</button>
         </div>
         <div id="tipo_consultas" style="margin-left:100px;background:#D3D3D3;border:solid 1px #E3E3E3;padding:15px;width:300px;float:left;">
             <div class="input-control radio">
@@ -145,10 +153,14 @@
                     Linea - Proveedor - Estilo - Color - Talla
                 </label>
             </div>
+            <hr/>
+            
+                Ajuste disponible para filtros específicos
+            
         </div>
         
     </div>
-    Ajuste disponible para filtros específicos
+    <br/>
     <div id="tabla_comparativa" style="margin-top:30px;">
 
     </div>

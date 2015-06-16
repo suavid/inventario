@@ -206,7 +206,7 @@
 </script>
 <style type="text/css">
     #fg div{
-        margin: 5px;
+        margin: 0px;
     }
 </style>
 <section>
@@ -215,147 +215,155 @@
         Ingrese, saque o mueva productos de sus bodegas. Cada transacción es registrada automáticamente en el Kardex
     </p>
     <hr/>
-    <form id="fg" style="display:table;" method="post" action="/{systemModuleName}/inventario/salvar_traslado">
-        <div style="width:400px; float:left;"> 
-            <!--<div class="input-control checkbox">
-                <label>
-                    <input type="checkbox" id="iConsigna"/>
-                    <span class="check"></span>
-                    Consigna
-                </label>
-            </div>
-            -->
-            <br/>
-            Transaccion
-            <div class="input-control select">
-                <select name="transaccion" id="transaccion" onchange="cambiar_bodegas();">
-                    <!-- START transacciones -->
-                    <option value="{cod}"> {nombre}</option>
-                    <!-- END transacciones -->
-                </select>
-            </div>
-            <div class="input-control text" style="display:table;">
-                <div style="float:left;">
-                    <label>
-                        # Documento (0 = nuevo)
+    
+    <form id="fg" method="post" action="/{systemModuleName}/inventario/salvar_traslado">
+        <div class="grid">
+            <div class="row">
+                <div class="panel span6">
+                    <div class="panel-header">
+                        <i class="icon-new"></i> Información de la transacción
+                    </div>  
+                    <div class="panel-content">
                         <br/>
-                        <div class="input-control text">
-                        <input type="text" onchange="load_data();" onkeyup="load_data();" style="width:100px" id="id" name="id" value="0" required="required"/>
+                        <label>Tipo de transacción</label>
+                        <div class="input-control select">
+                            <select name="transaccion" id="transaccion" onchange="cambiar_bodegas();">
+                                <!-- START transacciones -->
+                                <option value="{cod}"> {nombre}</option>
+                                <!-- END transacciones -->
+                            </select>
                         </div>
-                    </label>
-                </div>
-                <div style="float:left;">
-                    <label>
-                        Fecha
+                        <div class="input-control text" style="display:table;">
+                            <div style="float:left;">
+                                <label>
+                                    # Documento (0 = nuevo)
+                                    <br/>
+                                    <div class="input-control text">
+                                    <input type="text" onchange="load_data();" onkeyup="load_data();" style="width:100px" id="id" name="id" value="0" required="required"/>
+                                    </div>
+                                </label>
+                            </div>
+                            <div style="float:left;">
+                                <label>
+                                    Fecha
+                                    <br/>
+                                    <div class="input-control text">
+                                        <input type="text" id="fDate" name="fecha" id="transaccion" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" style="width:100px" />
+                                        </div>
+                                </label>
+                            </div>
+                        </div>
                         <br/>
+                        <label>Referencia retaceo No.</label>
                         <div class="input-control text">
-                        <input type="text" id="fDate" name="fecha" id="transaccion" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" style="width:100px" />
+                            <input type="text" id="referencia_retaceo" name="referencia_retaceo" onclick="$('#windowPendientes').css('display','block');" placeholder="Prorrateo de gastos de adquisición" />
                         </div>
-                    </label>
+                        <br/>
+                        <label>Proveedor Origen</label>
+                        <div class="input-control select">
+                            <select name="proveedor_origen" id="proveedor_origen">
+                                <!-- START proveedor1 -->
+                                <option value="{id}">
+                                    {nombre}
+                                </option>
+                                <!-- END proveedor1 -->
+                            </select>
+                        </div>
+                        <input type="hidden" id="bodega_origen_r" name="bodega_origen_r" value="0" />
+                        <input type="hidden" id="bodega_destino_r" name="bodega_destino_r" value="0" />
+                        <input type="hidden" id="transaccion_r" name="transaccion_r" value="0" />
+                        <input type="hidden" id="proveedor_nacional_r" name="proveedor_nacional_r" value="0" />
+                        <input type="hidden" id="proveedor_origen_r" name="proveedor_origen_r" value="0" />
+                        <input type="hidden" id="fecha_r" name="fecha_r" value="0" />
+                        <input type="hidden" id="concepto_r" name="concepto_r" value="0" />
+                        <input type="hidden" id="total_pares_r" name="total_pares_r" value="0" />
+                        <input type="hidden" id="total_costo_r" name="total_costo_r" value="0" />
+                        <input type="hidden" id="referencia_retaceo_r" name="referencia_retaceo_r" value="0" />
+                        <br/>
+                        <label>Proveedor Nacional (importador)</label>
+                        <div class="input-control select">
+                            <select name="proveedor_nacional" id="proveedor_nacional">
+                                <!-- START proveedor2 -->
+                                <option value="{id}">
+                                    {nombre}
+                                </option>
+                                <!-- END proveedor2 -->
+                            </select>
+                        </div>
+                        <br/>
+                        <br/>
+                        <label>Bodega de origen</label>
+                        <div class="input-control select">
+                            <select name="bodega_origen" id="bodega_origen" onchange="cambiar_bodegas();">
+                                <!-- START bodega1 -->
+                                <option value="{id}">
+                                    {nombre}
+                                </option>
+                                <!-- END bodega1 -->
+                            </select>
+                        </div>
+                        <br/>
+                        <label>Bodega de destino</label>
+                        <div class="input-control select">
+                            <select name="bodega_destino" id="bodega_destino" onchange="cambiar_bodegas();">
+                                <!-- START bodega2 -->
+                                <option value="{id}">
+                                    {nombre}
+                                </option>
+                                <!-- END bodega2 -->
+                            </select>
+                        </div>
+                        <br/>
+                        <label>Concepto</label>
+                        <div class="input-control text">
+                            <input type="text" name="concepto" id="concepto" required="required" />
+                        </div>
+                    </div>
+                </div>
+                <div class="panel span4" style="margin-left: 10px;">
+                    <div class="panel-header">
+                        <i class="icon-cycle"></i> Cantidad a trasladar
+                    </div>
+                    <div class="panel-content">
+                            <!--<h3>Cuentas por pagar</h3>
+                            Serie
+                            <div class="input-control text">
+                                <input type="text" />
+                            </div>
+                            Factura
+                            <div class="input-control text">
+                                <input type="text" value="0" />
+                            </div>
+                            Fecha
+                            <div class="input-control text">
+                                <input type="text" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" />
+                            </div>
+                            Periodo
+                            <div class="input-control text">
+                                <input type="text" />
+                            </div>
+                            Monto factura
+                            <div class="input-control text">
+                                <input type="text" value="0.0" />
+                            </div>
+                            <br/>
+                            <br/>-->
+                        <label>Total pares</label>
+                        <div class="input-control text">
+                            <input type="text" id="total_pares" name="total_pares" />
+                        </div>
+                        <br/>
+                        <label>Total costo</label>
+                        <div class="input-control text">
+                                <input type="text" id="total_costo" name="total_costo" />
+                        </div>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <button type="submit" class="button large success">Siguiente</button>
+                    </div>
                 </div>
             </div>
-            <br/>
-            Referencia retaceo No.
-            <div class="input-control text">
-                <input type="text" id="referencia_retaceo" name="referencia_retaceo" onclick="$('#windowPendientes').css('display','block');" placeholder="Prorrateo de gastos de adquisición" />
-            </div>
-            <br/>
-            Proveedor Origen
-            <div class="input-control select">
-                <select name="proveedor_origen" id="proveedor_origen">
-                    <!-- START proveedor1 -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END proveedor1 -->
-                </select>
-            </div>
-            <input type="hidden" id="bodega_origen_r" name="bodega_origen_r" value="0" />
-            <input type="hidden" id="bodega_destino_r" name="bodega_destino_r" value="0" />
-            <input type="hidden" id="transaccion_r" name="transaccion_r" value="0" />
-            <input type="hidden" id="proveedor_nacional_r" name="proveedor_nacional_r" value="0" />
-            <input type="hidden" id="proveedor_origen_r" name="proveedor_origen_r" value="0" />
-            <input type="hidden" id="fecha_r" name="fecha_r" value="0" />
-            <input type="hidden" id="concepto_r" name="concepto_r" value="0" />
-            <input type="hidden" id="total_pares_r" name="total_pares_r" value="0" />
-            <input type="hidden" id="total_costo_r" name="total_costo_r" value="0" />
-            <input type="hidden" id="referencia_retaceo_r" name="referencia_retaceo_r" value="0" />
-            <br/>
-            Proveedor Nacional (importador)
-            <div class="input-control select">
-                <select name="proveedor_nacional" id="proveedor_nacional">
-                    <!-- START proveedor2 -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END proveedor2 -->
-                </select>
-            </div>
-            <br/>
-            <br/>
-            Bodega de origen
-            <div class="input-control select">
-                <select name="bodega_origen" id="bodega_origen" onchange="cambiar_bodegas();">
-                    <!-- START bodega1 -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END bodega1 -->
-                </select>
-            </div>
-            <br/>
-            Bodega de destino
-            <div class="input-control select">
-                <select name="bodega_destino" id="bodega_destino" onchange="cambiar_bodegas();">
-                    <!-- START bodega2 -->
-                    <option value="{id}">
-                        {nombre}
-                    </option>
-                    <!-- END bodega2 -->
-                </select>
-            </div>
-            <br/>
-            Concepto
-            <div class="input-control text">
-                <input type="text" name="concepto" id="concepto" required="required" />
-            </div>
-        </div>
-        <div style="float:left;margin-left:80px; padding-top: 283px; width:400px;">
-            <!--<h3>Cuentas por pagar</h3>
-            Serie
-            <div class="input-control text">
-                <input type="text" />
-            </div>
-            Factura
-            <div class="input-control text">
-                <input type="text" value="0" />
-            </div>
-            Fecha
-            <div class="input-control text">
-                <input type="text" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" />
-            </div>
-            Periodo
-            <div class="input-control text">
-                <input type="text" />
-            </div>
-            Monto factura
-            <div class="input-control text">
-                <input type="text" value="0.0" />
-            </div>
-            <br/>
-            <br/>-->
-            Total pares
-            <div class="input-control text">
-                <input type="text" id="total_pares" name="total_pares" />
-            </div>
-            Total costo
-            <div class="input-control text">
-                <input type="text" id="total_costo" name="total_costo" />
-            </div>
-            <br/>
-            <br/>
-            <br/>
-            <button type="submit" class="button large success">Siguiente</button>
         </div>
     </form>
 </section>

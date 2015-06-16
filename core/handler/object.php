@@ -95,6 +95,7 @@ abstract class object {
     # guarda el estado actual del objeto
 
     public function save() {
+        //throw_error("save");
         list($tblname, $fields, $id, $is_auto) = ORMHelper::analize($this);
         $data = array();
         foreach ($fields as $field):

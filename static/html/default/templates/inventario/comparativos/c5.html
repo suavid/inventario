@@ -1,10 +1,10 @@
 <script>
 
-    function difHandler(event, idInput, linea, estilo, color, talla, costo, bodega)
+    function difHandler(event, idInput, linea, estilo, color, talla, costo, bodega, proveedor)
     {
         cant = $(event.target).val().trim();
         //alert(cant);   
-        if (!isNaN(cant))
+        /*if (!isNaN(cant))
         {
 
             uri = "/nymsa/inventario/actualizar_fisico";
@@ -17,7 +17,7 @@
             };
 
             make = $.post(uri, data, function(d){}, "json");
-        }
+        }*/
 
         idInput = idInput.split('.').join('');
         clases = idInput.split(' ');
@@ -30,7 +30,7 @@
         var pos = existeDiferencia(estilo,linea,color,talla);
 
         if(pos < 0)
-            agregarDiferencia(estilo, linea, color, talla, diferencia, costo, bodega);
+            agregarDiferencia(estilo, linea, color, talla, diferencia, costo, bodega, proveedor);
         else
             actualizarDiferencia(pos, diferencia);
     }
@@ -63,7 +63,7 @@
         $(e3).addClass(class_.replace("i_", "d_"));
     }
 
-    function agregarDiferencia(e, l, c, t, d, ct, bd){
+    function agregarDiferencia(e, l, c, t, d, ct, bd, prov){
         var item = {
             estilo: e,
             linea: l,
@@ -71,7 +71,8 @@
             talla: t,
             diferencia: d,
             costo: ct, 
-            bodega: bd
+            bodega: bd,
+            proveedor: prov
         }
 
         window._diferenciaComparativos.push(item);
@@ -93,20 +94,39 @@
     }
 
     function ajustarDiferencias(){
-        for(var i = 0; i < window._diferenciaComparativos.length; i++){
-            var dif = window._diferenciaComparativos[i].diferencia;
-            // fisico - teorico
-            if(dif > 0){
-                // fisico > teorico (entrada por ajuste)
-            }else if(dif < 0){
-                // teorico > fisico (salida por ajuste)
+        if(confirm("Esta seguro que desea realiar este ajuste?")){
+            for(var i = 0; i < window._diferenciaComparativos.length; i++){
+                var dif = window._diferenciaComparativos[i].diferencia;
+                // fisico - teorico
+                
+                if(dif > 0){
+                    // fisico > teorico (entrada por ajuste)
+                    window._entradas.push(window._diferenciaComparativos[i]);
+                }else if(dif < 0){
+                    // teorico > fisico (salida por ajuste)
+                    window._salidas.push(window._diferenciaComparativos[i]);
+                }
             }
+
+            var uri =  '/inventario/inventario/ejecutarAjusteDeInventario';
+            
+            var data = {
+                "entradas": window._entradas,
+                "salidas": window._salidas
+            };
+
+            $.post(uri, data, function(d){
+                alert("listo");
+                alert(d.msg);
+            }, "json");
         }
     }
 
     $(document).ready(function(){
 
         window._diferenciaComparativos = [];
+        window._salidas = [];
+        window._entradas = [];
         
         $('#inv input').each(function(){
             $(this).change();
@@ -115,7 +135,9 @@
     });
     </script>
 <div>
- <button type="button" onclick="ajustarDiferencias();">Ajustar</button>
+    <div style="text-align: right;">
+        <button type="button" class="success large" onclick="ajustarDiferencias();">Ajustar diferencias</button>
+    </div>
     <table id="inv" class="table bordered" style="text-align:center;">
         <thead>
             <tr>
@@ -158,7 +180,7 @@
                 <span class="t_{id_linea}{id_proveedor}{estilo}{id_color}{talla}">{stock}</span>
             </td>
             <td>
-                <input type="text" value="0" class="f_{id_linea}{id_proveedor}{estilo}{id_color}{talla}" onchange="parseClass(event); difHandler(event, '{id_linea}{id_proveedor}{estilo}{id_color}{talla}', {id_linea}, '{estilo}', {id_color}, {talla}, {costo}, {bodega});" />
+                <input type="text" value="0" class="f_{id_linea}{id_proveedor}{estilo}{id_color}{talla}" onchange="parseClass(event); difHandler(event, '{id_linea}{id_proveedor}{estilo}{id_color}{talla}', {id_linea}, '{estilo}', {id_color}, {talla}, {costo}, {bodega},{id_proveedor});" />
             </td>
             <td>
                 <span class="d_{id_linea}{id_proveedor}{estilo}{id_color}{talla}"></span>

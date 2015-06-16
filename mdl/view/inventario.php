@@ -430,10 +430,13 @@ class inventarioView {
         page()->addEstigma('concepto', $concepto);
         page()->addEstigma("traslado", array('SQL', $cache[0]));
         template()->parseOutput();
-        template()->parseExtras();
-        $html2pdf = new HTML2PDF('L', 'letter', 'es');
-        $html2pdf->WriteHTML(page()->getContent());
-        $html2pdf->Output('traslado.pdf');
+        //template()->parseExtras();
+        //$html2pdf = new HTML2PDF('L', 'letter', 'es');
+        //$html2pdf->WriteHTML(page()->getContent());
+        //$html2pdf->Output('traslado.pdf');
+        print page()->getContent();
+        $response = exec('C:\Users\Parras\Downloads\phantomjs-2.0.0-windows\phantomjs-2.0.0-windows\bin\phantomjs C:\Users\Parras\Desktop\html2pdf.js http://localhost/inventario/inventario/imprimirTraslado/21 C:\Users\Parras\Desktop\phantom.pdf');
+        echo $response;   
     }
 
     public function reporteDocumentoPr($detalle, $id, $system) {
