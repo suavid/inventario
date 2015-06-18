@@ -94,7 +94,7 @@
     }
 
     function ajustarDiferencias(){
-        if(confirm("Esta seguro que desea realiar este ajuste?")){
+        if(confirm("Esta seguro que desea realizar este ajuste?")){
             for(var i = 0; i < window._diferenciaComparativos.length; i++){
                 var dif = window._diferenciaComparativos[i].diferencia;
                 // fisico - teorico
@@ -133,6 +133,8 @@
         window._salidas = [];
         window._entradas = [];
         
+        //$('#bodega').change();
+        
         $('#inv input').each(function(){
             $(this).change();
         });
@@ -140,8 +142,8 @@
     });
     </script>
 <div>
-    <div style="text-align: right;">
-        <button type="button" class="success large" onclick="ajustarDiferencias();">Ajustar diferencias</button>
+    <div style="text-align: right; display: none;" id="btnAjustar_">
+        <button type="button"  class="success large" onclick="ajustarDiferencias();">Ajustar diferencias</button>
     </div>
     <table id="inv" class="table bordered" style="text-align:center;">
         <thead>

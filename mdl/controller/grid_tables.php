@@ -102,7 +102,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $condQ = "";
+        $condQ = "WHERE bodega.tiene_stock='si' ";
         
         $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -138,7 +138,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND ";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];
@@ -207,7 +207,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "";
+         $condQ = "WHERE bodega.tiene_stock='si' ";
          
          $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
          $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -243,7 +243,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];
@@ -304,7 +304,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "";
+         $condQ = "WHERE bodega.tiene_stock='si' ";
          
           $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -340,7 +340,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND ";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];
@@ -402,7 +402,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "";
+         $condQ = "WHERE bodega.tiene_stock='si' ";
          
           $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -438,7 +438,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND ";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];
@@ -499,9 +499,9 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "";
+         $condQ = "WHERE bodega.tiene_stock='si' ";
          
-          $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
+        $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
         
         if(isset($_POST['pc'])&&!empty($_POST['pc'])){
@@ -535,7 +535,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND ";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];
@@ -596,7 +596,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "";
+         $condQ = "WHERE bodega.tiene_stock='si' ";
          
           $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -632,7 +632,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND ";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];
@@ -693,7 +693,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "";
+         $condQ = "WHERE bodega.tiene_stock='si' ";
          
           $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -729,7 +729,7 @@ class grid_tablesController extends controller {
         
             }
             
-            $condQ = " WHERE ";
+            $condQ = " WHERE bodega.tiene_stock='si' AND ";
             
             if(isset($_POST['fecha'])&&!empty($_POST['fecha'])){
                 $fecha = $_POST['fecha'];

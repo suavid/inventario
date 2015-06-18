@@ -6,12 +6,15 @@
         }
     }
 </script>
-<h2>Gastos por adquisición de producto</h2>
-<p>
-    <br />
+<h3>Gastos por adquisición de producto</h3>
+<p class="text-muted">
+    Edite los gastos por adquisición del producto
 </p>
-<form method="post" action="/inventario/inventario/guardar_detalle_retaceo" class="span5" style="float: left;">
-    <h4>Agregar un nuevo gasto</h4>
+<hr/>
+<div class="panel span4" style="float: left;">
+    <div class="panel-header"><i class="icon-new"></i> Agregar un nuevo gasto</div>
+    <div class="panel-content">
+<form method="post" action="/inventario/inventario/guardar_detalle_retaceo" class="span5">
     <input type="hidden" name="id_hoja_retaceo" value="{id_hoja}" /> 
     <div class="input-control text span3">
         <input type="text" name="concepto" placeholder="Concepto de gasto" required/>
@@ -23,10 +26,9 @@
     <br />
     <button class="primary">Agregar</button>
 </form>
-<p>
-    <br/>
-</p>
-<div class="span5" style="float: left; margin-left: 20px;">
+    </div>
+</div>
+<div class="span5" style="float: left; margin-left: 200px;">
     <table class="table striped" style="text-align: center;">
         <tr>
             <th>Concepto de gasto</th>
@@ -54,3 +56,11 @@
     <button class="success" onclick="location.href='/inventario/inventario/confirmar_hoja_retaceo?cod={id_hoja}'">Confirmar hoja</button>
     
 </div>
+<div style="clear: both;">
+</div>
+<p>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+</p>

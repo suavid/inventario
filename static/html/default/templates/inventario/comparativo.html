@@ -47,22 +47,24 @@
         });
     });
 
-
     function procesar_consulta() {
         /* data filtro */
-        linea_limitInf = $('#linea_limitInf').val();
-        linea_limitSup = $('#linea_limitSup').val();
-        proveedor_limitInf = $('#proveedor_limitInf').val();
-        proveedor_limitSup = $('#proveedor_limitSup').val();
-        bodega = $('#bodega').val();
+        var linea_limitInf = $('#linea_limitInf').val();
+        var linea_limitSup = $('#linea_limitSup').val();
+        var proveedor_limitInf = $('#proveedor_limitInf').val();
+        var proveedor_limitSup = $('#proveedor_limitSup').val();
+        var bodega = $('#bodega').val();
+        var estilo = $('#estilo').val();
+        
 
         /* tipo consulta seleccionado */
-        tipo_query = $("input[name='t_consulta']:checked").val();
+        var tipo_query = $("input[name='t_consulta']:checked").val();
         /* uri de consulta de inventario */
-        uri = "/inventario/inventario/hacer_comparativo";
+        var uri = "/inventario/inventario/hacer_comparativo";
 
         /* data de peticion */
-        data = {
+        var data = {
+            "estilo": estilo,
             "lineaInf": linea_limitInf,
             "lineaSup": linea_limitSup,
             "provInf": proveedor_limitInf,
@@ -75,6 +77,11 @@
         /* realizacion de la peticion */
         jqr = $.post(uri, data, function(data) {
             $('#tabla_comparativa').html(data.html);
+            if($('#bodega').val()==0){
+                $('#btnAjustar_').css('display', 'none');
+            }else{
+                $('#btnAjustar_').css('display', 'block');
+            }
         }, "json");
     }
 </script>
@@ -88,7 +95,7 @@
             <div class="panel-content">
                 <label>Bodega</label>
                 <div class="input-control select">
-                    <select id="bodega">
+                    <select id="bodega" onchange="verificarBodega(event);">
                         <option value="0">Todas</option>
                         <!-- START bodegas -->
                         <option value="{id}">{nombre}</option>
@@ -100,6 +107,11 @@
                 <div class="input-control text">
                     <input type="text" id="linea_limitInf" value="1" style="width:100px;" />
                     <input type="text" id="linea_limitSup" value="999" style="width:100px;"/>
+                </div>
+                <br/>
+                <label>Estilo</label>
+                <div class="input-control text">
+                    <input type="text" id="estilo" value=""/>
                 </div>
                 <br/>
                 <label>Proveedor</label>

@@ -16,8 +16,9 @@
     var colsOption = [
         {id: 'id', header: "Código", width: 50},
         {id: 'nombre', header: "Nombre", width: 250},
-        {id: 'usuario', header: "Encargado", width: 100},
-        {id: 'descripcion', header: "Descripcion", width: 217}
+        {id: 'usuario', header: "Encargado", width: 80},
+        {id: 'descripcion', header: "Descripcion", width: 180},
+        {id: 'tiene_stock', header: "Stock", width: 57}
 
     ];
 
@@ -126,6 +127,13 @@
                 var esConsigna = !(d.bodega_consigna == "");
                 $('#nombre').val(d.nombre);
                 $('#descripcion').val(d.descripcion);
+                
+                if(d.tiene_stock == "si"){
+                    $("#tiene_stock").attr("checked", "checked");
+                }else{
+                    $("#tiene_stock").removeAttr("checked");
+                }
+                
                 if (esConsigna) {
                     // sustituir empleado por cliente
                 } else {
@@ -198,6 +206,10 @@
                             <div>
                                 <input type="checkbox" name="rellenar" id="rellenar" />
                                 Rellenar correlativos vacíos  
+                            </div>
+                            <div>
+                                <input type="checkbox" name="tiene_stock" id="tiene_stock" />
+                                Maneja stock  
                             </div>
                             <br/> 
                             <div class="input-control text">

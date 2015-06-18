@@ -471,7 +471,7 @@ class inventarioController extends controller {
             $fecha = "";
             
             
-            $condQ = "";
+            $condQ = "WHERE bodega.tiene_stock='si' ";
          
             $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
             $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
@@ -508,7 +508,7 @@ class inventarioController extends controller {
             
                 }
             
-                $condQ = " WHERE ";
+                $condQ = " WHERE bodega.tiene_stock ='si' AND ";
             
                 if(isset($_GET['fecha'])&&!empty($_GET['fecha'])){
                     $fecha = $_GET['fecha'];
@@ -1106,6 +1106,7 @@ class inventarioController extends controller {
 
     public function hacer_comparativo() {
         $this->validar();
+        $estilo     = $_POST['estilo'];
         $tipoQuery  = $_POST['tipoQuery'];
         $bodega     = $_POST['bodega'];
         $Li         = $_POST["lineaInf"];
@@ -1114,7 +1115,7 @@ class inventarioController extends controller {
         $Ps         = $_POST["provSup"];
 
         $cache = array();
-        $cache[0] = $this->model->consultar_inventario($tipoQuery, $bodega, $Li, $Ls, $Pi, $Ps);
+        $cache[0] = $this->model->consultar_inventario($tipoQuery, $bodega, $Li, $Ls, $Pi, $Ps, $estilo);
 
         $this->view->cargar_tabla($tipoQuery, $cache);
     }
@@ -1646,7 +1647,13 @@ class inventarioController extends controller {
                 $bodega_model->get($ultimo_en_blanco);
                 unset($data['id']);
             }
-
+            
+            if(isset($_POST['tiene_stock'])){
+                $data['tiene_stock'] = "si";
+            }else{
+                $data['tiene_stock'] = "no";
+            }
+            
             $bodega_model->bodega_consigna = $bodega_consigna;
             $bodega_model->change_status($data);
             $bodega_model->save();

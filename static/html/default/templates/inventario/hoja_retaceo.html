@@ -5,14 +5,15 @@
     </ul>
 </nav>
 <br/>
-<h2>Nueva hoja de retaceo</h2>
-<br />
+<div class="panel span4">
+<div class="panel-header"><i class="icon-new"></i> Nueva hoja de retaceo</div>
+<div class="panel-content">
 <form action="/inventario/inventario/guardar_hoja_retaceo" method="post">
-    <div class="input-control text span3">
+    <div class="input-control text">
         <input type="text" placeholder="Numero de documento (0 = nuevo)" name="cod" required/>
     </div>
     <br />
-    <div class="input-control text span3" data-role="datepicker"
+    <div class="input-control text" data-role="datepicker"
         data-format="yyyy/m/d"
         data-position="bottom"
         data-effect="fade">
@@ -20,13 +21,14 @@
         <button class="btn-date"></button>
     </div>
     <br />
-    <div class="input-control text span3">
+    <div class="input-control text">
         <input type="text" placeholder="Numero de pedido" name="id_orden_compra" required/>
     </div>
     <br />
     <button type="submit">Guardar</button>
 </form>
-
+</div>
+</div>
 <div id="windowPendientes" class="window flat shadow span10" style="position: fixed; top: 100px; left:50%; margin-left: -400px; display: none; z-index: 10000;">
     <div class="caption">
         <span class="icon icon-search"></span> 
