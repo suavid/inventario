@@ -114,10 +114,15 @@
                 "entradas": window._entradas,
                 "salidas": window._salidas
             };
-
+            porfavor_espere();
             $.post(uri, data, function(d){
-                alert("listo");
-                alert(d.msg);
+                setTimeout(function(){ 
+                    gracias_por_esperar();
+                }, 500);
+
+                setTimeout(function(){ 
+                    location.href = "/inventario/inventario/listadoTraslado";
+                }, 700);
             }, "json");
         }
     }

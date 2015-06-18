@@ -1337,10 +1337,7 @@ class inventarioModel extends object {
                     $prod = $this->get_child('producto');
                     $prod->get(array("estilo"=>$estilo, "linea"=>$linea));
                     $prov = $this->get_child('proveedor');
-                    $prov->get($prod->proveedor);
-
-                   
-                    
+                    $prov->get($prod->proveedor);   
 
                     $system = $this->get_child('system');
                     $system->get(1);

@@ -1,21 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-    </head>
-    <body>
-        <div style="padding:15px;padding-bottom:25px;background:#EFEFEF;border-radius:12px 12px 12px 12px;margin-right:20px;">
-            <div style="text-align:right;">Impreso por:&nbsp; {usuario} - {timestamp}</div>
-            <h2 style="margin-top:0px;">{ncod}</h2>
-            <span style="font-size:14px;"><i>Empresa: Negocios &#38; Mas, S. A de C. V.</i></span>
-            <br/>
-            <div style="margin-left:350px;font-weight:bold;font-size:14px;font-family:Arial;">
-                # Documento: {ntdoc} &nbsp;&nbsp; Fecha: {fecha}
-                <br/>
-                <br/>
-                {concepto}
-            </div>
-        </div>
+        <meta charset="UTF-8">
         <style type="text/css">
+            body{
+                font-family: Verdana;
+            }
+
             table tr{
                 width: 1000px;
             }
@@ -58,59 +49,56 @@
                 margin-left: 0px;  
             }
         </style>
+        <script type="text/javascript">
+            var PhantomJSPrinting = {
+                header: {
+                    height: "205px",
+                    contents: function(pageNum, numPages) { return '<style type="text/css">body{font-family: Verdana; }table tr{ width: 1000px;} table .header{ border: solid 1px black;  }table .header th{border-bottom: solid 1px black;border-top: solid 1px black;}table .header th:first-child{border-left: solid 1px black;}table .header th:last-child{border-right: solid 1px black;}table .header th{padding: 7px;}table td{font-size: 12px; padding-top:10px; }table td, table th{padding-left:15px;padding-right:15px;}table {text-align: center;border-collapse: collapse;font-size: 12px;margin: auto;margin-right:0px;margin-left: 0px;  }</style><div style="padding:15px;padding-bottom:25px;border-radius:12px 12px 12px 12px;margin-top: 0px;"><div style="text-align:right;font-size: 12px;">Impreso por:&nbsp; {usuario} - {timestamp}</div><h2 style="margin-top:0px;">{ncod}</h2><span style="font-size:14px;">Negocios &#38; Mas, S. A de C. V.</span><br/><div style="margin-left:350px;font-weight:bold;font-size:14px;font-family:Arial;"># Documento: {ntdoc} &nbsp;&nbsp; Fecha: {fecha}<br/><br/>{concepto}</div></div><table><tr class="header"><th style="width: 30%;">Proveedor</th><th style="width: 16%;">Codigo Producto</th><th style="width: 10%;">Cantidad</th><th style="width: 10%;">Costo.U</th><th style="width: 12%;">Total</th><th style="width: 12%;">PVU</th><th style="width: 10%;">%</th><th style="width: 10%;">Prop</th></tr></table>'; }
+                },
+                footer: {
+                    height: "1.2cm",
+                    contents: function(pageNum, numPages) { return "<div style='text-align:center;'><small>" + pageNum +
+        " / " + numPages + "</small></div>"; }
+                }
+            };
+        </script> 
+    </head>
+    <body>
         <div>
             <table>
-                <tr class="header">
-                    <th style="width: 30%;">Proveedor</th>
-                    <th style="width: 12%;">Codigo Producto</th>
-                    <th style="width: 12%;">Cantidad</th>
-                    <th style="width: 12%;">Costo.U</th>
-                    <th style="width: 12%;">Total</th>
-                    <th style="width: 12%;">PVU</th>
-                    <th style="width: 5%;">%</th>
-                    <th style="width: 5%;">Prop</th>
-                </tr>
                 <!-- START traslado -->
                 <tr>
                     <td style="width: 30%;">{proveedor}</td>
-                    <td style="width: 12%;">{codigo}</td>
-                    <td style="width: 12%;">{cantidad}</td>
-                    <td style="width: 12%;">{costo}</td>
-                    <td style="width: 12%;">{total}</td>
-                    <td style="width: 12%;">{precio}</td>
-                    <td style="width: 5%;">{margen_usual}</td>
-                    <td style="width: 5%;">{propiedad}</td>
+                    <td style="width: 16%;">{codigo}</td>
+                    <td style="width: 10%;">{cantidad}</td>
+                    <td style="width: 10%;">$ {costo}</td>
+                    <td style="width: 12%;">$ {total}</td>
+                    <td style="width: 12%;">$ {precio}</td>
+                    <td style="width: 10%;">{margen_usual}</td>
+                    <td style="width: 10%;">{propiedad}</td>
                 </tr>
                 <!-- END traslado -->
+                <tr>
+                    <td><p><br/></p></td>
+                </tr>
+                <tr>
+                    <td><strong>Total pares:</strong></td>
+                    <td><strong>{t_pares}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Total costo:</strong></td>
+                    <td><strong>$ {t_costo}</strong></td>
+                </tr>
             </table>
         </div>
         <br/>
-        <br/>
-        <br/>
-        <span style="font-size:18px;">Total Pares:&nbsp;&nbsp; &nbsp;&nbsp;  {t_pares}</span>
-        <br/>
-        <br/>
-        <span style="font-size:18px;">Total Costo:&nbsp;&nbsp; &nbsp;&nbsp;  {t_costo}</span>
-        <div style="margin-left:500px;">
-            ____________________ &nbsp;&nbsp; &nbsp;&nbsp; ____________________
+        <div style="margin-left:600px;margin-top: 20px;">
             <br/>
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span style="border-top: solid 1px #000;"><small>Aprobación gerencia</small></span>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            Vo.Bo Gerencia
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            Operado por
+            <span style="border-top: solid 1px #000;"><small>Operado por</small></span>
 
         </div>
     </body>

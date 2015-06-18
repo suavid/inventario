@@ -434,9 +434,21 @@ class inventarioView {
         //$html2pdf = new HTML2PDF('L', 'letter', 'es');
         //$html2pdf->WriteHTML(page()->getContent());
         //$html2pdf->Output('traslado.pdf');
-        print page()->getContent();
-        $response = exec('C:\Users\Parras\Downloads\phantomjs-2.0.0-windows\phantomjs-2.0.0-windows\bin\phantomjs C:\Users\Parras\Desktop\html2pdf.js http://localhost/inventario/inventario/imprimirTraslado/21 C:\Users\Parras\Desktop\phantom.pdf');
-        echo $response;   
+        $fp = fopen(APP_PATH."/temp/".Session::singleton()->getUser()."_traslado.html", "w");
+        fputs($fp, page()->getContent());
+        fclose($fp);
+        $str = APP_PATH.'common\plugins\phantomjs\bin\phantomjs '.APP_PATH.'static\js\html2pdf.js file:///'.APP_PATH.'temp\\'.Session::singleton()->getUser().'_traslado.html '.APP_PATH.'temp\\'.Session::singleton()->getUser().'_traslado.pdf';
+        system($str); 
+        $file = APP_PATH.'temp\\'.Session::singleton()->getUser().'_traslado.pdf';
+        $filename = Session::singleton()->getUser().'_traslado.pdf';
+
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($file));
+        header('Accept-Ranges: bytes');
+
+        @readfile($file);
     }
 
     public function reporteDocumentoPr($detalle, $id, $system) {
@@ -718,11 +730,26 @@ class inventarioView {
         page()->addEstigma('hora', date("h:i:s A"));
         
         template()->parseOutput();
-        template()->parseExtras();
+        //template()->parseExtras();
         
-        $html2pdf = new HTML2PDF('P', 'letter', 'es');
-        $html2pdf->WriteHTML(page()->getContent());
-        $html2pdf->Output('comparativo.pdf');
+        //$html2pdf = new HTML2PDF('P', 'letter', 'es');
+        //$html2pdf->WriteHTML(page()->getContent());
+        //$html2pdf->Output('comparativo.pdf');
+        $fp = fopen(APP_PATH."/temp/".Session::singleton()->getUser()."_comparativo.html", "w");
+        fputs($fp, page()->getContent());
+        fclose($fp);
+        $str = APP_PATH.'common\plugins\phantomjs\bin\phantomjs '.APP_PATH.'static\js\html2pdf.js file:///'.APP_PATH.'temp\\'.Session::singleton()->getUser().'_comparativo.html '.APP_PATH.'temp\\'.Session::singleton()->getUser().'_comparativo.pdf';
+        system($str); 
+        $file = APP_PATH.'temp\\'.Session::singleton()->getUser().'_comparativo.pdf';
+        $filename = Session::singleton()->getUser().'_traslado.pdf';
+
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($file));
+        header('Accept-Ranges: bytes');
+
+        @readfile($file);
     }
     
     public function imprimir_reporteInventario($cache, $tipo, $system, $data, $fecha) {

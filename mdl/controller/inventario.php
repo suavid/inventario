@@ -19,99 +19,204 @@ class inventarioController extends controller {
     }
 
     public function ejecutarAjusteDeInventario(){
-        $json = $_POST['salidas'];    
-        if(count($json) > 0 ){        
-            $tot_pares = 0;
-            $tot_costo = 0;
-            $codigo = 0;
+        if(isset($_POST['salidas']) && !empty($_POST['salidas'])){
+            $json = $_POST['salidas'];    
+            
+            if(count($json) > 0 ){        
+                $tot_pares = 0;
+                $tot_costo = 0;
+                $codigo = 0;
+                $bodega_s = 0;
 
-            // creando la cabecera del traslado 
+                // creando la cabecera del traslado 
 
-            foreach ($json as $item) {
+                foreach ($json as $item) {
 
-                $estilo = $item["estilo"];
-                $linea = $item["linea"];
-                $color = $item["color"];
-                $talla = $item["talla"];
-                if(isset($item['diferencia']))
-                    $diferencia = ($item["diferencia"] < 0)? $item["diferencia"] * -1 : $item["diferencia"];
-                else
-                    $diferencia = 0;
+                    $estilo = $item["estilo"];
+                    $linea = $item["linea"];
+                    $color = $item["color"];
+                    $talla = $item["talla"];
+                    if(isset($item['diferencia']))
+                        $diferencia = ($item["diferencia"] < 0)? $item["diferencia"] * -1 : $item["diferencia"];
+                    else
+                        $diferencia = 0;
 
-                $costo = (isset($item['costo']))? $item["costo"]:0; 
-                $bodega = (isset($item['bodega']))? $item["bodega"]:0;
-                $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
-                $tot_pares += $diferencia;
-                $tot_costo += ($diferencia * $costo);
-            }
-
-            $transaccion = $this->model->get_child('transacciones');
-            $transaccion->setVirtualId('cod');
-            $transaccion->get("2D");
-            $codigo = $transaccion->get_attr('ultimo') + 1;
-            $transaccion->set_attr('ultimo', $codigo);
-            $transaccion->save();
-
-            $traslado = $this->model->get_child('traslado');
-            $traslado->get(0);
-
-            $traslado->fecha = date("Y-m-d");
-            $traslado->proveedor_origen = 0;
-            $traslado->proveedor_nacional = 0;
-            $traslado->bodega_origen = 1;
-            $traslado->bodega_destino = 0;
-            $traslado->concepto = "Salida por ajuste físico";
-            $traslado->transaccion = "2D";
-            $traslado->total_pares = $tot_pares;
-            $traslado->total_costo = $tot_costo;
-            $traslado->total_costo_p = $tot_pares;
-            $traslado->total_pares_p = $tot_costo;
-            $traslado->editable = "0";
-            $traslado->consigna = "0";
-            $traslado->usuario = Session::singleton()->getUser();
-            $traslado->concepto_alternativo = "";
-            $traslado->cliente = "0";
-            $traslado->cod = $codigo;
-            $traslado->referencia_retaceo = "0";
-
-            $traslado->save();
-
-            $idref = $traslado->last_insert_id();
-
-            foreach ($json as $item) {
-
-                $estilo = $item["estilo"];
-                $linea = $item["linea"];
-                $color = $item["color"];
-                $talla = $item["talla"];
-                if(isset($item['diferencia']))
-                    $diferencia = ($item["diferencia"] < 0)? $item["diferencia"] * -1 : $item["diferencia"];
-                else
-                    $diferencia = 0;
-
-                $costo = (isset($item['costo']))? $item["costo"]:0; 
-                $bodega = (isset($item['bodega']))? $item["bodega"]:0;
-                $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
-                $tot_pares += $diferencia;
-                $tot_costo += ($diferencia * $costo);
-
-                if($diferencia > 0){
-                    $det = $this->model->get_child('detalle_traslado');
-                    $det->get(0);
-                    $det->id_ref = $idref;
-                    $det->linea = $linea;
-                    $det->estilo = $estilo;
-                    $det->color = $color;
-                    $det->talla = $talla;
-                    $det->costo = $costo;
-                    $det->cantidad = $diferencia;
-                    $det->total = $costo * $diferencia;
-                    $det->bodega = $bodega;
-                    $det->save();
+                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $bodega = (isset($item['bodega']))? $item["bodega"]:0;
+                    $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
+                    $tot_pares += $diferencia;
+                    $tot_costo += ($diferencia * $costo);
+                    $bodega_s = $bodega;
                 }
+
+                $transaccion = $this->model->get_child('transacciones');
+                $transaccion->setVirtualId('cod');
+                $transaccion->get("2D");
+                $codigo = $transaccion->get_attr('ultimo') + 1;
+                $transaccion->set_attr('ultimo', $codigo);
+                $transaccion->save();
+
+                $traslado = $this->model->get_child('traslado');
+                $traslado->get(0);
+
+                $traslado->fecha = date("Y-m-d");
+                $traslado->proveedor_origen = 0;
+                $traslado->proveedor_nacional = 0;
+                $traslado->bodega_origen = $bodega_s;
+                $traslado->bodega_destino = $bodega_s;
+                $traslado->concepto = "Salida por ajuste de inventario";
+                $traslado->transaccion = "2D";
+                $traslado->total_pares = $tot_pares;
+                $traslado->total_costo = $tot_costo;
+                $traslado->total_costo_p = $tot_pares;
+                $traslado->total_pares_p = $tot_costo;
+                $traslado->editable = "0";
+                $traslado->consigna = "0";
+                $traslado->usuario = Session::singleton()->getUser();
+                $traslado->concepto_alternativo = "";
+                $traslado->cliente = "0";
+                $traslado->cod = $codigo;
+                $traslado->referencia_retaceo = "0";
+
+                $traslado->save();
+
+                $idref = $traslado->last_insert_id();
+
+                foreach ($json as $item) {
+
+                    $estilo = $item["estilo"];
+                    $linea = $item["linea"];
+                    $color = $item["color"];
+                    $talla = $item["talla"];
+                    if(isset($item['diferencia']))
+                        $diferencia = ($item["diferencia"] < 0)? $item["diferencia"] * -1 : $item["diferencia"];
+                    else
+                        $diferencia = 0;
+
+                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $bodega = (isset($item['bodega']))? $item["bodega"]:0;
+                    $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
+                    $tot_pares += $diferencia;
+                    $tot_costo += ($diferencia * $costo);
+
+                    if($diferencia > 0){
+                        $det = $this->model->get_child('detalle_traslado');
+                        $det->get(0);
+                        $det->id_ref = $idref;
+                        $det->linea = $linea;
+                        $det->estilo = $estilo;
+                        $det->color = $color;
+                        $det->talla = $talla;
+                        $det->costo = $costo;
+                        $det->cantidad = $diferencia;
+                        $det->total = $costo * $diferencia;
+                        $det->bodega = $bodega;
+                        $det->save();
+                    }
+                }
+
+                $this->model->salidas($idref, $bodega_s, $bodega_s);
             }
+        }
 
+        if(isset($_POST['entradas']) && !empty($_POST['entradas'])){
+            $json = $_POST['entradas'];  
 
+            if(count($json) > 0 ){        
+                $tot_pares = 0;
+                $tot_costo = 0;
+                $codigo = 0;
+                $bodega_s = 0;
+
+                // creando la cabecera del traslado 
+
+                foreach ($json as $item) {
+
+                    $estilo = $item["estilo"];
+                    $linea = $item["linea"];
+                    $color = $item["color"];
+                    $talla = $item["talla"];
+                    if(isset($item['diferencia']))
+                        $diferencia = ($item["diferencia"] < 0)? $item["diferencia"] * -1 : $item["diferencia"];
+                    else
+                        $diferencia = 0;
+
+                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $bodega = (isset($item['bodega']))? $item["bodega"]:0;
+                    $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
+                    $tot_pares += $diferencia;
+                    $tot_costo += ($diferencia * $costo);
+                    $bodega_s = $bodega;
+                }
+
+                $transaccion = $this->model->get_child('transacciones');
+                $transaccion->setVirtualId('cod');
+                $transaccion->get("1D");
+                $codigo = $transaccion->get_attr('ultimo') + 1;
+                $transaccion->set_attr('ultimo', $codigo);
+                $transaccion->save();
+
+                $traslado = $this->model->get_child('traslado');
+                $traslado->get(0);
+
+                $traslado->fecha = date("Y-m-d");
+                $traslado->proveedor_origen = 0;
+                $traslado->proveedor_nacional = 0;
+                $traslado->bodega_origen = $bodega_s;
+                $traslado->bodega_destino = $bodega_s;
+                $traslado->concepto = "Ingreso por ajuste de inventario";
+                $traslado->transaccion = "1D";
+                $traslado->total_pares = $tot_pares;
+                $traslado->total_costo = $tot_costo;
+                $traslado->total_costo_p = $tot_pares;
+                $traslado->total_pares_p = $tot_costo;
+                $traslado->editable = "0";
+                $traslado->consigna = "0";
+                $traslado->usuario = Session::singleton()->getUser();
+                $traslado->concepto_alternativo = "";
+                $traslado->cliente = "0";
+                $traslado->cod = $codigo;
+                $traslado->referencia_retaceo = "0";
+
+                $traslado->save();
+
+                $idref = $traslado->last_insert_id();
+
+                foreach ($json as $item) {
+
+                    $estilo = $item["estilo"];
+                    $linea = $item["linea"];
+                    $color = $item["color"];
+                    $talla = $item["talla"];
+                    if(isset($item['diferencia']))
+                        $diferencia = ($item["diferencia"] < 0)? $item["diferencia"] * -1 : $item["diferencia"];
+                    else
+                        $diferencia = 0;
+
+                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $bodega = (isset($item['bodega']))? $item["bodega"]:0;
+                    $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
+                    $tot_pares += $diferencia;
+                    $tot_costo += ($diferencia * $costo);
+
+                    if($diferencia > 0){
+                        $det = $this->model->get_child('detalle_traslado');
+                        $det->get(0);
+                        $det->id_ref = $idref;
+                        $det->linea = $linea;
+                        $det->estilo = $estilo;
+                        $det->color = $color;
+                        $det->talla = $talla;
+                        $det->costo = $costo;
+                        $det->cantidad = $diferencia;
+                        $det->total = $costo * $diferencia;
+                        $det->bodega = $bodega;
+                        $det->save();
+                    }
+                }
+
+                $this->model->ingresos($idref, $bodega_s, $bodega_s);
+            }
         }
 
         echo json_encode(array("msg"=>count($_POST['salidas'])));
