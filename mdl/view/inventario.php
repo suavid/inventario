@@ -679,6 +679,18 @@ class inventarioView {
         print page()->getContent();
     }
     
+    public function productoEntrante(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Producto en tránsito');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+        page()->addEstigma("TITULO", 'Producto en tránsito');
+        template()->addTemplateBit('content', 'inventario/transito.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
+    
     public function imprimir_reporteComparativo($cache, $tipo, $system, $total, $data) {
         require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
         template()->buildFromTemplates('report/template.html');

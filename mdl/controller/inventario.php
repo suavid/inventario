@@ -17,6 +17,14 @@ class inventarioController extends controller {
         //if (!isset($_SESSION['inventario']))
         //    HttpHandler::redirect('/'.MODULE.'/modulo/listar');
     }
+    
+    public function productoEntrante(){
+        if(isInstalled("compras")){
+            $this->view->productoEntrante();
+        }else{
+            HttpHandler::redirect('/inventario/error/e403');
+        }
+    }
 
     public function ejecutarAjusteDeInventario(){
         if(isset($_POST['salidas']) && !empty($_POST['salidas'])){
