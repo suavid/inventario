@@ -371,6 +371,11 @@ class inventarioController extends controller {
         
         $this->view->reporte_inventario();
     }
+
+    public function reporte_kardex(){
+        
+        $this->view->reporte_kardex();
+    }
     
     public function imprimir_reporteComparativo(){
         if(isset($_GET['data'])&&!empty($_GET['data']) && isset($_GET['tipo'])&&!empty($_GET['tipo'])){

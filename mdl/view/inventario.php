@@ -678,6 +678,18 @@ class inventarioView {
         template()->parseExtras();
         print page()->getContent();
     }
+
+    public function reporte_kardex() {
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Reporte - karex');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+        page()->addEstigma("TITULO", 'Reporte - kardex');
+        template()->addTemplateBit('content', 'inventario/reporte_kardex.html');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
     
     public function productoEntrante(){
         template()->buildFromTemplates('template_nofixed.html');
