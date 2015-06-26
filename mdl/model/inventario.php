@@ -1239,6 +1239,7 @@ class inventarioModel extends object {
 
 
                 $kardex->nueva_entrada(
+                    $traslado->transaccion,
                     date("Y-m-d"), 
                     $traslado->concepto, 
                     $dato_articulo, 
@@ -1373,6 +1374,7 @@ class inventarioModel extends object {
 
 
                     $kardex->nueva_salida(
+                        $traslado->transaccion,
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 
@@ -1537,6 +1539,7 @@ class inventarioModel extends object {
                     $pcod         = $alcod;
 
                     $kardex->nueva_salida(
+                        $ptransaccion,
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 
@@ -1552,6 +1555,7 @@ class inventarioModel extends object {
                     );
 
                     $kardex->nueva_entrada(
+                        $traslado->transaccion,
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 
@@ -1728,6 +1732,7 @@ class inventarioModel extends object {
 
 
                     $kardex->nueva_entrada(
+                        $traslado->transaccion,
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 

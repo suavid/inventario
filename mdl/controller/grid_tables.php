@@ -790,28 +790,8 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-        $condQ = "WHERE bodega.tiene_stock='si' ";
+        $condQ = "";
         
-        $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
-        $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
-        
-        if(isset($_POST['pc'])&&!empty($_POST['pc'])){
-                $pc = $_POST['pc'];
-                
-                if($pc == "no"){
-                    $costoQ = "''";            
-                }
-        
-        }
-        
-        if(isset($_POST['pv'])&&!empty($_POST['pv'])){
-                $pv = $_POST['pv'];
-                
-                if($pv == "no"){
-                    $precioQ = "''";            
-                }
-        
-        }
         
         if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros = $_POST['filtros'];
@@ -859,7 +839,7 @@ class grid_tablesController extends controller {
            
         }
         
-        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) $condQ GROUP BY bodega.id ORDER BY no DESC";
+        $sql = "select no from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod order by proveedor,no ";
         
         //echo $sql;
         
@@ -871,7 +851,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) $condQ GROUP BY bodega.id ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k WHERE k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             
            // echo $sql;
             
@@ -895,28 +875,8 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "WHERE bodega.tiene_stock='si' ";
+         $condQ = "";
          
-         $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
-         $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
-        
-         if(isset($_POST['pc'])&&!empty($_POST['pc'])){
-                $pc = $_POST['pc'];
-                
-                if($pc == "no"){
-                    $costoQ = "''";            
-                }
-        
-         }
-        
-         if(isset($_POST['pv'])&&!empty($_POST['pv'])){
-                $pv = $_POST['pv'];
-                
-                if($pv == "no"){
-                    $precioQ = "''";            
-                }
-        
-         }
         
          if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros = $_POST['filtros'];
@@ -962,7 +922,7 @@ class grid_tablesController extends controller {
            
         }
         
-        $sql = "SELECT  count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) $condQ GROUP BY bodega.id, linea.id ORDER BY no DESC";
+        $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k where k.nombre_proveedor = kardex.nombre_proveedor and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod order by proveedor,no ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -971,7 +931,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT  linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) $condQ GROUP BY bodega.id, linea.id ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k where k.nombre_proveedor = kardex.nombre_proveedor and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -992,28 +952,8 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "WHERE bodega.tiene_stock='si' ";
+         $condQ = "";
          
-          $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
-        $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
-        
-        if(isset($_POST['pc'])&&!empty($_POST['pc'])){
-                $pc = $_POST['pc'];
-                
-                if($pc == "no"){
-                    $costoQ = "''";            
-                }
-        
-        }
-        
-        if(isset($_POST['pv'])&&!empty($_POST['pv'])){
-                $pv = $_POST['pv'];
-                
-                if($pv == "no"){
-                    $precioQ = "''";            
-                }
-        
-        }
         
         if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros = $_POST['filtros'];
@@ -1059,7 +999,7 @@ class grid_tablesController extends controller {
            
         }
         
-        $sql = "SELECT  count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id)  $condQ GROUP BY bodega.id, linea.id ORDER BY no DESC";
+        $sql = "select no from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id order by proveedor,no ";
         
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
@@ -1069,7 +1009,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT  proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id)  $condQ GROUP BY bodega.id, linea.id ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo where ar.linea = articulo.linea and ar.estilo = articulo.estilo and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -1090,28 +1030,8 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "WHERE bodega.tiene_stock='si' ";
+         $condQ = "";
          
-          $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
-        $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
-        
-        if(isset($_POST['pc'])&&!empty($_POST['pc'])){
-                $pc = $_POST['pc'];
-                
-                if($pc == "no"){
-                    $costoQ = "''";            
-                }
-        
-        }
-        
-        if(isset($_POST['pv'])&&!empty($_POST['pv'])){
-                $pv = $_POST['pv'];
-                
-                if($pv == "no"){
-                    $precioQ = "''";            
-                }
-        
-        }
         
         if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros = $_POST['filtros'];
@@ -1157,7 +1077,7 @@ class grid_tablesController extends controller {
            
         }
         
-        $sql = "SELECT  count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id)  $condQ GROUP BY bodega.id, linea.id, articulo.estilo ORDER BY no DESC";
+        $sql = "select no from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id order by no, articulo.linea, articulo.estilo";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -1166,7 +1086,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT  exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id)  $condQ GROUP BY bodega.id, linea.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id order by no, articulo.linea, articulo.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -1187,28 +1107,8 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "WHERE bodega.tiene_stock='si' ";
-         
-        $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
-        $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
+        $condQ = "";
         
-        if(isset($_POST['pc'])&&!empty($_POST['pc'])){
-                $pc = $_POST['pc'];
-                
-                if($pc == "no"){
-                    $costoQ = "''";            
-                }
-        
-        }
-        
-        if(isset($_POST['pv'])&&!empty($_POST['pv'])){
-                $pv = $_POST['pv'];
-                
-                if($pv == "no"){
-                    $precioQ = "''";            
-                }
-        
-        }
         
         if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros = $_POST['filtros'];
@@ -1254,7 +1154,7 @@ class grid_tablesController extends controller {
            
         }
         
-        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id)  $condQ GROUP BY bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC";
+        $sql = "select no from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id order by no, articulo.linea, articulo.estilo ";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -1263,7 +1163,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT  color.id, color.nombre as nombre_color, exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON ( producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) $condQ GROUP BY bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo,articulo.talla, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and ar.talla = articulo.talla and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id order by no, articulo.linea, articulo.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -1381,28 +1281,7 @@ class grid_tablesController extends controller {
         $pageSize = 10; //10 rows per page
         //to get how many records totally.
         
-         $condQ = "WHERE bodega.tiene_stock='si' ";
-         
-          $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
-        $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
-        
-        if(isset($_POST['pc'])&&!empty($_POST['pc'])){
-                $pc = $_POST['pc'];
-                
-                if($pc == "no"){
-                    $costoQ = "''";            
-                }
-        
-        }
-        
-        if(isset($_POST['pv'])&&!empty($_POST['pv'])){
-                $pv = $_POST['pv'];
-                
-                if($pv == "no"){
-                    $precioQ = "''";            
-                }
-        
-        }
+        $condQ = "";
         
         if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros = $_POST['filtros'];
@@ -1448,7 +1327,7 @@ class grid_tablesController extends controller {
            
         }
         
-        $sql = "SELECT count(*) as cnt FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON ( producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN marca on (marca.id =  producto.marca) LEFT JOIN color on (articulo.color = color.id) $condQ GROUP BY marca.id, articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC";
+        $sql = "select no from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join linea on linea.id = articulo.linea join transacciones on transaccion=transacciones.cod join control_precio on articulo.estilo = control_estilo and articulo.linea = control_precio.linea and articulo.color = control_precio.color and articulo.talla = control_precio.talla group by transacciones.cod order by kardex.tipo asc";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
         $totalRec = $handle->num_rows;
@@ -1457,7 +1336,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "SELECT  marca.id, marca.nombre as nombre_marca, articulo.talla as talla,color.id, color.nombre as nombre_color, exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON ( producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN marca on (marca.id =  producto.marca) LEFT JOIN color on (articulo.color = color.id) $condQ GROUP BY marca.id, articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select transacciones.nombre as concepto, SUM(ent_cantidad) as entradas, SUM(ent_cantidad * costo) as costo_ent, SUM(sal_cantidad) as salidas, SUM(sal_cantidad * costo) as costo_sal from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join linea on linea.id = articulo.linea join transacciones on transaccion=transacciones.cod join control_precio on articulo.estilo = control_estilo and articulo.linea = control_precio.linea and articulo.color = control_precio.color and articulo.talla = control_precio.talla group by transacciones.cod order by kardex.tipo asc limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):

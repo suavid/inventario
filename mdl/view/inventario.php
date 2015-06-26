@@ -681,7 +681,7 @@ class inventarioView {
 
     public function reporte_kardex() {
         template()->buildFromTemplates('template_nofixed.html');
-        page()->setTitle('Reporte - karex');
+        page()->setTitle('Reporte - kardex');
         page()->addEstigma("username", Session::singleton()->getUser());
         page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         page()->addEstigma("TITULO", 'Reporte - kardex');
@@ -858,6 +858,101 @@ class inventarioView {
         $html2pdf = new HTML2PDF('P', 'letter', 'es');
         $html2pdf->WriteHTML(page()->getContent());
         $html2pdf->Output('inventario.pdf');
+    }
+
+     public function imprimir_reporteKardex($cache, $tipo, $system, $data, $fecha) {
+        require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
+        template()->buildFromTemplates('report/template.html');
+        
+        switch($tipo){
+            case "bodega":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteKardexGeneral.html');
+                page()->addEstigma('titulo_reporte', "Kardex general");
+                page()->addEstigma('contenido', array('SQL', $cache[0]));
+                break;
+            case "linea":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteKardexProveedor.html');
+                page()->addEstigma('titulo_reporte', "Kardex x proveedor");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+                
+                break;   
+            case "proveedor":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteKardexEstilo.html');
+                page()->addEstigma('titulo_reporte', "Kardex x estilo");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+                
+                break;
+                
+             case "estilo":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteKardexColor.html');
+                page()->addEstigma('titulo_reporte', "Kardex x color");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+                
+                break;
+             case "color":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteKardexTalla.html');
+                page()->addEstigma('titulo_reporte', "Kardex x Talla");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+                
+                break;   
+              case "talla":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioTalla.html');
+                page()->addEstigma('titulo_reporte', "Inventario x talla");
+                page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
+                foreach($data['bodegasylineas'] as $data){
+                    page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
+                }
+               
+                break; 
+              case "provmar":
+                template()->addTemplateBit('contenido_reporte', 'report/reporteKardexResumen.html');
+                page()->addEstigma('titulo_reporte', "Kardex - Resumen");
+                page()->addEstigma('contenido', array('SQL', $cache[0]));
+                break;         
+        }
+        
+        
+        page()->addEstigma('razon_social', $system->razon_social);
+        page()->addEstigma('telefono', $system->telefono);
+        page()->addEstigma('direccion', $system->direccion);
+        page()->addEstigma('usuario', Session::singleton()->getUser());
+        page()->addEstigma('fecha', date("d/m/Y"));
+        page()->addEstigma('fecha_saldos', $fecha);
+        page()->addEstigma('hora', date("h:i:s A"));
+        
+        template()->parseOutput();
+        //template()->parseExtras();
+        
+        //$html2pdf = new HTML2PDF('P', 'letter', 'es');
+        //$html2pdf->WriteHTML(page()->getContent());
+        //$html2pdf->Output('inventario.pdf');
+        $fp = fopen(APP_PATH."/temp/".Session::singleton()->getUser()."_kardex.html", "w");
+        fputs($fp, page()->getContent());
+        fclose($fp);
+        $str = APP_PATH.'common\plugins\phantomjs\bin\phantomjs '.APP_PATH.'static\js\html2pdf.js file:///'.APP_PATH.'temp\\'.Session::singleton()->getUser().'_kardex.html '.APP_PATH.'temp\\'.Session::singleton()->getUser().'_kardex.pdf';
+        system($str); 
+        $file = APP_PATH.'temp\\'.Session::singleton()->getUser().'_kardex.pdf';
+        $filename = Session::singleton()->getUser().'_kardex.pdf';
+
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: ' . filesize($file));
+        header('Accept-Ranges: bytes');
+
+        @readfile($file);
     }
 
     public function catalogos($usuario) {

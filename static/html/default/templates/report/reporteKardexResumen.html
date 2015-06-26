@@ -1,0 +1,54 @@
+<style type="text/css">
+	body{
+		font-family: Arial;
+		font-size: 10px;
+	}
+
+	table{
+		text-align: center;
+		width: 100%;
+		border-collapse: collapse;
+	}
+	table td{
+		width: 17%;
+	}
+	
+	table thead tr th{
+		border-bottom: solid 1px #000;
+		border-top: solid 1px #000;
+	}
+	
+</style>
+Del  {fecha_1} al {fecha_2}
+<br/>
+<br/>
+<table>
+	<thead>
+		<tr>
+			<th>
+				Concepto
+			</th>
+			<th>
+				Entradas
+			</th>
+			<th>
+				Costo
+			</th>
+			<th>
+				Salidas
+			</th>
+			<th>
+				Costo
+			</th>
+		</tr>
+	</thead>
+	<!-- START contenido -->
+	<tr>
+		<td>{concepto}</td>
+		<td>{entradas}</td>
+		<td>{costo_ent}</td>
+		<td>{salidas}</td>
+		<td>{costo_sal}</td>
+	</tr>
+	<!-- END contenido -->
+</table>

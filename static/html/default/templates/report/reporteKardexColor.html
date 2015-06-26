@@ -1,0 +1,77 @@
+<style type="text/css">
+	table{
+		text-align: center;
+		width: 100%;
+	}
+
+	body{
+		font-family: Arial;
+		font-size: 10px;
+	}
+
+	table td{
+		width: 10%;
+	}
+	
+	table thead tr th{
+		border-bottom: solid 1px #000;
+		border-top: solid 1px #000;
+	}
+	
+	strong{
+		font-size: 12px;
+	}
+</style>
+Saldos a la fecha: {fecha_saldos}
+<br/>
+<br/>
+<!-- START bodegasylineas -->
+<strong>[{bodega}] {bodega_nombre}</strong>
+<br/>
+<strong>[{linea}] {linea_nombre}</strong>
+<br/>
+<strong>[{proveedor}] {proveedor_nombre}</strong>
+<table>
+	<thead>
+		<tr>
+			<th>
+				Estilo
+			</th>
+			<th>
+				Color
+			</th>
+			<th>
+				Fecha
+			</th>
+			<th>
+				Documento
+			</th>
+			<th>
+				Concepto
+			</th>
+			<th>
+				(+) Entradas
+			</th>
+			<th>
+				(-) Salidas
+			</th>
+			<th>
+				Saldo
+			</th>
+		</tr>
+	</thead>
+	<!-- START contenido_bl{bodega}_{linea}_{proveedor} -->
+	<tr>
+		<td>{estilo}</td>
+		<td>{color}</td>
+		<td>{fecha}</td>
+		<td>{documento}</td>
+		<td>{concepto}</td>
+		<td>{entradas}</td>
+		<td>{salidas}</td>
+		<td>{saldo}</td>
+	</tr>
+	<!-- END contenido_bl{bodega}_{linea}_{proveedor} -->
+</table>
+<br/>
+<!-- END bodegasylineas -->
