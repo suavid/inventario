@@ -1,16 +1,13 @@
 <style type="text/css">
+	body{
+		font-family: Verdana;
+		font-size: 11px;
+	}
+
 	table{
 		text-align: center;
 		width: 100%;
-	}
-
-	body{
-		font-family: Arial;
-		font-size: 10px;
-	}
-
-	table td{
-		width: 10%;
+		border-collapse: collapse;
 	}
 	
 	table thead tr th{
@@ -18,21 +15,31 @@
 		border-top: solid 1px #000;
 	}
 	
-	strong{
-		font-size: 12px;
+	.hdr tr{
+		border: solid 1px #000;
 	}
+	
 </style>
-Saldos a la fecha: {fecha_saldos}
-<br/>
 <br/>
 <!-- START bodegasylineas -->
-<strong>[{bodega}] {bodega_nombre}</strong>
-<br/>
-<strong>[{linea}] {linea_nombre}</strong>
-<br/>
-<strong>[{proveedor}] {proveedor_nombre}</strong>
-<table>
-	<thead>
+<table style="page-break-inside: avoid;">
+		<thead>
+		<tr>
+			<th colspan="6">NOMBRE DEL CONTRIBUYENTE: {nombre_empresa}</th>
+			<th colspan="5">PERIODO: Del {fecha_1} al {fecha_2}</th>
+		</tr>
+		<tr>
+			<th colspan="6">NIT: {nit}</th>
+			<th colspan="5">NRC: {nrc}</th>
+		</tr>
+		<tr>
+			<th colspan="6">NOMBRE, RAZON SOCIAL DEL PROVEEDOR: [{proveedor}] {proveedor_nombre}</th>
+			<th colspan="5">NACIONALIDAD DEL PROVEEDOR: {nacionalidad_proveedor}</th>
+		</tr>
+		<tr>
+			<th colspan="6">BODEGA: [{bodega}] {bodega_nombre}</th>
+			<th colspan="5">LINEA DE PRODUCTO: [{linea}] {linea_nombre}</th>
+		</tr>
 		<tr>
 			<th>
 				Estilo
@@ -44,7 +51,16 @@ Saldos a la fecha: {fecha_saldos}
 				Fecha
 			</th>
 			<th>
+				Codigo
+			</th>
+			<th>
+				Descripcion
+			</th>
+			<th>
 				Documento
+			</th>
+			<th>
+				Ref retaceo No.
 			</th>
 			<th>
 				Concepto
@@ -65,7 +81,10 @@ Saldos a la fecha: {fecha_saldos}
 		<td>{estilo}</td>
 		<td>{color}</td>
 		<td>{fecha}</td>
+		<td>{articulo}</td>
+		<td>{descripcion}</td>
 		<td>{documento}</td>
+		<td>{referencia_recateo_no}</td>
 		<td>{concepto}</td>
 		<td>{entradas}</td>
 		<td>{salidas}</td>

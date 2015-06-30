@@ -860,19 +860,19 @@ class inventarioView {
         $html2pdf->Output('inventario.pdf');
     }
 
-     public function imprimir_reporteKardex($cache, $tipo, $system, $data, $fecha) {
+     public function imprimir_reporteKardex($cache, $tipo, $system, $data, $fecha, $fecha2) {
         require_once(APP_PATH . 'common/plugins/sigma/demos/export_php/html2pdf/html2pdf.class.php');
         template()->buildFromTemplates('report/template.html');
         
         switch($tipo){
             case "bodega":
                 template()->addTemplateBit('contenido_reporte', 'report/reporteKardexGeneral.html');
-                page()->addEstigma('titulo_reporte', "Kardex general");
+                page()->addEstigma('titulo_reporte', "Registro de control de inventario <br/> Saldos generales");
                 page()->addEstigma('contenido', array('SQL', $cache[0]));
                 break;
             case "linea":
                 template()->addTemplateBit('contenido_reporte', 'report/reporteKardexProveedor.html');
-                page()->addEstigma('titulo_reporte', "Kardex x proveedor");
+                page()->addEstigma('titulo_reporte', "Registro de control de inventario <br/> Saldos por proveedor");
                 page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
                 foreach($data['bodegasylineas'] as $data){
                     page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
@@ -881,7 +881,7 @@ class inventarioView {
                 break;   
             case "proveedor":
                 template()->addTemplateBit('contenido_reporte', 'report/reporteKardexEstilo.html');
-                page()->addEstigma('titulo_reporte', "Kardex x estilo");
+                page()->addEstigma('titulo_reporte', "Registro de control de inventario <br/> Saldos por estilo");
                 page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
                 foreach($data['bodegasylineas'] as $data){
                     page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
@@ -891,7 +891,7 @@ class inventarioView {
                 
              case "estilo":
                 template()->addTemplateBit('contenido_reporte', 'report/reporteKardexColor.html');
-                page()->addEstigma('titulo_reporte', "Kardex x color");
+                page()->addEstigma('titulo_reporte', "Registro de control de inventario <br/> Saldos por color");
                 page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
                 foreach($data['bodegasylineas'] as $data){
                     page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
@@ -900,7 +900,7 @@ class inventarioView {
                 break;
              case "color":
                 template()->addTemplateBit('contenido_reporte', 'report/reporteKardexTalla.html');
-                page()->addEstigma('titulo_reporte', "Kardex x Talla");
+                page()->addEstigma('titulo_reporte', "Registro de control de inventario <br/> Saldos por talla");
                 page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
                 foreach($data['bodegasylineas'] as $data){
                     page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
@@ -909,7 +909,7 @@ class inventarioView {
                 break;   
               case "talla":
                 template()->addTemplateBit('contenido_reporte', 'report/reporteInventarioTalla.html');
-                page()->addEstigma('titulo_reporte', "Inventario x talla");
+                page()->addEstigma('titulo_reporte', "Registro de control de inventario <br/> Saldos por linea");
                 page()->addEstigma('bodegasylineas', array('SQL', $cache['bodegasylineas']));
                 foreach($data['bodegasylineas'] as $data){
                     page()->addEstigma('contenido_bl'.$data['bodega'].'_'.$data['linea'].'_'.$data['proveedor'], array('SQL', $cache['bodega_'.$data['bodega']."_".$data['linea']."_".$data['proveedor']]));
@@ -925,11 +925,15 @@ class inventarioView {
         
         
         page()->addEstigma('razon_social', $system->razon_social);
+        page()->addEstigma('nombre_empresa', $system->razon_social);
+        page()->addEstigma('nit', $system->nit);
+        page()->addEstigma('nrc', $system->nrc);
         page()->addEstigma('telefono', $system->telefono);
         page()->addEstigma('direccion', $system->direccion);
         page()->addEstigma('usuario', Session::singleton()->getUser());
         page()->addEstigma('fecha', date("d/m/Y"));
-        page()->addEstigma('fecha_saldos', $fecha);
+        page()->addEstigma('fecha_1', $fecha);
+        page()->addEstigma('fecha_2', $fecha2);
         page()->addEstigma('hora', date("h:i:s A"));
         
         template()->parseOutput();

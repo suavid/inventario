@@ -1,7 +1,7 @@
 <style type="text/css">
 	body{
-		font-family: Arial;
-		font-size: 10px;
+		font-family: Verdana;
+		font-size: 11px;
 	}
 
 	table{
@@ -18,10 +18,24 @@
 		border-top: solid 1px #000;
 	}
 	
+	.hdr tr{
+		border: solid 1px #000;
+	}
+	
 </style>
-Del  {fecha_1} al {fecha_2}
 <br/>
-<br/>
+<table class="hdr">
+	<tbody>
+		<tr>
+			<td>NOMBRE DEL CONTRIBUYENTE: {nombre_empresa}</td>
+			<td>PERIODO: Del {fecha_1} al {fecha_2}</td>
+		</tr>
+		<tr>
+			<td>NIT: {nit}</td>
+			<td>NRC: {nrc}</td>
+		</tr>
+	</tbody>
+</table>
 <table>
 	<thead>
 		<tr>
