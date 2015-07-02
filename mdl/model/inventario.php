@@ -1296,13 +1296,14 @@ class inventarioModel extends object {
             $linea = $producto['linea'];
             $estilo = $producto['estilo'];
             $color = $producto['color'];
+            $bodega = $producto['bodega'];
             $talla = $producto['talla'];
             $cantidad = $producto['cantidad'];
             $costo = $producto['costo'];
             $total = $producto['total'];
             $id = $producto['id'];
 
-            $existe = "SELECT id,stock FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega_origen";
+            $existe = "SELECT id,stock FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega";
 
             data_model()->executeQuery($existe);
             $dat_ = data_model()->getResult()->fetch_assoc();
@@ -1336,7 +1337,7 @@ class inventarioModel extends object {
                 $talla = $producto['talla'];
                 $cantidad = $producto['cantidad'];
 
-                $existe = "SELECT id FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega_origen";
+                $existe = "SELECT id FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega";
                 data_model()->executeQuery($existe);
                 $ect = data_model()->getResult()->fetch_assoc();
                 $id_origen = $ect['id'];
@@ -1386,7 +1387,7 @@ class inventarioModel extends object {
                         0, 
                         $dato_salida,
                         "TR-".$traslado->transaccion."-".$traslado->cod,
-                        $bodega_origen
+                        $bodega
                     );        
 
                     
@@ -1403,38 +1404,39 @@ class inventarioModel extends object {
     }
 
     public function transaccionLibre($id_ref, $bodega_origen, $bodega_destino, $transaccion) {
-        /* Cierra el traslado */
+        // Cierra el traslado
         $close_q = "UPDATE traslado SET editable = 0 WHERE id = $id_ref";
         data_model()->executeQuery($close_q);
         
-        $query   = "INSERT INTO traslado(fecha, proveedor_origen, proveedor_nacional, bodega_origen, bodega_destino, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod) (SELECT fecha, proveedor_origen, proveedor_nacional, bodega_origen, bodega_destino, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod FROM traslado WHERE id = $id_ref)";
-        // genera la copia
+        // Duplica el traslado invirtiendo el orden de las bodegas de destino y origen
+        $query   = "INSERT INTO traslado(fecha, proveedor_origen, proveedor_nacional, bodega_origen, bodega_destino, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod) (SELECT fecha, proveedor_origen, proveedor_nacional, bodega_destino, bodega_origen, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod FROM traslado WHERE id = $id_ref)";
+        
         data_model()->executeQuery($query);
 
-        // obtener el id del traslado nuevo
+        
+        // Obtiene el id del traslado duplicado
         $query = "SELECT MAX(id) AS id FROM traslado";
         data_model()->executeQuery($query);
         $data = data_model()->getResult()->fetch_assoc();
         $id = $data['id'];
+        $idCopia = $id;
 
         $tras = $this->get_child('traslado');
         $tras->get($id);
 
-        // asigna la transaccion contraria
-        $tras->transaccion = ($transaccion=="1C") ? "2C": "1C";
+        // Edita el duplicado del traslado (que representa la operacion opuesta)
+        $tras->transaccion = ($transaccion=="1C") ? "2C": "1C"; // asigna la transaccion contraria
         $transaccion = $this->get_child('transacciones');
         $transaccion->setVirtualId('cod');
         $transaccion->get($tras->transaccion);
         $tras->cod = $transaccion->get_attr('ultimo') + 1;
         $alcod = $tras->cod; 
-        $transaccion->set_attr('ultimo', $tras->cod);
+        $transaccion->set_attr('ultimo', $tras->cod); // le asgina el numero de documento
         $transaccion->save();
         $tras->save();
-        // termina copia del traslado
+        // Termina la edición del traslado duplicado
         
-        $query = "SELECT * FROM detalle_traslado WHERE id_ref = $id_ref";
-        $productos = array();
-        $stop_flag = false;
+        // Obtiene los gatos indirectos (si los hay)
         $traslado  = $this->get_child('traslado');
         $traslado->get($id_ref);
         $hoja_retaceo = $this->get_child('hoja_retaceo');
@@ -1447,9 +1449,13 @@ class inventarioModel extends object {
             $gasto_indirecto_unitario = 0;   
         }
         
+        // obtiene los productos del detalle del traslado
+        $query = "SELECT * FROM detalle_traslado WHERE id_ref = $id_ref";
+        $productos = array();
+        $stop_flag = false;
         
         data_model()->executeQuery($query);
-
+        
         while ($data = data_model()->getResult()->fetch_assoc()) {
             $productos[] = $data;
         }
@@ -1462,9 +1468,10 @@ class inventarioModel extends object {
             $cantidad = $producto['cantidad'];
             $costo = $producto['costo'];
             $total = $producto['total'];
+            $bodega = $producto['bodega']; // Esto ha sido modificado, se toma la bodega del detalle del traslado
             $id = $producto['id'];
 
-            $existe = "SELECT id,stock FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega_origen";
+            $existe = "SELECT id,stock FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega";
 
 
             data_model()->executeQuery($existe);
@@ -1486,6 +1493,8 @@ class inventarioModel extends object {
             }
         }
 
+        unset($producto);
+
         if (!$stop_flag) {
 
             foreach ($productos as $producto) {
@@ -1494,6 +1503,7 @@ class inventarioModel extends object {
                 $color = $producto['color'];
                 $talla = $producto['talla'];
                 $cantidad = $producto['cantidad'];
+                $bodega = $producto['bodega'];
 
                 if(isInstalled("kardex")){
                     
@@ -1551,7 +1561,7 @@ class inventarioModel extends object {
                         0, 
                         $dato_salida,
                         "TR-".$ptransaccion."-".$pcod,
-                        $bodega_origen
+                        $bodega
                     );
 
                     $kardex->nueva_entrada(
@@ -1578,7 +1588,7 @@ class inventarioModel extends object {
                     $this->get_child('control_precio')->cambiar_costo($linea, $estilo, $color, $talla, $kcosto_unitario);
                 }
 
-                $existe = "SELECT id FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega_origen";
+                $existe = "SELECT id FROM estado_bodega WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND bodega=$bodega";
                 data_model()->executeQuery($existe);
                 $ect = data_model()->getResult()->fetch_assoc();
                 $id_origen = $ect['id'];
@@ -1621,7 +1631,7 @@ class inventarioModel extends object {
                 $total    = $producto['total'];
                 $bodega   = $producto['bodega'];
 
-                $query = "INSERT INTO detalle_traslado VALUES(null, $id, $linea, '{$estilo}', $color, $talla, $costo, $cantidad,$total, $bodega)";
+                $query = "INSERT INTO detalle_traslado VALUES(null, $idCopia, $linea, '{$estilo}', $color, $talla, $costo, $cantidad,$total, $bodega)";
 
                 data_model()->executeQuery($query);
             }
