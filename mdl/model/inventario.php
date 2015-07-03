@@ -1408,8 +1408,8 @@ class inventarioModel extends object {
         $close_q = "UPDATE traslado SET editable = 0 WHERE id = $id_ref";
         data_model()->executeQuery($close_q);
         
-        // Duplica el traslado invirtiendo el orden de las bodegas de destino y origen
-        $query   = "INSERT INTO traslado(fecha, proveedor_origen, proveedor_nacional, bodega_origen, bodega_destino, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod) (SELECT fecha, proveedor_origen, proveedor_nacional, bodega_destino, bodega_origen, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod FROM traslado WHERE id = $id_ref)";
+        // Duplica el traslado
+        $query   = "INSERT INTO traslado(fecha, proveedor_origen, proveedor_nacional, bodega_origen, bodega_destino, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod) (SELECT fecha, proveedor_origen, proveedor_nacional, bodega_origen, bodega_destino, concepto, transaccion, total_pares, total_costo, total_pares_p, total_costo_p, editable, consigna, usuario, concepto_alternativo, cliente, cod FROM traslado WHERE id = $id_ref)";
         
         data_model()->executeQuery($query);
 
@@ -1545,11 +1545,19 @@ class inventarioModel extends object {
                         "sal_cantidad"=> $cantidad
                     );
 
-                    $ptransaccion = ($traslado->transaccion=="1C") ? "2C" : "1C";
-                    $pcod         = $alcod;
+                    $codSalida = "";
+                    $codEntrada = "";
+                    
+                    if($traslado->transaccion=="2C"){
+                        $codSalida = $traslado->cod;
+                        $codEntrada = $alcod;
+                    }else{
+                        $codSalida = $alcod;
+                        $codEntrada = $traslado->cod;
+                    }
 
                     $kardex->nueva_salida(
-                        $ptransaccion,
+                        "2C",
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 
@@ -1560,12 +1568,12 @@ class inventarioModel extends object {
                         $system->periodo_actual,
                         0, 
                         $dato_salida,
-                        "TR-".$ptransaccion."-".$pcod,
+                        "TR-2C-".$codSalida,
                         $bodega
                     );
 
                     $kardex->nueva_entrada(
-                        $traslado->transaccion,
+                        "1C",
                         date("Y-m-d"), 
                         $traslado->concepto, 
                         $dato_articulo, 
@@ -1576,7 +1584,7 @@ class inventarioModel extends object {
                         $system->periodo_actual,
                         0, 
                         $dato_entrada,
-                        "TR-".$traslado->transaccion."-".$traslado->cod,
+                        "TR-1C-".$codEntrada,
                         $bodega_destino
                     );
         
@@ -1620,8 +1628,9 @@ class inventarioModel extends object {
                 data_model()->executeQuery($up);
             }
             
-
-            foreach ($productos as &$producto) {
+            unset($producto);
+            
+            foreach ($productos as $producto) {
                 $linea    = $producto['linea'];
                 $estilo   = $producto['estilo'];
                 $color    = $producto['color'];
