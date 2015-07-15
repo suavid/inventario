@@ -843,7 +843,7 @@ class grid_tablesController extends controller {
             $pageNo = 1;
         endif;
         if ($json->{'action'} == 'load'):
-            $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k WHERE k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod $condQ order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k WHERE k.no <= kardex.no and k.bodega = kardex.bodega order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod $condQ order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             
            // echo $sql;
             
@@ -917,8 +917,13 @@ class grid_tablesController extends controller {
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
+        $condQ2 = str_replace("WHERE","AND", $condQ);
+        $condQ2 = str_replace("producto","prod", $condQ2);
+        $condQ2 = str_replace("bodega","bod", $condQ2);
+        $condQ2 = str_replace("articulo","ar", $condQ2);
+        
         if ($json->{'action'} == 'load'):
-            $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k where k.nombre_proveedor = kardex.nombre_proveedor and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod  $condQ order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id WHERE k.no <= kardex.no $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod  $condQ order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -990,8 +995,12 @@ class grid_tablesController extends controller {
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
+        $condQ2 = str_replace("WHERE","AND", $condQ);
+        $condQ2 = str_replace("producto","prod", $condQ2);
+        $condQ2 = str_replace("bodega","bod", $condQ2);
+        $condQ2 = str_replace("articulo","ar", $condQ2);
         if ($json->{'action'} == 'load'):
-            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo where ar.linea = articulo.linea and ar.estilo = articulo.estilo and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  $condQ order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  $condQ order by proveedor,no  limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -1062,8 +1071,12 @@ class grid_tablesController extends controller {
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
+        $condQ2 = str_replace("WHERE","AND", $condQ);
+        $condQ2 = str_replace("producto","prod", $condQ2);
+        $condQ2 = str_replace("bodega","bod", $condQ2);
+        $condQ2 = str_replace("articulo","ar", $condQ2);
         if ($json->{'action'} == 'load'):
-            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  $condQ order by no, articulo.linea, articulo.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and k.bodega = kardex.bodega and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor  $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  $condQ order by no, articulo.linea, articulo.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -1134,8 +1147,12 @@ class grid_tablesController extends controller {
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
+        $condQ2 = str_replace("WHERE","AND", $condQ);
+        $condQ2 = str_replace("producto","prod", $condQ2);
+        $condQ2 = str_replace("bodega","bod", $condQ2);
+        $condQ2 = str_replace("articulo","ar", $condQ2);
         if ($json->{'action'} == 'load'):
-            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo,articulo.talla, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and ar.talla = articulo.talla and k.no <= kardex.no order by no) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  $condQ order by no, articulo.linea, articulo.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
+            $sql = "select CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo,articulo.talla, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, ent_cantidad as entradas, sal_cantidad as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and ar.talla = articulo.talla and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  $condQ order by no, articulo.linea, articulo.estilo limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
             $retArray = array();
             while ($row = mysqli_fetch_object($handle)):
@@ -1205,6 +1222,10 @@ class grid_tablesController extends controller {
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
+        $condQ2 = str_replace("WHERE","AND", $condQ);
+        $condQ2 = str_replace("producto","prod", $condQ2);
+        $condQ2 = str_replace("bodega","bod", $condQ2);
+        $condQ2 = str_replace("articulo","ar", $condQ2);
         if ($json->{'action'} == 'load'):
             $sql = "SELECT  articulo.talla as talla,color.id, color.nombre as nombre_color, exi_costo_unitario as costo_unitario, articulo.estilo as estilo, proveedor.id, proveedor.nombre as nombre_proveedor, linea.id, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea)  LEFT JOIN proveedor ON ( producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id)  $condQ GROUP BY articulo.talla, bodega.id, linea.id, color.id, articulo.estilo ORDER BY no DESC limit " . ($pageNo - 1) * $pageSize . ", " . $pageSize . ";";
             $handle = mysqli_query(conManager::getConnection(), $sql);
