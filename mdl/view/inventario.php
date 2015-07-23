@@ -20,6 +20,7 @@ class inventarioView {
             template()->addTemplateBit('content', 'e403.html');
             page()->addEstigma("username", Session::singleton()->getUser());
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+            page()->addEstigma("TITULO", "Error 403");
             template()->parseOutput();
             template()->parseExtras();
             print page()->getContent();
@@ -34,6 +35,7 @@ class inventarioView {
         page()->setTitle('Módulo de control de inventario');
         template()->addTemplateBit('content', 'inventario/principal.html');
         page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("TITULO", "Página principal");
         page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         template()->parseOutput();
         template()->parseExtras();
@@ -96,7 +98,7 @@ class inventarioView {
             page()->setTitle('Control de inventario');
             page()->addEstigma("username", Session::singleton()->getUser());
             page()->addEstigma("back_url", '/inventario/inventario/principal');
-            page()->addEstigma("TITULO", 'Inventario');
+            page()->addEstigma("TITULO", 'Segmentación de productos');
             template()->addTemplateBit('content', 'inventario/menu/segmentacion.html');
             template()->parseOutput();
             template()->parseExtras();
@@ -966,7 +968,7 @@ class inventarioView {
             page()->setTitle('Catalogos');
             page()->addEstigma("username", $usuario);
             page()->addEstigma("back_url", '/inventario/inventario/principal');
-            page()->addEstigma("TITULO", 'Catálogos');
+            page()->addEstigma("TITULO", 'Administración de campañas');
             template()->addTemplateBit('content', 'inventario/catalogo.html');
             template()->parseOutput();
             template()->parseExtras();
@@ -1142,7 +1144,7 @@ class inventarioView {
             page()->addEstigma("username", $usuario);
             page()->addEstigma("empleados", array('SQL', $cache[0]));
             page()->addEstigma("back_url", '/inventario/inventario/principal');
-            page()->addEstigma("TITULO", 'Bodegas');
+            page()->addEstigma("TITULO","Administración de bodegas");
             template()->addTemplateBit('content', 'inventario/bodegas.html');
             template()->parseOutput();
             template()->parseExtras();
