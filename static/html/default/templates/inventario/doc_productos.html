@@ -50,7 +50,7 @@
         var grid         = Sigma.$grid("producto2_grid"); 
         var grid2        = Sigma.$grid("producto3_grid"); 
         var http_request = $.post(rq_url, {estilo:nuevo_estilo, doc:{documento}, linea: $('#linea').val()}, function(data){
-            alert(JSON.stringify(data));
+            
             if (data.found){
                 if(data.auth){
                     clearColorContainer();
@@ -631,26 +631,18 @@ function copyCode(event){
 
 </script>
 
-<div id="page-container">
-    <div style="margin-right:30px;">
-
-        <button type="button" id="CTBTN" class="default disabled">
-            Tallas
-        </button>      
+<div id="page-container" style="margin-bottom: 0px;">
+    <div style="margin-right:30px;margin-bottom: 0px;">      
         <form id="nw_b">
-            <div style="border:solid 1px #D3D3D3;padding:35px;display:table;">
+            <div style="border:solid 1px #D3D3D3;padding:35px;display:table;padding-bottom:0px;margin-bottom: 0px;">
                 <div style="padding: 30px;">
-                    <h2>
-                        Registrar un nuevo producto (Documento No. {documento})
-                    </h2>
-                    <div style="float:right;margin-left:5px;">
-                        <a href="javascript: void(0);" onclick="showPane('thisDoc');">En este documento <i class="icon-new"></i></a>  | 
-                        <a href="javascript: void(0);" onclick="showPane('general');">General <i class="icon-database"></i></a>   |  
-                        <a href="javascript: void(0);" onclick="showPane('detail');">Detalle <i class="icon-list"></i></a>
+                    <div style="margin-left:5px;">
+                        <a href="javascript: void(0);" onclick="showPane('thisDoc');"><i class="icon-new"></i> Ver productos registrados en este documento </a>  | 
+                        <a href="javascript: void(0);" onclick="showPane('general');"><i class="icon-database"></i> Ver productos que ya han sido registrados </a>   |  
+                        <a href="javascript: void(0);" onclick="showPane('detail');"><i class="icon-list"></i> Ver detalle del producto seleccionado </a>
                     </div>
-                    <hr/>
                     <br/>
-                    <div style="width:200px; float:left; text-align: right; margin:10px;margin-bottom:50px;">
+                    <div style="width:200px; float:left; text-align: right; margin:10px;margin-bottom:10px;">
                         <div class="input-control select"> 
                             <select name="proveedor" style="margin-bottom:5px;" id="proveedor"  required/>
                                 <option value="-1">--- Seleccione un proveedor ---</option>
@@ -697,8 +689,6 @@ function copyCode(event){
                                 <!-- END catalogo -->
                             </select>
                         </div>
-                        <br />
-                        
                     </div>
                     <div style="width:200px; float:left; text-align: right; padding-top: 10px;">
                         <div class="input-control text">
@@ -776,8 +766,6 @@ function copyCode(event){
                                 <option value="3">Consignacion</option>
                             </select>
                         </div>
-                        <br/>
-                        <br/>
                     </div>
                     <div style="width:300px; float:left; text-align: right; padding-top: 10px;">
                         Colores
@@ -798,6 +786,12 @@ function copyCode(event){
                             Agregar 
                             <i class="icon-plus"></i>
                         </button>
+                        <br/>
+                        <br/>
+                        <br/><br/><br/>
+                        <button type="button" id="CTBTN" class="default disabled">
+                            Editar tallas
+                        </button>
                     </div>
 
                     <div style="width:300px; float:left; text-align: right; padding-top: 10px;">
@@ -814,7 +808,7 @@ function copyCode(event){
                         <input type="hidden" name="visible" value="0" />
 
                         <input type="reset" value="Reset"/>
-                        <button type="button" id="btnSaveProduct" class="large primary" onclick="saveNewProduct();">
+                        <button type="button" id="btnSaveProduct" class="primary" onclick="saveNewProduct();">
                             Registrar producto
                         </button>
                     </div>
@@ -840,7 +834,7 @@ function copyCode(event){
 </div>
 
 <!-- PANELES -->
-<div id="thisDoc" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 1px #000;padding-left:20px;">
+<div id="thisDoc" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
     <h3>En este documento</h3>
     <button onclick="closePane('thisDoc')">Cerrar</button>
     <div id="bigbox" style="margin:15px;display:!none;width:500px;">
@@ -862,7 +856,7 @@ function copyCode(event){
         </div>
     </div>
 </div>
-<div id="general" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 1px #000;padding-left:20px;">
+<div id="general" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
     <h3>Registrados</h3>
     <button onclick="closePane('general')">Cerrar</button>
     <div id="bigbox3" style="margin:15px;display:!none;width:500px;">
@@ -884,7 +878,7 @@ function copyCode(event){
         </div>
     </div>
 </div>
-<div id="detail" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 1px #000;padding-left:20px;">
+<div id="detail" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
     <h3>Detalle en inventario</h3>
     <button onclick="closePane('detail')">Cerrar</button>
     <div id="bigbox2" style="margin:15px;display:!none;width:500px;">
@@ -904,7 +898,7 @@ function copyCode(event){
     </div>
 </div>
 
-<div id="editCyT" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 1px #000;padding-left:20px;">
+<div id="editCyT" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
     <button onclick="closePane('editCyT'); edicionColores();" style="margin:10px;">Cerrar</button>
     <div id="corrida" style="width:400px;text-align:left;background: #fff;padding-left:20px;" class="span5">
         <form id="corrida_formulario" action="/{systemModuleName}/inventario/salvar_color" method="post">

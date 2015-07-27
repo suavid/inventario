@@ -87,11 +87,7 @@
         <div class="frame" id="_page_1">
 
             <div style="display:table;">
-                <form style="width:450px; float:left; border: solid 1px #d3d3d3; padding: 20px;" id="ft" action="/{systemModuleName}/inventario/salvarCatalogo" method="post" enctype="multipart/form-data">
-                    <h3>
-                        Nuevo cat&aacute;logo de productos
-                    </h3>
-                    <br/>
+                <form style="width:450px; float:left; border: solid 1px #d3d3d3; padding: 20px;padding-bottom: 0px;margin-bottom:0px;" id="ft" action="/{systemModuleName}/inventario/salvarCatalogo" method="post" enctype="multipart/form-data">
                     Id catálogo: (0 = Nuevo)
                     <div class="input-control text">
                         <input type="text" name="id" id="_id"/> 
@@ -105,7 +101,6 @@
                     <div class="input-control textarea">
                         <textarea name="descripcion" id="descripcion_" required></textarea>
                     </div>
-                    <br/>
                     <span class="fg-red">*</span> Fecha de inicio:
                     <div id="picker2" class="input-control text" data-role="datepicker"/> 
                         <input type="text" name="inicio" id="inicio_" required />
@@ -116,15 +111,9 @@
                         <input type="text" name="final" id="final_" required/>
                         <button type="button" class="btn-date"></button>
                     </div>
-                    Imagen: 
-                    <br/>
-                    <br/>
                     <div class="input-control">
                         <input type="file" name="archivo"/>
                     </div>
-                    <p>
-                        <br/>
-                    </p>
                     <div style="text-align: right;">
                         <button type="submit" class="primary">Guardar</button>
                     </div>

@@ -69,10 +69,10 @@
         {id: 'estilo', header: "Estilo", width :60},
         {id: 'linea', header: "Linea", width  :50},
         {id: 'codigo_origen', header: "Código de origen", width :110},
-        {id: 'descripcion', header: "Descripción", width :250},
+        {id: 'descripcion', header: "Descripción", width :230},
         {id: 'catalogo', header: "Catálogo", width :70},
         {id: 'n_pagina', header: "N. Página", width :70},
-        {id: 'fecha_ingreso', header: "Ingresa el", width :150}
+        {id: 'fecha_ingreso', header: "Ingresó el", width :150}
     ];
     
     var gridOption = {
@@ -80,7 +80,7 @@
         loadURL : '/{systemModuleName}/inventario/cargarResumenProd',
         saveURL : '',
         width: "762", //"100%", // 700,
-        height: "380", //"100%", // 330,
+        height: "240", //"100%", // 330,
         container : 'gridbox',
         replaceContainer : true,
         encoding : 'UTF-8', // Sigma.$encoding(), 
@@ -351,10 +351,6 @@
     });
 
 </script>
-
-<h2>Productos registrados en el sistema</h2>
-<p class="text-muted">Consulte el catálogo de productos</p>
-<hr/>
 <div class="grid">
     <div class="row">
         <div class="panel span10">
@@ -442,7 +438,7 @@
         </div> 
     </div>
 </div>
-<br/>
+
 <div class="grid">
     <div class="row">
         <div class="span10">

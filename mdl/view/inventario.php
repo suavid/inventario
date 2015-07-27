@@ -126,6 +126,7 @@ class inventarioView {
             template()->buildFromTemplates('template_nofixed.html');
             page()->setTitle('Creación de hojas de retaceo');
             page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("TITULO", "Crear hoja de retaceo");
             page()->addEstigma("back_url", '/inventario/inventario/principal');
             template()->addTemplateBit('content', 'inventario/hoja_retaceo.html');
             template()->parseOutput();
@@ -145,6 +146,7 @@ class inventarioView {
             page()->addEstigma("username", Session::singleton()->getUser());
             page()->addEstigma("id_hoja", $id_hoja);
             page()->addEstigma("total", $total);
+            page()->addEstigma("TITULO","Gastos por adquisición de producto");
             page()->addEstigma("detalle", array('SQL', $detalle));
             page()->addEstigma("back_url", '/inventario/inventario/hoja_retaceo');
             template()->addTemplateBit('content', 'inventario/editar_hoja_retaceo.html');
@@ -162,6 +164,7 @@ class inventarioView {
         page()->setTitle('Ver hoja de retaceo');
         page()->addEstigma("username", Session::singleton()->getUser());
         page()->addEstigma("id_hoja", $id_hoja);
+        page()->addEstigma("TITULO","Gastos por adquisición de producto");
         page()->addEstigma("total", $total);
         page()->addEstigma("detalle", array('SQL', $detalle));
         page()->addEstigma("back_url", '/inventario/inventario/hoja_retaceo');
@@ -177,6 +180,7 @@ class inventarioView {
             template()->buildFromTemplates('template_nofixed.html');
             page()->setTitle('Kardex');
             page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("TITULO", "Consulta rápida de kardex");
             page()->addEstigma("back_url", '/inventario/inventario/principal');
             template()->addTemplateBit('content', 'inventario/mov_kardex.html');
             template()->parseOutput();
@@ -206,7 +210,7 @@ class inventarioView {
             page()->setTitle('Productos sugeridos');
             page()->addEstigma("username", Session::singleton()->getUser());
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-            page()->addEstigma("TITULO", 'Inventario');
+            page()->addEstigma("TITULO", 'Asosiación de productos sugeridos');
             page()->addEstigma("linea", array('SQL', $lineas));
             template()->addTemplateBit('content', 'inventario/producto_sugerido.html');
             template()->parseOutput();
@@ -224,6 +228,7 @@ class inventarioView {
         template()->addTemplateBit('content', 'inventario/detalle_producto.html');
         page()->addEstigma("username", Session::singleton()->getUser());
         page()->addEstigma("back_url", '/'.MODULE.'/modulo/listar');
+        page()->addEstigma("TITULO", "Resumen de estado del producto");
         page()->addEstigma("general", array('SQL', $general));
         page()->addEstigma("estilo", $estilo);
         page()->addEstigma("n", $n);
@@ -266,7 +271,7 @@ class inventarioView {
             page()->setTitle('Control de inventario');
             page()->addEstigma("username", Session::singleton()->getUser());
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-            page()->addEstigma("TITULO", 'Inventario');
+            page()->addEstigma("TITULO", 'Actualización de imagen del producto');
             page()->addEstigma("lineas", array('SQL', $lineas));
             template()->addTemplateBit('content', 'inventario/actualizar_foto.html');
             template()->parseOutput();
@@ -365,7 +370,7 @@ class inventarioView {
             page()->setTitle('Traslados');
             page()->addEstigma("username", $usuario);
             page()->addEstigma("back_url", '/inventario/inventario/principal');
-            page()->addEstigma("TITULO", 'Traslados');
+            page()->addEstigma("TITULO", 'Historial de traslados realizados');
             template()->addTemplateBit('content', 'inventario/traslado_listado.html');
             template()->parseOutput();
             template()->parseExtras();
@@ -494,7 +499,7 @@ class inventarioView {
                 page()->addEstigma("back_url", '/'.MODULE.'/inventario/traslados');
             else
                 page()->addEstigma("back_url", '/'.MODULE.'/inventario/consigna');
-            page()->addEstigma("TITULO", 'Traslados');
+            page()->addEstigma("TITULO", 'Detalle de traslado');
             template()->addTemplateBit('content', 'inventario/traslado_detalle.html');
             template()->parseOutput();
             template()->parseExtras();
@@ -658,7 +663,7 @@ class inventarioView {
         page()->setTitle('Ofertas');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
-        page()->addEstigma("TITULO", 'Ofertas');
+        page()->addEstigma("TITULO", 'Preparación de ofertas');
         page()->addEstigma("ofertas", array('SQL', $cache[0]));
         page()->addEstigma("aOferta", array('SQL', $cache[1]));
         page()->addEstigma("genero", array('SQL', $cache[2]));
@@ -984,7 +989,7 @@ class inventarioView {
         page()->setTitle('Productos');
         page()->addEstigma("username", $usuario);
         page()->addEstigma("back_url", '/inventario/inventario/principal');
-        page()->addEstigma("TITULO", 'Resumen general');
+        page()->addEstigma("TITULO", 'Consulta de productos registrados');
         template()->addTemplateBit('content', 'inventario/resumenGeneralProducto.html');
         template()->parseOutput();
         template()->parseExtras();
@@ -1065,7 +1070,7 @@ class inventarioView {
             page()->addEstigma("paginacion", $pag);
             page()->addEstigma("modulo", "inventario");
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-            page()->addEstigma("TITULO", 'Historial de eventos');
+            page()->addEstigma("TITULO", 'Historial de documentos');
             template()->addTemplateBit('content', 'inventario/historial.html');
             page()->addEstigma('historial', array('SQL', $cache[0]));
             page()->addEstigma('1', 'Aplicado');
@@ -1122,7 +1127,7 @@ class inventarioView {
         if(verifyAccess("inventario", "inventario", "nuevo_producto", Session::singleton()->getUser())){
             template()->buildFromTemplates('template_nofixed.html');
             page()->setTitle('Mantenimiento de productos');
-            page()->addEstigma("TITULO", 'Nuevo producto');
+            page()->addEstigma("TITULO", 'Registro de productos');
             page()->addEstigma("username", $usuario);
             page()->addEstigma("documentos", array('SQL', $cache[0]));
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
@@ -1144,7 +1149,7 @@ class inventarioView {
             page()->addEstigma("username", $usuario);
             page()->addEstigma("empleados", array('SQL', $cache[0]));
             page()->addEstigma("back_url", '/inventario/inventario/principal');
-            page()->addEstigma("TITULO","Administración de bodegas");
+            page()->addEstigma("TITULO","Administración de bodegas virtuales");
             template()->addTemplateBit('content', 'inventario/bodegas.html');
             template()->parseOutput();
             template()->parseExtras();
@@ -1319,7 +1324,7 @@ class inventarioView {
             page()->addEstigma("documento", $doc);
             page()->addEstigma("fecha", date("Y-m-d"));
             page()->addEstigma("username", $usuario);
-            page()->addEstigma("TITULO", 'Producto');
+            page()->addEstigma("TITULO", 'Registro de nuevo producto - Doc #'.$doc);
             template()->parseOutput();
             template()->parseExtras();
             print page()->getContent();
@@ -1352,7 +1357,7 @@ class inventarioView {
         import('scripts.secure');
         if(verifyAccess("inventario", "inventario", "cambiarPrecios", Session::singleton()->getUser())){
             template()->buildFromTemplates('template_nofixed.html');
-            page()->addEstigma("TITULO", 'Cambios');
+            page()->addEstigma("TITULO",'Actualización de datos de productos');
             page()->setTitle('Cambios');
             page()->addEstigma("username", $user);
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');

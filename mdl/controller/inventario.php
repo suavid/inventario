@@ -2653,7 +2653,7 @@ class inventarioController extends controller {
             $cache     = array();
             $cache[0]  = $this->model->get_child('linea')->get_list();
             $cache[1]  = $this->model->get_child('marca')->get_list();
-            $cache[2]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));;
+            $cache[2]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
             $cache[3]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
             $cache[4]  = $this->model->get_child('genero')->get_list();
             $cache[5]  = $this->model->get_child('linea')->get_list();
