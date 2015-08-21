@@ -2630,6 +2630,11 @@ class inventarioController extends controller {
         }
         $this->model->cambiarDatosGenerales($linea, $estilo, $data);
     }
+    
+    public function revision_de_salida(){
+        
+        $this->view->revision_de_salida();
+    }
 
     public function cambiarPrecios() {
         $this->validar();

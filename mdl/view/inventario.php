@@ -41,6 +41,18 @@ class inventarioView {
         template()->parseExtras();
         print page()->getContent();
     }
+    
+    public function revision_de_salida(){
+        template()->buildFromTemplates('template_nofixed.html');
+        page()->setTitle('Revisión de salida');
+        template()->addTemplateBit('content', 'inventario/revision_de_salida.html');
+        page()->addEstigma("username", Session::singleton()->getUser());
+        page()->addEstigma("TITULO", "Revisión de salida");
+        page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
+        template()->parseOutput();
+        template()->parseExtras();
+        print page()->getContent();
+    }
 
     public function construir_plantilla($usuario, $admin) {
         template()->buildFromTemplates('template_nofixed.html');
@@ -210,7 +222,7 @@ class inventarioView {
             page()->setTitle('Productos sugeridos');
             page()->addEstigma("username", Session::singleton()->getUser());
             page()->addEstigma("back_url", '/'.MODULE.'/inventario/nuevo_producto');
-            page()->addEstigma("TITULO", 'Asosiación de productos sugeridos');
+            page()->addEstigma("TITULO", 'Asociación de productos sugeridos');
             page()->addEstigma("linea", array('SQL', $lineas));
             template()->addTemplateBit('content', 'inventario/producto_sugerido.html');
             template()->parseOutput();

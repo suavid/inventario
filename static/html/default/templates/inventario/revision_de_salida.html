@@ -1,0 +1,99 @@
+<div class="grid">
+	<div class="row">
+		<div class="panel span4">
+			<div class="panel-header">
+			</div>
+			<div class="panel-content">
+				Ingrese la serie de la factura
+				<div class="input-control text">
+					<input type="text" id="serie"/>
+				</div>
+				Ingrese el número de factura
+				<div class="input-control text">
+					<input type="text" id="nofac"/>
+				</div>
+                <button class="primary" onclick="buscarDetalle();">Aceptar</button>
+			</div>
+		</div>
+		<div class="span8">
+            <h3>Detalle</h3>
+			<div id="bigbox" style="margin-top: 10px; margin-right:25px;display:!none;float:left;">
+				<div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+		
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+    function buscarDetalle(){
+        var nofac = $('#nofac').val().trim();
+        var serie = $('#serie').val().trim();
+        var grid = Sigma.$grid("factura_grid");
+    	grid.loadURL = '/facturacion/factura/cargar_detalle_fac?nofac=' + nofac + '&serie='+serie;
+    	grid.reload();
+    }
+
+	var grid_demo_id = "factura_grid";
+            
+    var dsOption = {
+        fields :[
+            {name : 'descripcion'  },
+            {name : 'precio'  },
+            {name : 'cantidad'  },
+            {name : 'porcentaje'  },
+            {name : 'descuento'  },
+            {name : 'importe'  },
+            {name : 'id_factura'  },
+            {name : 'id'  }
+        ],
+        recordType : 'object'
+    }
+
+    var colsOption = [
+        {id: 'descripcion', header: "Descripcion", width :250 },
+        {id: 'precio', header: "Precio", width :80 },
+        {id: 'cantidad', header: "Cantidad", width :80 },
+        {id: 'pordes', header: "%", width :80 },
+        {id: 'valdes', header: "Descuento", width :80 },
+        {id: 'importe', header: "Importe", width :80 },
+        {id: 'opt', header: "Opciones", width :80, renderer:despachar_render }
+    ];
+            
+    function despachar_render(value, record, columnObj, grid, colNo, rowNo){
+		return '<a href="javascript:void(0);" onclick="despachar(' + record['id'] + ')">Despachar</a>';
+    }        
+            
+    function despachar(id){
+        $.post('/facturacion/factura/despachar', {"id":id}, function(d){
+            buscarDetalle();
+        }, "json");    
+    }   
+         
+    var gridOption = {
+        id : grid_demo_id,
+        loadURL : '',
+        saveURL : '',
+        width: "735", //"100%", // 700,
+        height: "250", //"100%", // 330,
+        container : 'gridbox',
+        replaceContainer : true,
+        encoding : 'UTF-8', // Sigma.$encoding(), 
+        dataset : dsOption,
+        columns : colsOption,
+        allowCustomSkin: true,
+        skin: 'mac',
+        clickStartEdit : true,
+        defaultRecord : {'id':"00", 'nombre':""},
+        remotePaging: true,
+        autoLoad: true,
+        pageSize:10,
+        toolbarContent : 'nav state'
+    };
+
+    var mygrid = new Sigma.Grid(gridOption);
+    Sigma.Util.onLoad(function(){
+        mygrid.render();
+    });
+</script>
