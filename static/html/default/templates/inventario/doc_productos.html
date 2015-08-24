@@ -348,6 +348,8 @@ var gridOption={
   clickStartEdit : true ,
   defaultRecord : {'id':"00"},
   pageSize:10,
+  allowCustomSkin: true,
+  skin: 'mac',
   toolbarContent : ' filter | nav state'
 };
 
@@ -366,6 +368,8 @@ var gridOption2={
   clickStartEdit : true ,
   defaultRecord : {'id':"00",'nombre':""},
   pageSize:10,
+  allowCustomSkin: true,
+  skin: 'mac',
   toolbarContent : 'reload filter nav state'
 };
 
@@ -384,6 +388,8 @@ var gridOption3={
   clickStartEdit : true ,
   defaultRecord : {'id':"00"},
   pageSize:10,
+  allowCustomSkin: true,
+  skin: 'mac',
   toolbarContent : 'filter | nav state'
 };
 
@@ -637,9 +643,9 @@ function copyCode(event){
             <div style="border:solid 1px #D3D3D3;padding:35px;display:table;padding-bottom:0px;margin-bottom: 0px;">
                 <div style="padding: 30px;">
                     <div style="margin-left:5px;">
-                        <a href="javascript: void(0);" onclick="showPane('thisDoc');"><i class="icon-new"></i> Ver productos registrados en este documento </a>  | 
-                        <a href="javascript: void(0);" onclick="showPane('general');"><i class="icon-database"></i> Ver productos que ya han sido registrados </a>   |  
-                        <a href="javascript: void(0);" onclick="showPane('detail');"><i class="icon-list"></i> Ver detalle del producto seleccionado </a>
+                        <a href="javascript: void(0);" onclick="showPane('thisDoc');"><i class="icon-new"></i> Ver productos registrados en este documento </a> &nbsp;&nbsp;&nbsp;&nbsp;  
+                        <a href="javascript: void(0);" onclick="showPane('general');"><i class="icon-database"></i> Ver productos que ya han sido registrados </a> &nbsp;&nbsp;&nbsp;&nbsp;  
+                        <a href="javascript: void(0);" onclick="showPane('detail');"><i class="icon-list"></i> Ver detalle del producto seleccionado </a> &nbsp;&nbsp;&nbsp;&nbsp;
                     </div>
                     <br/>
                     <div style="width:200px; float:left; text-align: right; margin:10px;margin-bottom:10px;">

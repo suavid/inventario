@@ -2,6 +2,7 @@
 	<div class="row">
 		<div class="panel span4">
 			<div class="panel-header">
+                Datos de la factura
 			</div>
 			<div class="panel-content">
 				Ingrese la serie de la factura
@@ -15,15 +16,37 @@
                 <button class="primary" onclick="buscarDetalle();">Aceptar</button>
 			</div>
 		</div>
-		<div class="span8">
-            <h3>Detalle</h3>
-			<div id="bigbox" style="margin-top: 10px; margin-right:25px;display:!none;float:left;">
-				<div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-		
-				</div>
-			</div>
+		<div class="span10">
+            <div class="panel">
+                <div class="panel-header">
+                    Detalle de factura
+                </div>
+                <div class="panel-content">
+                    <div id="bigbox" style="margin-top: 10px; margin-right:25px;display:!none;float:left;">
+                        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
+                
+                        </div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
 		</div>
 	</div>
+    <div class="row" style="margin-top: 15px;">
+        <div class="span4"></div>
+        <div class="panel span10">
+            <div class="panel-header">
+                <i class="icon-warning"></i> Advertencia
+            </div>
+            <div class="panel-content">
+                <p>
+                    No dejar salir producto que no posee respaldo de su respectivo documento (factura, nota de remisión o equivalente)
+                    que garantice que el cliente está autorizado para retirar el producto de la tienda. En caso de anomalías corroborar datos
+                    con el personal de facturación y bodega.
+                </p>
+            </div>
+        </div>
+     </div>
 </div>
 <script type="text/javascript">
 
