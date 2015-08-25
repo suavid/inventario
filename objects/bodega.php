@@ -8,7 +8,7 @@ class bodegaModel extends object {
      * */
 
     public function existe_producto($linea, $estilo, $color, $talla) {
-        $query = "SELECT * FROM estado_bodega WHERE estilo='{$estilo}' AND linea=$linea AND talla=$talla AND color=$color";
+        $query = "SELECT id FROM estado_bodega WHERE estilo='{$estilo}' AND linea=$linea AND talla=$talla AND color=$color";
         data_model()->executeQuery($query);
         if (data_model()->getNumRows() > 0)
             return true;
@@ -35,7 +35,7 @@ class bodegaModel extends object {
     public function aumentar_stock($linea, $estilo, $color, $talla, $bodega, $cantidad) {
         if ($cantidad < 0)
             $cantidad *= -1;
-        if ($this->existe_producto($linea, $estilo, $color, $talla)) {
+        if ($this->existe($linea, $estilo, $color, $talla, $bodega)) {
             $query = "UPDATE estado_bodega SET stock=(stock+$cantidad) WHERE estilo='{$estilo}' AND linea=$linea AND talla=$talla AND color=$color AND bodega=$bodega";
             data_model()->executeQuery($query);
         } else {

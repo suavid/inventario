@@ -1703,6 +1703,7 @@ class inventarioController extends controller {
         $genero = $_POST['genero'];
         $oferta = $_POST['oferta'];
         $this->model->oferta_x_genero($genero, $oferta);
+        echo json_encode(array("msg"=>""));
     }
 
     public function oferta_x_detalle() {
@@ -1713,6 +1714,7 @@ class inventarioController extends controller {
         $oferta = $_POST['oferta'];
 
         $this->model->oferta_x_detalle($linea, $estilo, $color, $talla, $oferta);
+        echo json_encode(array("msg"=>""));
     }
 
     public function salvar_traslado() {
