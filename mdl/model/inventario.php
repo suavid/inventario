@@ -157,7 +157,7 @@ class inventarioModel extends object {
     }
 
     public function detalle_producto_stock($linea, $estilo){
-        $query = "SELECT estado_bodega.talla as eb_talla, estado_bodega.color as eb_color, stock as eb_stock, precio as eb_precio FROM estado_bodega INNER JOIN control_precio ON ((control_precio.linea = estado_bodega.linea) AND (control_precio.control_estilo = estado_bodega.estilo)) WHERE estado_bodega.linea = $linea AND estilo='{$estilo}' AND bodega = 1 GROUP BY estado_bodega.estilo, estado_bodega.linea, estado_bodega.color, estado_bodega.talla";
+        $query = "SELECT estado_bodega.talla as eb_talla, estado_bodega.color as eb_color, stock as eb_stock, precio as eb_precio FROM estado_bodega INNER JOIN control_precio ON ((control_precio.linea = estado_bodega.linea) AND (control_precio.control_estilo = estado_bodega.estilo)) WHERE estado_bodega.linea = $linea AND estilo='{$estilo}' AND bodega = 1 OR bodega = 2 OR bodega = 3 GROUP BY estado_bodega.estilo, estado_bodega.linea, estado_bodega.color, estado_bodega.talla";
 
         return data_model()->cacheQuery($query);
     }
@@ -686,14 +686,13 @@ class inventarioModel extends object {
 
             $query = "SELECT * FROM oferta_producto INNER JOIN oferta ON oferta_producto.id_oferta = oferta.id WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND fin >= CURRENT_DATE()";
             data_model()->executeQuery($query);
-
+            
             if (data_model()->getNumRows() <= 0) {
                 //echo "SE GUARDAN";
                 # asignamos la oferta
                 $query = "INSERT INTO oferta_producto VALUES(null,$oferta,'{$estilo}',$linea,$color,$talla)";
                 data_model()->executeQuery($query);
                 $query = "UPDATE estado_bodega SET bodega = 3 WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND ( bodega = 1 OR bodega = 2)";
-                echo $query;
                 data_model()->executeQuery($query);
             }
         }
