@@ -336,6 +336,7 @@ var gridOption={
     if(colNO == 0 && record['estilo'].trim()!="")
     {
         $('#fgs').focus();
+        $('#linea').val(record['linea']);
         $('#fgs').val(record['estilo']);
         $('#fgs').change();
         closePane('thisDoc');

@@ -2514,7 +2514,7 @@ class inventarioController extends controller {
 
     public function DatosCatalogo() {
         $id = $_POST['id'];
-        echo json_encode($this->model->CatalogoPorId($id));
+        echo safe_json_encode($this->model->CatalogoPorId($id));
     }
 
     public function crear_documento() {
@@ -2874,7 +2874,10 @@ class inventarioController extends controller {
                 $prodTmp->set_attr('numero_documento', $doc);
                 $prodTmp->save();
             }  
-
+            
+            $query = "UPDATE tarjeta_costo SET RUN1 = $inf_corrida, RUN2 = $sup_corrida WHERE CESTILO='{$estilo}' AND CCOLOR=$color AND LINEA=$linea AND NODOC = $doc";
+            data_model()->executeQuery($query);
+            
             $sql = "";
             $medios = (isset($_POST['medios']) && $_POST['medios'] == "on" ) ? true : false;
             $tallas = array();
@@ -2888,7 +2891,7 @@ class inventarioController extends controller {
                 endif;
             endfor;
             foreach ($tallas as $talla):
-                $sql = "SELECT * FROM documento_talla_producto WHERE talla_estilo_producto='{$estilo}' AND color=$color AND talla=$talla";
+                $sql = "SELECT * FROM documento_talla_producto WHERE talla_estilo_producto='{$estilo}' AND linea=$linea AND color=$color AND talla=$talla";
                 data_model()->executeQuery($sql);
                 if (data_model()->getNumRows() == 0):
                     $data = array();
@@ -2899,7 +2902,7 @@ class inventarioController extends controller {
                     $talla_obj = $this->model->get_child('documento_talla_producto');
                     $talla_obj->get(0);
                     $talla_obj->change_status($data);
-                    $talla_obj->save();
+                    $talla_obj->force_save();
                 endif;
             endforeach;
             HttpHandler::redirect('/'.MODULE.'/inventario/doc_productos?documento=' . $doc);
