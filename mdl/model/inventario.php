@@ -647,8 +647,9 @@ class inventarioModel extends object {
                 # asignamos la oferta
                 $query = "INSERT INTO oferta_producto VALUES(null,$oferta,'{$estilo}',$linea,$color,$talla)";
                 data_model()->executeQuery($query);
-                $query = "UPDATE estado_bodega SET bodega = 3 WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND ( bodega = 1 OR bodega = 2)";
-                data_model()->executeQuery($query);
+                /* YA NO SE MOVERA A BODEGA */
+                //$query = "UPDATE estado_bodega SET bodega = 3 WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND ( bodega = 1 OR bodega = 2)";
+                //data_model()->executeQuery($query);
             }
         }
     }
@@ -692,8 +693,9 @@ class inventarioModel extends object {
                 # asignamos la oferta
                 $query = "INSERT INTO oferta_producto VALUES(null,$oferta,'{$estilo}',$linea,$color,$talla)";
                 data_model()->executeQuery($query);
-                $query = "UPDATE estado_bodega SET bodega = 3 WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND ( bodega = 1 OR bodega = 2)";
-                data_model()->executeQuery($query);
+                /* YA NO SE MOVERA A BODEGA */
+                //$query = "UPDATE estado_bodega SET bodega = 3 WHERE linea=$linea AND estilo='{$estilo}' AND color=$color AND talla=$talla AND ( bodega = 1 OR bodega = 2)";
+                //data_model()->executeQuery($query);
             }
         }
     }
