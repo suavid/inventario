@@ -163,6 +163,47 @@
         grid.loadURL = '/{systemModuleName}/grid_tables/bodega_grid_1?term='+term;
     	grid.reload();
     }
+    
+    function verificar(){
+        if(!$('#tiene_stock').prop("checked")){
+           $('#tiene_stock').prop("checked", true);
+            $.Dialog({
+                    overlay: true,
+                    shadow: true,
+                    flat: true,
+                    title: 'Necesita autorización',
+                    content: '',
+                    width:500,
+                    onShow: function(_dialog){
+                        var content = _dialog.children('.content');
+                        html = ['<div style="padding:30px;">',
+                            '<br/>',
+                            '<h4>Proveea la clave de autorización</h4>',
+                            '<input type="password" id="pass" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" onclick="auth_imp();">Autorizar</button>',
+                            '<br/>',
+                            '<br/>',
+                            '</div>'].join("");
+                        content.html(html);
+                    }
+                });
+        }
+    }
+    
+    function auth_imp()
+    {
+        pass = $('#pass').val();
+        uri  = "/inventario/inventario/autorizacion";
+        data = {"clave":pass};
+        res  = $.post(uri, data, function(d){
+            if (d.auth){
+                $('#tiene_stock').prop("checked", false);
+            } else{
+                alert("No tiene autorizacion");
+            }
+        }, "json");
+        
+        $.Dialog.close();
+    }
 
 </script>
 <style>
@@ -184,7 +225,7 @@
                                 Rellenar correlativos vacíos  
                             </div>
                             <div>
-                                <input type="checkbox" name="tiene_stock" id="tiene_stock" />
+                                <input type="checkbox" name="tiene_stock" checked="checked" id="tiene_stock" onclick="verificar();"/>
                                 Maneja stock  
                             </div>
                             <br/> 

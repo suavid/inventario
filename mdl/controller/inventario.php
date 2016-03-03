@@ -2576,14 +2576,23 @@ class inventarioController extends controller {
 
     public function salvarCatalogo() {
         $data = $_POST;
+        $data['inicio'] = $this->getDateFromString($data['inicio']);        
         $catalogo = $this->model->get_child('catalogo');
         $catalogo->get(0);
-        $data['inicio'] = $this->getDateFromString($data['inicio']);
-        $data['final'] = $this->getDateFromString($data['final']);
+        $final = $data['inicio'];
+        $id = 0;
+        $query = "SELECT max(id) as id FROM catalogo";
+        data_model()->executeQuery($query);
+        while($row=data_model()->getResult()->fetch_assoc()){
+            $id = $row['id'];
+        }
+        $query = "UPDATE catalogo SET final='$final' WHERE id = $id";
+        data_model()->executeQuery($query);
+        //$data['final'] = $this->getDateFromString($data['final']);
         $catalogo->change_status($data);
         $catalogo->save();
         upload_image(APP_PATH . 'static/img/catalogo', 'archivo', $catalogo->last_insert_id().".jpg");
-        HttpHandler::redirect('/'.MODULE.'/inventario/catalogos');
+        HttpHandler::redirect('/'.MODULE.'/inventario/catalogos?success=ok');
     }
 
     public function getDateFromString($String) {
@@ -2634,8 +2643,9 @@ class inventarioController extends controller {
     }
     
     public function revision_de_salida(){
-        
-        $this->view->revision_de_salida();
+        $query = "SELECT serie FROM serie WHERE tipo='FC'";
+        $series = data_model()->cacheQuery($query);
+        $this->view->revision_de_salida($series);
     }
 
     public function cambiarPrecios() {
@@ -2651,6 +2661,19 @@ class inventarioController extends controller {
         $linea  = $_POST['linea'];
         echo json_encode($this->model->DatosGeneralesProducto($linea, $estilo));
     }
+    
+    public function autorizacion() {
+        $clave = $_POST['clave'];
+        $ret = array();
+        $ret['auth'] = false;
+        $system = $this->model->get_child('system');
+        $system->get(1);
+        if (md5($clave) == $system->get_attr('clave')) {
+            $ret['auth'] = true;
+        }
+
+        echo json_encode($ret);
+    }
 
     public function doc_productos() {
         $this->validar();
@@ -2658,18 +2681,18 @@ class inventarioController extends controller {
         $doc = (isset($_GET) && !empty($_GET)) ? $_GET['documento'] : 0;
         if ($this->model->document_acces($usuario, $doc)):
             $cache     = array();
-            $cache[0]  = $this->model->get_child('linea')->get_list();
-            $cache[1]  = $this->model->get_child('marca')->get_list();
+            $cache[0]  = $this->model->get_child('linea')->get_list('', '', array('nombre'));
+            $cache[1]  = $this->model->get_child('marca')->get_list('', '', array('nombre'));
             $cache[2]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
             $cache[3]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
-            $cache[4]  = $this->model->get_child('genero')->get_list();
-            $cache[5]  = $this->model->get_child('linea')->get_list();
-            $cache[6]  = $this->model->get_child('marca')->get_list();
+            $cache[4]  = $this->model->get_child('genero')->get_list('', '', array('nombre'));
+            $cache[5]  = $this->model->get_child('linea')->get_list('', '', array('nombre'));
+            $cache[6]  = $this->model->get_child('marca')->get_list('', '', array('nombre'));
             $cache[7]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
             $cache[8]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
-            $cache[9]  = $this->model->get_child('genero')->get_list();
-            $cache[10] = $this->model->get_child('catalogo')->get_list();
-            $cache[11] = $this->model->get_child('catalogo')->get_list();
+            $cache[9]  = $this->model->get_child('genero')->get_list('', '', array('nombre'));
+            $cache[10] = $this->model->get_child('catalogo')->get_list('', '', array('nombre'));
+            $cache[11] = $this->model->get_child('catalogo')->get_list('', '', array('nombre'));
             $cache[12]  = $this->model->get_child('tacon')->get_list('', '', array('nombre'));
             $cache[13]  = $this->model->get_child('suela')->get_list('', '', array('nombre'));
             $cache[14]  = $this->model->get_child('material')->get_list('', '', array('nombre'));

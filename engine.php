@@ -94,7 +94,8 @@ BM::singleton()->storeObject('database', 'db');
 BM::singleton()->storeSetting('default', 'skin');
 
 BM::singleton()->getObject('temp')->getPage()->setJs('static/js/jquery.min.js');
-BM::singleton()->getObject('temp')->getPage()->setJs('static/js/jquery.widget.min.js');
+//BM::singleton()->getObject('temp')->getPage()->setJs('static/js/jquery.widget.min.js');
+BM::singleton()->getObject('temp')->getPage()->setJs('static/js/jquery-ui.min.js');
 
 BM::singleton()->getObject('temp')->getPage()->setCss('common/plugins/sigma/grid/gt_grid.css');
 BM::singleton()->getObject('temp')->getPage()->setCss('common/plugins/sigma/grid/skin/mac/skinstyle.css');
@@ -102,6 +103,7 @@ BM::singleton()->getObject('temp')->getPage()->setCss('common/plugins/sigma/grid
 BM::singleton()->getObject('temp')->getPage()->setCss('static/css/metro-bootstrap-responsive.css');
 BM::singleton()->getObject('temp')->getPage()->setCss('static/css/metro-bootstrap.css');
 BM::singleton()->getObject('temp')->getPage()->setCss('static/css/iconFont.min.css');
+//BM::singleton()->getObject('temp')->getPage()->setCss('static/css/jquery-ui.min.css');
 
 BM::singleton()->getObject('temp')->getPage()->setJs('static/js/business.manager.1.0.js');
 
@@ -121,6 +123,41 @@ BM::singleton()->getObject('db')->newConnection(HOST, USER, PASSWORD, DATABASE);
 
 //CANCELAR_OFERTAS();
 #####	fin de configuraciones #####
+
+$query = " SELECT id_documento FROM documento WHERE   DATE_ADD(fecha_creacion,INTERVAL 3 DAY) < NOW() AND estado = 0";
+$ids   = array();
+
+data_model()->executeQuery($query);
+
+while($row = data_model()->getResult()->fetch_assoc()){
+    $ids[] = $row['id_documento'];
+}
+
+foreach ($ids as $id) {
+    $query = "SELECT estilo, linea FROM documento_producto WHERE numero_documento=$id"; 
+    
+    data_model()->executeQuery($query);
+    $res = array();
+    
+    while($row = data_model()->getResult()->fetch_assoc()){
+        $res[] = $row;
+    }    
+    
+    foreach ($res as $r) {
+        $estilo = $r['estilo'];
+        $linea = $r['linea'];
+        
+        $query = "DELETE FROM documento_talla_producto WHERE talla_estilo_producto='$estilo' AND linea=$linea";
+        data_model()->executeQuery($query);
+        $query = "DELETE FROM documento_color_producto WHERE color_estilo_producto='$estilo' AND linea=$linea";
+        data_model()->executeQuery($query);
+        
+        $query = "DELETE FROM documento_producto WHERE numero_documento=$id";
+        data_model()->executeQuery($query);
+    }
+    $query = "DELETE FROM documento WHERE id_documento=$id";
+    data_model()->executeQuery($query);
+}
 
 $front = new frontController(array());  # crear controlador 'front'
 $front->run();        # correr controlador 'front'

@@ -42,12 +42,13 @@ class inventarioView {
         print page()->getContent();
     }
     
-    public function revision_de_salida(){
+    public function revision_de_salida($series){
         template()->buildFromTemplates('template_nofixed.html');
         page()->setTitle('Revisión de salida');
         template()->addTemplateBit('content', 'inventario/revision_de_salida.html');
         page()->addEstigma("username", Session::singleton()->getUser());
         page()->addEstigma("TITULO", "Revisión de salida");
+        page()->addEstigma("series", array('SQL', $series));
         page()->addEstigma("back_url", '/'.MODULE.'/inventario/principal');
         template()->parseOutput();
         template()->parseExtras();

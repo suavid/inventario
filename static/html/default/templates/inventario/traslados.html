@@ -1,5 +1,9 @@
 <script>
     $(document).ready(function() {
+
+        $( "#fDate" ).datepicker();
+
+
         window.vdate = false;
         $('#transaccion').change();
         uri_parser = new url_handler();
@@ -176,26 +180,38 @@
         {
             case "1B":
                 $("#bodega_origen").attr("disabled", "disabled");
+                $("#proveedor_origen").removeAttr("disabled");
+                $("#proveedor_nacional").removeAttr("disabled");
                 break;
             case "1C":
                 $("#bodega_origen").removeAttr("disabled");
                 $("#bodega_destino").removeAttr("disabled");
+                $("#proveedor_origen").attr("disabled", "disabled");
+                $("#proveedor_nacional").attr("disabled", "disabled");
                 break;
             case "2C":
                 $("#bodega_origen").removeAttr("disabled");
                 $("#bodega_destino").removeAttr("disabled");
+                $("#proveedor_origen").attr("disabled", "disabled");
+                $("#proveedor_nacional").attr("disabled", "disabled");
                 break;
             case "1E":
                 $("#bodega_destino").removeAttr("disabled");
                 $("#bodega_origen").attr("disabled", "disabled");
+                $("#proveedor_origen").attr("disabled", "disabled");
+                $("#proveedor_nacional").attr("disabled", "disabled");
                 break;
             case "2E":
                 $("#bodega_origen").removeAttr("disabled");
                 $("#bodega_destino").attr("disabled", "disabled");
+                $("#proveedor_origen").attr("disabled", "disabled");
+                $("#proveedor_nacional").attr("disabled", "disabled");
                 break;
             case "2B":
                 $("#bodega_origen").removeAttr("disabled");
                 $("#bodega_destino").attr("disabled", "disabled");
+                $("#proveedor_origen").attr("disabled", "disabled");
+                $("#proveedor_nacional").attr("disabled", "disabled");
                 break;
             default:
                 //alert("No implementado");
@@ -242,7 +258,7 @@
                                     Fecha
                                     <br/>
                                     <div class="input-control text">
-                                        <input type="text" id="fDate" name="fecha" id="transaccion" value="{fecha}" onkeyup="mascara(this, '-', patron_fecha, true)" onblur="cdate();" maxlength="10" style="width:100px" />
+                                        <input type="date" id="fDate" name="fecha" value="{fecha}" style="width:200px" />
                                         </div>
                                 </label>
                             </div>
