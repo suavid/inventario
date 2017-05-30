@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>
-        </title>
-        <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
-    </head>
-    <body class="metro">
-        <style type="text/css">
 
-        #blsBScreen{
+<head>
+    <meta charset="UTF-8">
+    <title>
+    </title>
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
+</head>
+
+<body class="metro" ng-app="Inventario">
+    <style type="text/css">
+        #blsBScreen {
             position: fixed;
             z-index: 1000000;
             height: 100%;
             width: 100%;
             background: #000;
-            -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
             filter: alpha(opacity=50);
-            -moz-opacity:0.5;
+            -moz-opacity: 0.5;
             -khtml-opacity: 0.5;
             opacity: 0.5;
             display: none;
         }
-
-        #blsMScreen{
+        
+        #blsMScreen {
             min-height: 300px;
             width: 100%;
             position: fixed;
@@ -31,213 +32,212 @@
             margin-top: 150px;
             display: none;
         }
-
-        #blsMessage{ 
+        
+        #blsMessage {
             margin: 0 auto;
             margin-top: 100px;
         }
-
-        </style>        
-        <noscript>
+    </style>
+    <noscript>
         Para que el sistema trabaje correctamente necesita tener activado Javascript,
         si usted puede leer este mensaje significa que javascript se encuentra desactivado.
         Active Javascript y recarge la p&aacute;gina; si no sabe como activarlo contacte 
         con el administrador.
         </noscript>
-        <div id="blsBScreen"></div>
-        <div id="blsMScreen" class="bg-blue">
-            <div id="blsMessage" class="span5"> 
-                <p class="fg-white" style="font-size: 20px; text-align: center;"> 
-                    Por favor, espere un momento
-                    <br />
-                    <br />
-                </p>
-                <div style="text-align: center;"><img src="../static/img/loader_screen.gif" style="width: 32px;"></div> 
-            </div>
+    <div id="blsBScreen"></div>
+    <div id="blsMScreen" class="bg-blue">
+        <div id="blsMessage" class="span5">
+            <p class="fg-white" style="font-size: 20px; text-align: center;">
+                Por favor, espere un momento
+                <br />
+                <br />
+            </p>
+            <div style="text-align: center;"><img src="../static/img/loader_screen.gif" style="width: 32px;"></div>
         </div>
-        <script>
+    </div>
+    <script>
+        function porfavor_espere() {
+            $('#blsBScreen').css('display', 'blocK');
+            $('#blsMScreen').css('display', 'blocK');
+        }
 
-            function porfavor_espere(){
-                $('#blsBScreen').css('display', 'blocK');
-                $('#blsMScreen').css('display', 'blocK');
-            } 
+        function gracias_por_esperar() {
+            $('#blsBScreen').css('display', 'none');
+            $('#blsMScreen').css('display', 'none');
+        }
 
-            function gracias_por_esperar(){
-                $('#blsBScreen').css('display', 'none');
-                $('#blsMScreen').css('display', 'none');  
-            }
+        $(document).ready(function() {
+            //var noti = setInterval( notificaciones , 1000 );
+            //var bloq = setInterval( bloqueo , 500 );
 
-            $(document).ready(function() {
-                //var noti = setInterval( notificaciones , 1000 );
-                //var bloq = setInterval( bloqueo , 500 );
-                
 
-                /* INBOX */
-                /*setInterval(function(){
+            /* INBOX */
+            /*setInterval(function(){
 
-                    var uri = "/nymsa/modulo/inboxPendientes";
-                    $.post(uri, {}, function(resp){
+                var uri = "/nymsa/modulo/inboxPendientes";
+                $.post(uri, {}, function(resp){
 
-                        $("#inboxPending").html(resp.noleidos);
+                    $("#inboxPending").html(resp.noleidos);
 
-                    },"json");
+                },"json");
 
-                }, 500);*/
+            }, 500);*/
 
-                var messages_handler = new url_handler();
-                messages_handler.initialize();
-                if (messages_handler.isKey('error')) {
+            var messages_handler = new url_handler();
+            messages_handler.initialize();
+            if (messages_handler.isKey('error')) {
 
-                    if (messages_handler.getValue('error') == 1530) {
-                        $.Dialog({
-                            overlay: true,
-                            shadow: true,
-                            flat: true,
-                            icon: '<i class="icon-warning"></i>',
-                            title: 'ACCESO RESTRINGIDO',
-                            content: '',
-                            onShow: function(_dialog){
-                                var content = _dialog.children('.content');
-                                content.html('<p style="padding: 15px;">No posee autorización para visualizar el contenido</p>');
-                            }
-                        });
-                    }
-                }
-            });
-
-            function inboxPreview(){
-                var uri = "/nymsa/modulo/inboxPreview";
-
-                $.post(uri, {}, function(mensajes){
-                    agregarMensajes(mensajes);
-                }, "json");
-            }
-
-            function agregarMensajes(mensajes){
-                $('#loader').remove();
-                
-                for(var i = 0; i < mensajes.length; i++){
-                    if(mensajes[i].leido == 1){
-                        var li = $('<li style="padding: 5px;" onclick="readInbox('+mensajes[i].id+')"><p>'+mensajes[i].titulo+'</p><span style="color: #636363; font-size: 10px;">De: '+mensajes[i].remitente+' - Enviado el: '+mensajes[i].fecha+'</span></li>');
-                        $('#bandeja').append(li);
-                    }else{
-                        var li = $('<li style="padding: 5px;" onclick="readInbox('+mensajes[i].id+')"><p style="font-weight: bold;">'+mensajes[i].titulo+' (Sin leer)</p><span style="color: #636363; font-size: 10px;">De: '+mensajes[i].remitente+' - Enviado el: '+mensajes[i].fecha+'</span></li>');
-                        $('#bandeja').append(li);
-                    }
+                if (messages_handler.getValue('error') == 1530) {
+                    $.Dialog({
+                        overlay: true,
+                        shadow: true,
+                        flat: true,
+                        icon: '<i class="icon-warning"></i>',
+                        title: 'ACCESO RESTRINGIDO',
+                        content: '',
+                        onShow: function(_dialog) {
+                            var content = _dialog.children('.content');
+                            content.html('<p style="padding: 15px;">No posee autorización para visualizar el contenido</p>');
+                        }
+                    });
                 }
             }
+        });
 
-            function readInbox(id){
-                location.href = "/nymsa/modulo/inboxRead?inboxId="+id;
+        function inboxPreview() {
+            var uri = "/nymsa/modulo/inboxPreview";
+
+            $.post(uri, {}, function(mensajes) {
+                agregarMensajes(mensajes);
+            }, "json");
+        }
+
+        function agregarMensajes(mensajes) {
+            $('#loader').remove();
+
+            for (var i = 0; i < mensajes.length; i++) {
+                if (mensajes[i].leido == 1) {
+                    var li = $('<li style="padding: 5px;" onclick="readInbox(' + mensajes[i].id + ')"><p>' + mensajes[i].titulo + '</p><span style="color: #636363; font-size: 10px;">De: ' + mensajes[i].remitente + ' - Enviado el: ' + mensajes[i].fecha + '</span></li>');
+                    $('#bandeja').append(li);
+                } else {
+                    var li = $('<li style="padding: 5px;" onclick="readInbox(' + mensajes[i].id + ')"><p style="font-weight: bold;">' + mensajes[i].titulo + ' (Sin leer)</p><span style="color: #636363; font-size: 10px;">De: ' + mensajes[i].remitente + ' - Enviado el: ' + mensajes[i].fecha + '</span></li>');
+                    $('#bandeja').append(li);
+                }
             }
+        }
 
-            
-            function ver_detalle_producto(){
+        function readInbox(id) {
+            location.href = "/nymsa/modulo/inboxRead?inboxId=" + id;
+        }
 
-                window.open('/{systemModuleName}/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val() , '_blank');
-            }
-        </script>
-        <div>
-            <nav class="navigation-bar light fixed-top shadow" >
-                <nav class="navigation-bar-content">
-                    <a href="/{systemModuleName}/inventario/principal" class="element brand">
-                        <i class="icon-home"></i>
-                        Inicio
-                    </a>
-                    <span class="element-divider place-left"></span> 
 
-                    <a class="element brand" href="{back_url}"><i class="icon-arrow-left-3"></i></a>
-                    
-                    <div class="element">
-                        <a class="dropdown-toggle" href="#"><i class="icon-tools"></i> Mantenimientos</a>
-                        <ul class="dropdown-menu" data-role="dropdown">
-                            <li>
-                                <a href="/{systemModuleName}/inventario/segmentacion"><i class="icon-list"></i> Segmentación</a>
-                            </li>
-                            <!--<li>
+        function ver_detalle_producto() {
+
+            window.open('/{systemModuleName}/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val(), '_blank');
+        }
+    </script>
+    <div>
+        <nav class="navigation-bar light fixed-top shadow">
+            <nav class="navigation-bar-content">
+                <a href="/{systemModuleName}/inventario/principal" class="element brand">
+                    <i class="icon-home"></i> Inicio
+                </a>
+                <span class="element-divider place-left"></span>
+
+                <a class="element brand" href="{back_url}"><i class="icon-arrow-left-3"></i></a>
+
+                <div class="element">
+                    <a class="dropdown-toggle" href="#"><i class="icon-tools"></i> Mantenimientos</a>
+                    <ul class="dropdown-menu" data-role="dropdown">
+                        <li>
+                            <a href="/{systemModuleName}/inventario/segmentacion"><i class="icon-list"></i> Segmentación</a>
+                        </li>
+                        <!--<li>
                                 <a href="/{systemModuleName}/inventario/proveedores"><i class="icon-user-2"></i> Proveedores</a>
                             </li>-->
-                            <li>
-                                <a href="/{systemModuleName}/inventario/bodegas"><i class="icon-box"></i> Bodegas</a>
-                            </li>
-                            <li><a href="/{systemModuleName}/inventario/catalogos"><i class="icon-broadcast"></i> Campañas</a></li>
-                            <li>
-                                <a class="dropdown-toggle" href="#"><i class="icon-basket"></i> Productos</a>
-                                <ul class="dropdown-menu" data-role="dropdown">
-                                    <li><a href="/{systemModuleName}/inventario/nuevo_producto"><i class="icon-file"></i> Nuevo producto</a></li>
-                                    <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-book"></i> Catálogo</a></li>
-                                    <li><a href="/{systemModuleName}/inventario/productoEntrante"><i class="icon-cycle"></i> En tránsito</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a class="dropdown-toggle" href="#"><i class="icon-tab"></i> Transacciones</a>
-                                <ul class="dropdown-menu" data-role="dropdown">
-                                    <li><a href="/{systemModuleName}/inventario/traslados">Traslados</a></li>
-                                    <li><a href="/{systemModuleName}/inventario/listadoTraslado">Historial de traslados</a></li>
-                                </ul> 
-                            </li>
-                        </ul>
-                    </div>
+                        <li>
+                            <a href="/{systemModuleName}/inventario/bodegas"><i class="icon-box"></i> Bodegas</a>
+                        </li>
+                        <li><a href="/{systemModuleName}/inventario/catalogos"><i class="icon-broadcast"></i> Campañas</a></li>
+                        <li>
+                            <a class="dropdown-toggle" href="#"><i class="icon-basket"></i> Productos</a>
+                            <ul class="dropdown-menu" data-role="dropdown">
+                                <li><a href="/{systemModuleName}/inventario/nuevo_producto"><i class="icon-file"></i> Nuevo producto</a></li>
+                                <li><a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-book"></i> Catálogo</a></li>
+                                <li><a href="/{systemModuleName}/inventario/productoEntrante"><i class="icon-cycle"></i> En tránsito</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a class="dropdown-toggle" href="#"><i class="icon-tab"></i> Transacciones</a>
+                            <ul class="dropdown-menu" data-role="dropdown">
+                                <li><a href="/{systemModuleName}/inventario/traslados">Traslados</a></li>
+                                <li><a href="/{systemModuleName}/inventario/listadoTraslado">Historial de traslados</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
 
-                 
-                    <div class="element">
-                        <a class="dropdown-toggle" href="#"><i class="icon-plus-2"></i> Más</a>
-                        <ul class="dropdown-menu" data-role="dropdown">
-                             <li><a href="/{systemModuleName}/inventario/revision_de_salida"><i class="icon-checkmark"></i> Revisión de salida</a></li> 
-                            <li><a href="/{systemModuleName}/inventario/hoja_retaceo"><i class="icon-clipboard-2"></i> Hoja de retaceo</a></li>
-                            <li><a href="/{systemModuleName}/inventario/movKardex"><i class="icon-clipboard"></i> Kardex</a></li>
-                            <li><a href="#" class="dropdown-toggle"><i class="icon-printer"></i> Reportes</a>
-                                <ul class="dropdown-menu" data-role="dropdown">
-                                    <li><a href="">Cuadre mensual</a></li>
-                                    <li><a href="">Devolución sobre venta</a></li>
-                                    <li><a href="/{systemModuleName}/inventario/reporte_inventario">Inventarios</a></li>
-                                    <li><a href="/inventario/inventario/reporte_kardex">Kardex</a></li>
-                                    <li><a href="">Entradas y salidas (mes)</a></li>
-                                    <li><a href="">Ventas</a></li>
-                                </ul>
-                            </li> 
-                            <div class="divider"></div>
-                            <li><a href="/{systemModuleName}/inventario/comparativo_fisico_teorico"> Recuento de inventario</a></li>
-                            <li><a href="/{systemModuleName}/inventario/ofertas"> Preparación de ofertas</a></li>
-                            
-                        </ul>
-                    </div>
-                    
-                    <span class="element-divider"></span>
-                    <div class="element input-element">
-                        <form>
-                            <div class="input-control text">
-                                <input id="navBusquedaProducto" type="text" placeholder="Código de producto">
-                                <button class="btn-search" type="button" onclick="ver_detalle_producto();" ></button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="element place-right">
-                        <a class="dropdown-toggle" href="#">
-                            <span class="icon-cog"></span>
-                            &nbsp;&nbsp;&nbsp;
-                        </a>
-                        <ul class="dropdown-menu place-right" data-role="dropdown">
-                            <!--<li><a href="/{systemModuleName}/modulo/cuenta">Cuenta</a></li>-->
-                            <li><a href="/{systemModuleName}/logout/user">Salir</a></li>
-                        </ul>
-                    </div>
-                    <span class="element-divider"></span>
-                    <button class="element place-right">
+
+                <div class="element">
+                    <a class="dropdown-toggle" href="#"><i class="icon-plus-2"></i> Más</a>
+                    <ul class="dropdown-menu" data-role="dropdown">
+                        <li><a href="/{systemModuleName}/inventario/revision_de_salida"><i class="icon-checkmark"></i> Revisión de salida</a></li>
+                        <li><a href="/{systemModuleName}/inventario/hoja_retaceo"><i class="icon-clipboard-2"></i> Hoja de retaceo</a></li>
+                        <li><a href="/{systemModuleName}/inventario/movKardex"><i class="icon-clipboard"></i> Kardex</a></li>
+                        <li><a href="#" class="dropdown-toggle"><i class="icon-printer"></i> Reportes</a>
+                            <ul class="dropdown-menu" data-role="dropdown">
+                                <li><a href="">Cuadre mensual</a></li>
+                                <li><a href="">Devolución sobre venta</a></li>
+                                <li><a href="/{systemModuleName}/inventario/reporte_inventario">Inventarios</a></li>
+                                <li><a href="/inventario/inventario/reporte_kardex">Kardex</a></li>
+                                <li><a href="">Entradas y salidas (mes)</a></li>
+                                <li><a href="">Ventas</a></li>
+                            </ul>
+                        </li>
+                        <div class="divider"></div>
+                        <li><a href="/{systemModuleName}/inventario/comparativo_fisico_teorico"> Recuento de inventario</a></li>
+                        <li><a href="/{systemModuleName}/inventario/ofertas"> Preparación de ofertas</a></li>
+
+                    </ul>
+                </div>
+
+                <span class="element-divider"></span>
+                <div class="element input-element">
+                    <form>
+                        <div class="input-control text">
+                            <input id="navBusquedaProducto" type="text" placeholder="Código de producto">
+                            <button class="btn-search" type="button" onclick="ver_detalle_producto();"></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="element place-right">
+                    <a class="dropdown-toggle" href="#">
+                        <span class="icon-cog"></span> &nbsp;&nbsp;&nbsp;
+                    </a>
+                    <ul class="dropdown-menu place-right" data-role="dropdown">
+                        <!--<li><a href="/{systemModuleName}/modulo/cuenta">Cuenta</a></li>-->
+                        <li><a href="/{systemModuleName}/logout/user">Salir</a></li>
+                    </ul>
+                </div>
+                <span class="element-divider"></span>
+                <button class="element place-right">
                         <i class="icon-user"></i> &nbsp;&nbsp;<strong>{username}</strong>
                     </button>
-                    <span class="element-divider place-right"></span>
-                    <a class="element place-right" href="#"> <p class="subheader-secondary" style="margin-top:-5px;"><i class="icon-enter" ></i> {TITULO}</p></a>
-                </nav>
-            </nav> 
-            <br/>
-            <br/>
+                <span class="element-divider place-right"></span>
+                <a class="element place-right" href="#">
+                    <p class="subheader-secondary" style="margin-top:-5px;"><i class="icon-enter"></i> {TITULO}</p>
+                </a>
+            </nav>
+        </nav>
+        <br/>
+        <br/>
 
 
-            <div class="page-region" style="padding-left:30px; padding-top: 30px;padding-right: 15px;">
-                {content}
-            </div>
-            <div style="clear:both;"></div>
+        <div class="page-region" style="padding-left:30px; padding-top: 30px;padding-right: 15px;">
+            {content}
         </div>
-    </body>
+        <div style="clear:both;"></div>
+    </div>
+</body>
+
 </html>

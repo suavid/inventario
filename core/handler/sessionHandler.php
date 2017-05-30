@@ -39,7 +39,7 @@ class Session {
      *
      */
     public static function ValidateSession() {
-        if (!isset($_SESSION[MODULE.'_user']) || !isset($_SESSION['level'])):
+        if (!isset($_SESSION[MODULE.'_user'])):
             return false;
         else:
             return true;
@@ -65,10 +65,9 @@ class Session {
      * @param int $level acces level
      *
      */
-    public static function NewSession($user, $level) {
+    public static function NewSession($user) {
 
         $_SESSION[MODULE.'_user'] = $user;
-        $_SESSION['level'] = $level;
     }
 
     /**

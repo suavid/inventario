@@ -3,30 +3,66 @@
 import('mdl.view.inventario');
 import('mdl.model.inventario');
 
-class inventarioController extends controller {
-###### INDEX ######
-
-    public function principal() {
+class inventarioController extends controller 
+{
+    public function principal() 
+    {
         $this->validar();
         $this->view->principal();
     }
 
-    private function validar() {
+    private function validar() 
+    {
         if (!Session::ValidateSession())
             HttpHandler::redirect(DEFAULT_DIR);
-        //if (!isset($_SESSION['inventario']))
-        //    HttpHandler::redirect('/'.MODULE.'/modulo/listar');
+    }
+
+    public function segmentacion()
+    {
+        $this->validar(); 
+        $this->view->segmentacion();
     }
     
-    public function productoEntrante(){
-        if(isInstalled("compras")){
+    public function ObtenerCategorias()
+    {
+        // creacion de cliente soap
+        $client  = new SoapClient(SERVICE_URL, BM::getSetting("SOAP_OPTIONS"));     
+        // establecer parametros para llamada del servicio
+        $result = $client->VerCategorias(array()); 
+        
+        echo  $result->{"VerCategoriasResult"};
+    }
+
+    public function ObtenerBanner(){
+        if(isset($_POST) && !empty($_POST)){
+            $id = $_POST['id'];
+
+             // creacion de cliente soap
+            $client  = new SoapClient(SERVICE_URL, BM::getSetting("SOAP_OPTIONS"));     
+            // establecer parametros para llamada del servicio
+            $result = $client->VerMensajesBienvenida(array("id"=>$id)); 
+            
+            echo  $result->{"VerMensajesBienvenidaResult"};
+
+        }
+    }
+
+
+    // No validado
+    public function productoEntrante()
+    {
+        if(isInstalled("compras"))
+        {
             $this->view->productoEntrante();
-        }else{
+        }
+        else
+        {
             HttpHandler::redirect('/inventario/error/e403');
         }
     }
 
-    public function ejecutarAjusteDeInventario(){
+    public function ejecutarAjusteDeInventario()
+    {
         if(isset($_POST['salidas']) && !empty($_POST['salidas'])){
             $json = $_POST['salidas'];    
             
@@ -1088,11 +1124,6 @@ class inventarioController extends controller {
         }else{
             echo json_encode(array("msg"=>"Los datos ya han sido asignados"));
         }           
-    }
-
-    public function segmentacion(){
-        
-        $this->view->segmentacion();
     }
 
     public function segmentacionLinea(){

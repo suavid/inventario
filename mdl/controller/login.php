@@ -2,44 +2,58 @@
 
 import('mdl.view.login');
 import('mdl.model.login');
-proveedor_activo();
 
-class LoginController extends controller {
-
-    public function form() {
-        if (!Session::singleton()->ValidateSession()) {
+class LoginController extends controller 
+{
+    // mostrar formulario de inicio de sesion
+    public function form() 
+    {
+        // si no hay sesion activa mostrar formulario de inicio de sesion
+        if (!Session::singleton()->ValidateSession()) 
+        {
             $this->view->show_form();
-        } else {
+        } else 
+        {
+            // si hay una sesion activa redirigir a la pagina principal del modulo
             HttpHandler::redirect('/'.MODULE.'/inventario/principal');
         }
     }
 
-    public function info() {
-        $this->view->show_info();
-    }
-
-    public function login() {
-        if (empty($_POST)) {
-            HttpHandler::redirect('/'+MODULE+'/login/form');
-        } else {
-            BM::singleton()->getObject('db')->newConnection(HOST, USER, PASSWORD, DATABASE);
-            $usuario = BM::singleton()->getObject('db')->sanitizeData($_POST['usuario']);
-            $clave = cifrar_RIJNDAEL_256($_POST['clave']);
-            $query = "SELECT * FROM empleado WHERE usuario='{$usuario}' AND clave='{$clave}' AND modulo='inventario';";
-            BM::singleton()->getObject('db')->executeQuery($query);
-            if (BM::singleton()->getObject('db')->getNumRows() > 0) {
-                $level = 1;
-                while ($data = BM::singleton()->getObject('db')->getResult()->fetch_assoc()) {
-                    $level = $data['permiso'];
-                }
-                Session::singleton()->NewSession($usuario, $level);
-                HttpHandler::redirect('/'.MODULE.'/login/form');
-            } else {
+    // validar credenciales de acceso
+    public function login() 
+    {
+        // verificar que el request provenga de un formulario
+        if (empty($_POST)) 
+        {
+            HttpHandler::redirect('/'.MODULE.'/login/form');
+        } 
+        else 
+        {
+            // creacion de cliente soap
+            $client  = new SoapClient(SERVICE_URL, BM::getSetting("SOAP_OPTIONS"));
+            // obtener las credenciales proporcionadas
+            $usuario = (isset($_POST['usuario']))? $_POST['usuario']:'';
+            $clave   = (isset($_POST['clave']))? cifrar_RIJNDAEL_256($_POST['clave']):'';     
+            // establecer parametros para llamada del servicio
+            $params = array(
+                'Usuario' => $usuario,
+                'Clave'   => $clave
+            );
+            // llamar al metodo de autenticacion
+            $result = $client->Autenticar($params); 
+            // validar resultado de autenticacion, 0 == exitoso
+            if( $result->{"AutenticarResult"} == 0 )
+            {
+                // crear sesion del usuario
+                 Session::singleton()->NewSession($usuario);
+                 HttpHandler::redirect('/'.MODULE.'/login/form');
+            } 
+            else
+            {
                 HttpHandler::redirect('/'.MODULE.'/login/form?error_id=2');
             }
         }
     }
-
 }
 
 ?>

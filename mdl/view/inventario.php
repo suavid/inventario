@@ -2,7 +2,37 @@
 
 class inventarioView {
 
-    private function load_settings() {
+     public function segmentacion()
+     {
+        import('scripts.secure');
+
+        if(verifyAccess("inventario", "inventario", "segmentacion", Session::singleton()->getUser()))
+        {
+
+            template()->buildFromTemplates(DEFAULT_LAYOUT);
+            
+            page()->setTitle('Control de inventario');
+
+            page()->addEstigma("username", Session::singleton()->getUser());
+            page()->addEstigma("back_url", '/inventario/inventario/principal');
+            page()->addEstigma("TITULO", 'Segmentación de productos');
+            
+            template()->addTemplateBit('content', 'inventario/menu/segmentacion.html');
+            
+            template()->parseOutput();
+            template()->parseExtras();
+            
+            print page()->getContent();
+        }
+        else
+        {
+            HttpHandler::redirect('/inventario/error/e403');
+        }
+    }
+
+    // no validado
+    private function load_settings() 
+    {
         import('scripts.periodos');
         $pf = "";
         $pa = "";
@@ -100,26 +130,6 @@ class inventarioView {
         page()->addEstigma("operaciones", array('SQL', $operaciones));
         template()->parseOutput();
         return page()->getContent();
-    }
-
-    public function segmentacion(){
-        import('scripts.secure');
-
-        if(verifyAccess("inventario", "inventario", "segmentacion", Session::singleton()->getUser())){
-
-            template()->buildFromTemplates('template_nofixed.html');
-            page()->setTitle('Control de inventario');
-            page()->addEstigma("username", Session::singleton()->getUser());
-            page()->addEstigma("back_url", '/inventario/inventario/principal');
-            page()->addEstigma("TITULO", 'Segmentación de productos');
-            template()->addTemplateBit('content', 'inventario/menu/segmentacion.html');
-            template()->parseOutput();
-            template()->parseExtras();
-            print page()->getContent();
-        }else{
-
-            HttpHandler::redirect('/inventario/error/e403');
-        }
     }
 
     public function kits(){

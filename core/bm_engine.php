@@ -38,6 +38,7 @@ class BM {
             $obj = __CLASS__;
             self::$instance = new $obj;
         }
+
         return self::$instance;
     }
 

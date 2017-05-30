@@ -1,13 +1,26 @@
 <?php
 
 function verifyAccess($system, $view, $resource, $user){
-	$query = "SELECT id FROM acceso_sistema WHERE sistema='{$system}' AND vista='{$view}' AND recurso='{$resource}' AND usuario='{$user}'";
-	data_model()->executeQuery($query);
-
-	if(data_model()->getNumRows()>0)
-		return true;
-
-	return false;
+	// creacion de cliente soap
+    $client  = new SoapClient(SERVICE_URL, BM::getSetting("SOAP_OPTIONS"));     
+    // establecer parametros para llamada del servicio
+    $params = array(
+    	'Sistema' => $system,
+        'Vista'   => $view,
+		'Recurso' => $resource,
+		'Usuario' => $user
+    );
+    
+    $result = $client->ValidarAcceso($params); 
+    
+    if( $result->{"ValidarAccesoResult"} == 0 )
+    {
+       return true;
+    } 
+    else
+    {
+    	return false;
+    }
 }
 
 ?>
