@@ -8,4 +8,5 @@ openssl_pkey_export_to_file($privateKey, 'private.key');
 $a_key = openssl_pkey_get_details($privateKey);
 file_put_contents('public.key', $a_key['key']);
 openssl_free_key($privateKey);
+
 ?>

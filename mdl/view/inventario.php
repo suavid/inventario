@@ -30,6 +30,21 @@ class inventarioView {
         }
     }
 
+    public function ObtenerFormularioCategoria(){
+        import('scripts.secure');
+
+        if(verifyAccess("inventario", "inventario", "segmentacion", Session::singleton()->getUser()))
+        {
+            template()->buildFromTemplates('inventario/FormularioCategoria.html');
+            template()->parseOutput();
+            return page()->getContent();   
+         }
+        else
+        {
+            return "";
+        }
+    }
+
     // no validado
     private function load_settings() 
     {
@@ -304,60 +319,6 @@ class inventarioView {
 
             HttpHandler::redirect('/inventario/error/e403');
         }
-    }
-
-    public function segmentacionLinea(){
-        template()->buildFromTemplates('inventario/lineas.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionGrupo(){
-        template()->buildFromTemplates('inventario/grupos.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionConcepto(){
-        template()->buildFromTemplates('inventario/conceptos.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionTacon(){
-        template()->buildFromTemplates('inventario/tacones.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionSuela(){
-        template()->buildFromTemplates('inventario/suelas.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionMaterial(){
-        template()->buildFromTemplates('inventario/materiales.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionColor(){
-        template()->buildFromTemplates('inventario/colores.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionGenero(){
-        template()->buildFromTemplates('inventario/generos.html');
-        template()->parseOutput();
-        return page()->getContent();   
-    }
-
-    public function segmentacionMarca(){
-        template()->buildFromTemplates('inventario/marcas.html');
-        template()->parseOutput();
-        return page()->getContent();   
     }
 
     public function cambio_de_linea($usuario, $cache) {

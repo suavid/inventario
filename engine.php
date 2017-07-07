@@ -25,7 +25,6 @@ import('core.handler.MysqliHandler');
 import('core.handler.debugHandler');
 import('core.orm.helper');
 
-import('scripts.acceso');
 import('scripts.loghandler');
 import('scripts.pdf.fpdf');
 import('scripts.pdf.report');

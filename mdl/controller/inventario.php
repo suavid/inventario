@@ -47,6 +47,10 @@ class inventarioController extends controller
         }
     }
 
+    public function ObtenerFormularioCategoria(){
+
+        echo json_encode(array('html'=>$this->view->ObtenerFormularioCategoria()));
+    }
 
     // No validado
     public function productoEntrante()
@@ -1124,52 +1128,6 @@ class inventarioController extends controller
         }else{
             echo json_encode(array("msg"=>"Los datos ya han sido asignados"));
         }           
-    }
-
-    public function segmentacionLinea(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionLinea()));
-    }
-
-    public function segmentacionGrupo(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionGrupo()));
-    }
-
-    public function segmentacionTacon(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionTacon()));
-    }
-
-    public function segmentacionConcepto(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionConcepto()));
-    }
-
-    public function segmentacionSuela(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionSuela()));
-    }
-
-    public function segmentacionMaterial(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionMaterial()));
-    }
-
-
-    public function segmentacionColor(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionColor()));
-    }
-
-    public function segmentacionGenero(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionGenero()));
-    }
-
-    public function segmentacionMarca(){
-
-        echo json_encode(array('html'=>$this->view->segmentacionMarca()));
     }
 
     public function detalle_de_producto(){
