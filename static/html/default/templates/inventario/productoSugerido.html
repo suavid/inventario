@@ -1,0 +1,57 @@
+<section>
+    <div class="panel span5" style="float: left; margin: 20px;">
+        <div class="panel-header">
+            Información
+        </div>
+        <div class="panel-content">
+            <p>
+                Selecione un producto y a continuación podrá escoger productos que estén estrechamente relacionados, de esta forma
+                puede recomendar a sus clientes productos similares al que buscan en caso de inexistencias.
+                <br /><br />
+            </p>
+        </div>
+    </div>
+
+    <div style="float: left; margin: 20px;" class=" panel span5">
+        <div class="panel-header">
+            Asosiación de productos
+        </div>
+        <div class="panel-content">
+            <div class="span6">
+                <div class="input-control select span2">
+                    Seleccione una linea
+                    <select ng-model="vm.Producto.Linea">
+                        <option ng-repeat="linea in vm.ListaDeLineas" value="{{linea.id}}">{{linea.nombre}}</option>
+                    </select>
+                </div>
+                <div id="divEst" class="input-control select span2">
+                    Ingrese un estilo
+                    <select ng-model="vm.Producto.Estilo">
+                        <option ng-repeat="estilo in vm.ListaDeEstilos" value="{{estilo.estilo}}">{{estilo.estilo}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="span6">
+                <div id="divEstSug" class="input-control select span2">
+                    Ingrese un estilo a sugerir
+                    <select ng-model="vm.EstiloSugerido">
+                        <option ng-repeat="estilo in vm.ListaDeEstilos" value="{{estilo.estilo}}">{{estilo.estilo}}</option>
+                    </select>
+                </div>
+                <button ng-click="vm.AgregarProductoSugerido();">Agregar estilo</button>
+            </div>
+            <br /><br />
+        </div>
+    </div>
+
+    <div class="panel span5" style="float: left; margin: 20px;">
+        <div class="panel-header">
+            Productos a sugerir
+        </div>
+        <div class="panel-content">
+            {{vm.ListadoDeSugerencias}}
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+</section>

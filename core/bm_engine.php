@@ -12,7 +12,7 @@ class BM {
     private static $settings = array();
 
     /** core name @type string $name */
-    private static $name = 'Business manager 1.0';
+    private static $name = '';
 
     /** core instance @type \BMObject $instance */
     private static $instance;

@@ -1,0 +1,57 @@
+<div class="grid" ng-controller="DocumentoController as vm">
+    <div class="row">
+        <div class="panel span5">
+            <div class="panel-header">
+                Selección del producto
+            </div>
+            <div class="panel-content">
+                Seleccione una linea
+                <div class="input-control select">
+                    <select ng-model="vm.Producto.Linea">
+                        <option ng-repeat="linea in vm.ListaDeLineas" value="{{linea.id}}">{{linea.nombre}}</option>
+                    </select>
+                </div>
+                <div class="input-control select">
+                    Seleccione un estilo
+                    <select ng-model="vm.Producto.Estilo">
+                        <option ng-repeat="estilo in vm.ListaDeEstilos" value="{{estilo.estilo}}">{{estilo.estilo}}</option>
+                    </select>
+                </div>
+                <br />
+                <br />
+            </div>
+        </div>
+        <div class="panel span5">
+            <div class="panel-header">
+                Seleccione una nueva foto
+            </div>
+            <div class="panel-content">
+                <br />
+                <form id="formArchivo" enctype="multipart/form-data" action="/inventario/inventario/actualizarFotoProducto" method="post">
+                    <div class="input-control file">
+                        <input type="file" name="archivo" />
+                        <button class="btn-file"></button>
+                    </div>
+                    <input type="hidden" ng-model="vm.Producto.Linea" name="linea"/>
+                    <input type="hidden" ng-model="vm.Producto.Estilo" name="Estilo"/>
+                    <br />
+                    <br />
+                    <input type="submit" value="Guardar" />
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel span5">
+            <div class="panel-header">
+                Imagen actual
+            </div>
+            <div class="panel-content">
+                <div id="foto">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

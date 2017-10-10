@@ -3,7 +3,6 @@
 class ErrorController {
 
     public function not_found() {
-        proveedor_activo();
         BM::singleton()->getObject('temp')->buildFromTemplates('template_nofixed.html');
         template()->addTemplateBit('content', 'error.html');
         BM::singleton()->getObject('temp')->getPage()->setTitle("Recurso no encontrado");

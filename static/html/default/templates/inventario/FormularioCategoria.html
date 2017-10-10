@@ -1,0 +1,83 @@
+<script type="text/javascript">
+    var GridCategoriaDetalle = "CategoriaDetalle_grid";
+
+    var dsOption = {
+        fields: [{
+            name: 'id_categoria_especifica'
+        }, {
+            name: 'nombre'
+        }],
+        recordType: 'object'
+    }
+
+    var colsOption = [{
+            id: 'id_categoria_especifica',
+            header: "ID",
+            width: 92
+        }, {
+            id: 'nombre',
+            header: "Descripción",
+            width: 285,
+            editor: {
+                type: 'text'
+            }
+        }
+
+    ];
+
+    var gridOption = {
+        id: GridCategoriaDetalle,
+        loadURL: '/inventario/inventario/ObtenerDetalleCategoria/{seg_IdGrupo}',
+        saveURL: '',
+        width: "380",
+        height: "280",
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8',
+        dataset: dsOption,
+        columns: colsOption,
+        clickStartEdit: true,
+        defaultRecord: {
+            'id': "00",
+            'nombre': ""
+        },
+        pageSize: 10,
+        allowCustomSkin: true,
+        skin: "mac",
+        toolbarContent: 'reload | nav state'
+    };
+
+    var mygrid = new Sigma.Grid(gridOption);
+    mygrid.render();
+</script>
+<div class="grid" style="float:left;">
+    <div class="row">
+        <div class="panel span6" style="margin-left: 50px;">
+            <div class="panel-header">Listado - {seg_TituloFormulario}</div>
+            <div class="panel-content">
+                <div id="bigbox" style="margin:0px;display:!none;">
+                    <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;">
+
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+                <br />
+                <br />
+                <br />
+            </div>
+        </div>
+        <div class="panel span4">
+            <div class="panel-header">
+                Agregar {seg_TituloFormulario}
+            </div>
+            <div class="panel-content">
+                <form>
+                    <div class="input-control text">
+                        <input type="text" placeholder="Descripción" name="nombre" ng-model="vm.NuevaCategoriaEspecifica" autofocus />
+                    </div>
+                    <button type="button" class="big" ng-click="vm.GuardarNuevaCategoriaEspecifica({seg_IdGrupo});"><i class="icon-save"></i>Agregar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

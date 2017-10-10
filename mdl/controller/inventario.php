@@ -3,15 +3,23 @@
 import('mdl.view.inventario');
 import('mdl.model.inventario');
 
-class inventarioController extends controller 
+class inventarioController extends controller
 {
-    public function principal() 
+    private static $SOAP_OPTIONS = array("trace" => 1, "exception" => true, "soap_version"=>SOAP_1_1);
+
+    private function getDateFromString($String) 
     {
-        $this->validar();
+        $DateArray = explode(".", $String);
+        return $DateArray[2] . "-" . $DateArray[1] . "-" . $DateArray[0];
+    }
+
+    public function principal()
+    {
+        $this->ValidateSession();
         $this->view->principal();
     }
 
-    private function validar() 
+    private function ValidateSession()
     {
         if (!Session::ValidateSession())
             HttpHandler::redirect(DEFAULT_DIR);
@@ -19,40 +27,591 @@ class inventarioController extends controller
 
     public function segmentacion()
     {
-        $this->validar(); 
+        $this->ValidateSession();
         $this->view->segmentacion();
     }
-    
+
     public function ObtenerCategorias()
     {
-        // creacion de cliente soap
-        $client  = new SoapClient(SERVICE_URL, BM::getSetting("SOAP_OPTIONS"));     
-        // establecer parametros para llamada del servicio
-        $result = $client->VerCategorias(array()); 
-        
+        $this->ValidateSession();
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerCategorias(array());
+
         echo  $result->{"VerCategoriasResult"};
     }
 
-    public function ObtenerBanner(){
-        if(isset($_POST) && !empty($_POST)){
+    public function ObtenerBanner()
+    {
+        $this->ValidateSession();
+        if(isset($_POST) && !empty($_POST))
+        {
             $id = $_POST['id'];
+            $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+            $result = $client->VerMensajesBienvenida(array("id"=>$id));
 
-             // creacion de cliente soap
-            $client  = new SoapClient(SERVICE_URL, BM::getSetting("SOAP_OPTIONS"));     
-            // establecer parametros para llamada del servicio
-            $result = $client->VerMensajesBienvenida(array("id"=>$id)); 
-            
             echo  $result->{"VerMensajesBienvenidaResult"};
-
         }
     }
 
-    public function ObtenerFormularioCategoria(){
+    public function ObtenerFormularioCategoria()
+    {
+        $this->ValidateSession();
+        if(isset($_POST) && !empty($_POST))
+        {
+            $tituloFormulario = (isset($_POST['tituloFormulario']))?$_POST['tituloFormulario']:"";
+            $id = (isset($_POST['id']))?$_POST['id']:0;
 
-        echo json_encode(array('html'=>$this->view->ObtenerFormularioCategoria()));
+            echo json_encode(array('html'=>$this->view->ObtenerFormularioCategoria($id,$tituloFormulario)));
+        }
+        else
+        {
+            echo json_encode(array('html'=>""));
+        }
     }
 
-    // No validado
+
+    public function ObtenerDetalleCategoria($idGrupo)
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerDetalleCategoria(array("id"=>$idGrupo));
+        $data = json_decode($result->{"VerDetalleCategoriaResult"});
+
+        $ret = "{data:" . $result->{"VerDetalleCategoriaResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+    }
+
+     public function ObtenerCategoriaEspecifica($idGrupo)
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerDetalleCategoria(array("id"=>$idGrupo));
+
+        echo  $result->{"VerDetalleCategoriaResult"};
+    }
+
+    public function ObtenerBodegas()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerBodegas(array("tipo_vista"=>0));
+        $data = json_decode($result->{"ObtenerBodegasResult"});
+
+        $ret = "{data:" . $result->{"ObtenerBodegasResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+    }
+
+     public function ListaBodegas()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerBodegas(array("tipo_vista"=>0));
+        echo $result->{"ObtenerBodegasResult"};
+    }
+
+    public function ObtenerCatalogos()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ListadoCatalogos();
+        $data = json_decode($result->{"ListadoCatalogosResult"});
+
+        $ret = "{data:" . $result->{"ListadoCatalogosResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+    }
+
+    public function HistorialTraslados()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerHistorialTransacciones();
+        $data = json_decode($result->{"ObtenerHistorialTransaccionesResult"});
+
+        $ret = "{data:" . $result->{"ObtenerHistorialTransaccionesResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+    }
+
+    public function ObtenerDocumentoDetalle($idDocumento)
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerDocumentoDetalle(array("id"=>$idDocumento));
+        $data = json_decode($result->{"VerDocumentoDetalleResult"});
+
+        $ret = "{data:" . $result->{"VerDocumentoDetalleResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+    }
+
+    public function ObtenerListaDeCatalogos()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ListadoCatalogos();
+        
+        echo $result->{"ListadoCatalogosResult"};
+    }
+
+    public function ObtenerTipoTransacciones()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerTipoTransacciones();
+        
+        echo $result->{"ObtenerTipoTransaccionesResult"};
+    }
+
+    public function GuardarNuevaCategoriaEspecifica()
+    {
+        $this->ValidateSession();
+        if(isset($_POST) && !empty($_POST["id_grupo"]) && !empty($_POST["nombre"]))
+        {
+            $idGrupo = $_POST["id_grupo"];
+            $nombre = $_POST["nombre"];
+            $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+            $result = array("success"=>false, "message"=>"");
+
+            try
+            {
+                $client->InsertarDetalleCategoria(array(
+                        "idCategoria"=>$idGrupo
+                    ,   "descripcion"=>$nombre
+                    ,   "usuario"=>Session::singleton()->getUser()
+                ));
+
+                $result["success"] = true;
+                $result["message"] = "OK";
+            }
+            catch(Exception $e)
+            {
+                $result["message"] = $e->getMessage();
+            }
+
+            echo json_encode($result);
+        }
+    }
+
+    public function ObtenerEmpleados()
+    {
+        $this->ValidateSession();
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerEmpleados(array());
+
+        echo  $result->{"ObtenerEmpleadosResult"};
+    }
+
+     public function ObtenerProveedores()
+    {
+        $this->ValidateSession();
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerListadoProveedores(array());
+
+        echo  $result->{"ObtenerListadoProveedoresResult"};
+    }
+
+    public function GuardarBodega()
+    {
+        $this->ValidateSession();
+
+        if(isset($_POST) && !empty($_POST))
+        {
+            $nombre = $_POST["nombre"];
+            $encargado = $_POST["encargado"];
+            $descripcion = $_POST["descripcion"];
+            $tiene_stock = ($_POST["manejaStock"])? "SI":"NO";
+            $reutilizar_id = $_POST["reutilizarCorrelativos"];
+
+            $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+            $result = array("success"=>false, "message"=>"");
+
+            try
+            {
+                $client->InsertarBodega(array(
+                        "nombre"=>$nombre
+                    ,   "encargado"=>$encargado
+                    ,   "descripcion"=>$descripcion
+                    ,   "tiene_stock"=>$tiene_stock
+                    ,   "reutilizar_id"=>$reutilizar_id
+                ));
+
+                $result["success"] = true;
+                $result["message"] = "OK";
+            }
+            catch(Exception $e)
+            {
+                $result["message"] = $e->getMessage();
+            }
+
+            echo json_encode($result);
+        }
+    }
+
+    public function bodegas()
+    {
+        $this->ValidateSession();
+        $this->view->mantenimiento_de_bodegas(Session::getUser());
+    }
+
+    public function nuevo_producto()
+    {
+        $this->ValidateSession();
+        $usuario = Session::getUser();
+        $this->view->nuevo_producto($usuario);
+    }
+
+    public function cambiarPrecios()
+    {
+        $this->ValidateSession();
+        $this->view->cambiarPrecios(Session::getUser());
+    }
+
+    public function actualizarFoto()
+    {
+        $this->ValidateSession();
+        $this->view->actualizarFoto();
+    }
+
+    public function actualizarFotoProducto()
+    {
+        $this->ValidateSession();
+
+        if(isset($_POST['linea']) && !empty($_POST['linea']) && isset($_POST['estilo']) && !empty($_POST['estilo']))
+        {
+            upload_image(APP_PATH.'static/img/productos', 'archivo', $_POST['linea'].'_'.$_POST['estilo'].".jpg");
+
+            httpHandler::redirect('/inventario/inventario/actualizarFoto?success=true');
+        }
+        else
+        {
+            httpHandler::redirect('/inventario/inventario/actualizarFoto?success=false');
+        }
+    }
+
+    public function productosSugeridos()
+    {
+        $this->ValidateSession();
+        $this->view->productosSugeridos();
+    }
+
+    public function traslados()     
+    {
+        $this->ValidateSession();
+        $this->view->traslados(Session::getUser());
+    }
+
+    public function salvarCatalogo() 
+    {
+        $this->ValidateSession();
+        $data = $_POST;
+
+        $data['inicio'] = $this->getDateFromString($_POST['inicio']);
+        $data['final'] = $this->getDateFromString($_POST['final']);
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        try
+        {
+            $result = $client->InsertarCatalogo(array(
+                    "nombre"=>$data["nombre"]
+                ,   "descripcion"=>$data["descripcion"]
+                ,   "inicio"=>$data["inicio"]
+                ,   "final"=>$data["final"]
+            ));
+
+            $data = json_decode($result->{"InsertarCatalogoResult"});
+
+            upload_image(APP_PATH . 'static/img/catalogo', 'archivo', $data[0]->{"ID"}.".jpg");
+
+            HttpHandler::redirect('/inventario/inventario/catalogos?result=200');
+        }
+        catch(Exception $e)
+        {
+            $result["message"] = $e->getMessage();
+            HttpHandler::redirect('/inventario/inventario/catalogos?result=500');
+        }
+    }
+
+    public function ObtenerDocumentosSinAplicar()
+    {
+        $this->ValidateSession();
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->ObtenerDocumentosSinAplicar(array("username"=>Session::getUser()));
+
+        echo  $result->{"ObtenerDocumentosSinAplicarResult"};
+    }
+
+    public function GuardarDocumento()
+    {
+        $this->ValidateSession();
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->InsertarDocumento(array("propietario"=>Session::singleton()->getUser()));
+
+        echo  $result->{"InsertarDocumentoResult"};
+    }
+
+    public function doc_productos() 
+    {
+        $this->ValidateSession();
+        $usuario = Session::getUser();
+        $doc = (isset($_GET) && !empty($_GET)) ? $_GET['documento'] : 0;
+        $this->view->doc_mantenimiento_de_productos($doc, $usuario);
+    }
+
+    public function InsertarProducto()
+    {
+        $this->ValidateSession();
+        $data = $_POST;
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        try
+        {
+            $result = $client->InsertarDocumentoDetalle(array(
+                    "id_documento"=>$data["documento"]
+                    , "estilo"=>$data["estilo"]
+                    , "codigo_origen"=>$data["codigo_origen"]
+                    , "descripcion"=>$data["descripcion"]
+                    , "proveedor"=>$data["proveedor"]
+                    , "catalogo"=>$data["catalogo"]
+                    , "n_pagina"=>$data["n_pagina"]
+                    , "minimo_stock"=>0
+                    , "corrida_a"=>$data["corridaA"]
+                    , "corrida_b"=>$data["corridaB"]
+                    , "fraccion_corrida"=>$data["fraccionCorrida"]
+                    , "categorias_especificas"=>$data["categoriasArr"]
+                    , "observacion"=>$data["observaciones"]
+                    , "nota"=>$data["notas"]
+            ));
+
+            $data = json_decode($result->{"InsertarDocumentoDetalleResult"});
+
+        }
+        catch(Exception $e)
+        {
+            $result["message"] = $e->getMessage();
+        }
+
+        echo json_encode($result);
+    }
+
+    public function AplicarDocumento()
+    {
+        $this->ValidateSession();
+        $data = $_POST;
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        try
+        {
+            $result = $client->AplicarDocumento(array(
+                    "id"=>$data["id"]
+            ));
+
+            $data = json_decode($result->{"AplicarDocumentoResult"});
+
+        }
+        catch(Exception $e)
+        {
+            $result["message"] = $e->getMessage();
+        }
+
+        echo json_encode($result);
+    }
+
+    public function InsertarTraslado()
+    {
+        $this->ValidateSession();
+        $data = $_POST;
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        try
+        {
+            $result = $client->InsertarTraslado(array(
+                    "proveedor_origen" =>$data["proveedorOrigen"]
+                    , "proveedor_nacional" =>$data["proveedorNacional"]
+                    , "bodega_origen" =>$data["bodegaOrigen"]
+                    , "bodega_destino" =>$data["bodegaDestino"]
+                    , "concepto" =>$data["conceptoTransaccion"]
+                    , "transaccion" =>$data["tipoTransaccion"]
+                    , "usuario" =>Session::getUser()
+                    , "cliente" =>$data["cliente"]
+                    , "referencia_retaceo" =>$data["hojaRetaceo"]
+            ));
+
+            $data = json_decode($result->{"InsertarTrasladoResult"});
+
+        }
+        catch(Exception $e)
+        {
+            $result["message"] = $e->getMessage();
+        }
+
+        echo json_encode($result);
+    }
+
+     public function detalle_traslado() {
+        $this->ValidateSession();
+        $id = $_GET['id'];
+        $this->view->detalle_traslado(Session::getUser(), $id);
+    }
+
+    public function VerTraslado(){
+        $this->ValidateSession();
+        $data = $_POST;
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerTraslado(array("id"=>$data['id']));
+
+        echo  $result->{"VerTrasladoResult"};
+    }
+
+    public function CargarEstadoInventario()
+    {
+        $this->ValidateSession();
+        $_data = $_POST;
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerEstadoInventario(array("proveedor"=>$_data["proveedor"], "linea"=>$_data["linea"], "estilo"=>$_data["estilo"], "color"=>$_data["color"], "talla"=>null, "bodega"=>$_data["bodega"]));
+        $data = json_decode($result->{"VerEstadoInventarioResult"});
+
+        $ret = "{data:" . $result->{"VerEstadoInventarioResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+
+    }
+
+    public function salvarTrasladoDetalle() 
+    {
+        $this->ValidateSession();
+        
+        $json = json_decode(stripslashes($_POST["productos"]));
+        
+        $result = array();
+        
+        $result["error"] = false;
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        foreach ($json as $item) 
+        {
+            $estilo = $item->{"estilo"};
+            $linea = $item->{"linea"};
+            $color = $item->{"color"};
+            $talla = $item->{"talla"};
+            $cantidad = $item->{"cantidad"};
+            $costo = $item->{"costo"};
+            $id_ref = $item->{"id_ref"};
+
+            try
+            {
+                $result = $client->InsertarDetalleTraslado(array(
+                        "estilo"=>$estilo, "linea"=>$linea, "talla"=>$talla, "color"=>$color, "id_ref"=>$id_ref, "cantidad"=>$cantidad, "costo"=>$costo
+                ));
+
+                $data = json_decode($result->{"InsertarDetalleTrasladoResult"});
+
+            }
+            catch(Exception $e)
+            {
+                $result["error"] = true;
+                $result["message"] = $e->getMessage();
+            }
+         
+        }
+
+        echo json_encode($result);
+    }
+
+    public function VerDetalleTraslado()
+    {
+        $this->ValidateSession();
+        $_data = $_POST;
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $result = $client->VerTrasladoDetalle(array("id"=>$_data["id"]));
+        $data = json_decode($result->{"VerTrasladoDetalleResult"});
+
+        $ret = "{data:" . $result->{"VerTrasladoDetalleResult"} . ",\n";
+        $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";
+        $ret .= "recordType : 'object'}";
+
+        echo  $ret;
+    }
+
+    public function EliminarDetalleTraslado()
+    {
+        $this->ValidateSession();
+        $data = $_POST;
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        try
+        {
+            $result = $client->EliminarDetalleTraslado(array(
+                    "id"=>$data["id"]
+            ));
+
+            $data = json_decode($result->{"EliminarDetalleTrasladoResult"});
+
+        }
+        catch(Exception $e)
+        {
+            $result["message"] = $e->getMessage();
+        }
+
+        echo json_encode($result);
+    }
+
+    public function ProcesarTraslado()
+    {
+        $this->ValidateSession();
+        $data = $_POST;
+
+        $client = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+
+        try
+        {
+            $result = $client->ProcesarTraslado(array(
+                    "id"=>$data["id"]
+            ));
+
+            $data = json_decode($result->{"ProcesarTrasladoResult"});
+
+        }
+        catch(Exception $e)
+        {
+            $result["message"] = $e->getMessage();
+        }
+
+        echo json_encode($result);
+    }
+
+    //***************************************************************************************************
+    // No validado **************************************************************************************
+    //***************************************************************************************************
     public function productoEntrante()
     {
         if(isInstalled("compras"))
@@ -68,15 +627,15 @@ class inventarioController extends controller
     public function ejecutarAjusteDeInventario()
     {
         if(isset($_POST['salidas']) && !empty($_POST['salidas'])){
-            $json = $_POST['salidas'];    
-            
-            if(count($json) > 0 ){        
+            $json = $_POST['salidas'];
+
+            if(count($json) > 0 ){
                 $tot_pares = 0;
                 $tot_costo = 0;
                 $codigo = 0;
                 $bodega_s = 0;
 
-                // creando la cabecera del traslado 
+                // creando la cabecera del traslado
 
                 foreach ($json as $item) {
 
@@ -89,7 +648,7 @@ class inventarioController extends controller
                     else
                         $diferencia = 0;
 
-                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $costo = (isset($item['costo']))? $item["costo"]:0;
                     $bodega = (isset($item['bodega']))? $item["bodega"]:0;
                     $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
                     $tot_pares += $diferencia;
@@ -141,7 +700,7 @@ class inventarioController extends controller
                     else
                         $diferencia = 0;
 
-                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $costo = (isset($item['costo']))? $item["costo"]:0;
                     $bodega = (isset($item['bodega']))? $item["bodega"]:0;
                     $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
                     $tot_pares += $diferencia;
@@ -168,15 +727,15 @@ class inventarioController extends controller
         }
 
         if(isset($_POST['entradas']) && !empty($_POST['entradas'])){
-            $json = $_POST['entradas'];  
+            $json = $_POST['entradas'];
 
-            if(count($json) > 0 ){        
+            if(count($json) > 0 ){
                 $tot_pares = 0;
                 $tot_costo = 0;
                 $codigo = 0;
                 $bodega_s = 0;
 
-                // creando la cabecera del traslado 
+                // creando la cabecera del traslado
 
                 foreach ($json as $item) {
 
@@ -189,7 +748,7 @@ class inventarioController extends controller
                     else
                         $diferencia = 0;
 
-                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $costo = (isset($item['costo']))? $item["costo"]:0;
                     $bodega = (isset($item['bodega']))? $item["bodega"]:0;
                     $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
                     $tot_pares += $diferencia;
@@ -241,7 +800,7 @@ class inventarioController extends controller
                     else
                         $diferencia = 0;
 
-                    $costo = (isset($item['costo']))? $item["costo"]:0; 
+                    $costo = (isset($item['costo']))? $item["costo"]:0;
                     $bodega = (isset($item['bodega']))? $item["bodega"]:0;
                     $proveedor = (isset($item['proveedor']))? $item["proveedor"]:0;
                     $tot_pares += $diferencia;
@@ -274,21 +833,10 @@ class inventarioController extends controller
 ###### (FIN INDEX) ######
 ###### VISTAS MANTENIMIENTOS ######
 
-    public function bodegas() {
-        $this->validar();
-        
-        $usuario = Session::getUser();
-        
-        $cache = array(
-            $this->model->get_child('empleado')->get_list()
-        );
 
-        $this->view->mantenimiento_de_bodegas($usuario, $cache);
-    }
-    
     public function hoja_retaceo(){
-        
-        $this->view->hoja_retaceo();   
+
+        $this->view->hoja_retaceo();
     }
 
     public function obtener_lineas(){
@@ -315,7 +863,7 @@ class inventarioController extends controller
 
         echo json_encode($tallaprod->tallas($params['linea'],$params['estilo'], $params['color']));
     }
-    
+
     public function editar_hoja_retaceo(){
         if(isset($_GET['cod'])){
             $hoja_retaceo = $this->model->get_child('hoja_retaceo');
@@ -326,16 +874,16 @@ class inventarioController extends controller
                     $detalle = $this->model->get_child('detalle_retaceo')->filter('id_hoja_retaceo', $id_hoja);
                     $this->view->editar_hoja_retaceo($id_hoja, $hoja_retaceo->total_gastos, $detalle);
                 }else{
-                    HttpHandler::redirect('/inventario/inventario/ver_hoja_retaceo?cod='.$id_hoja);    
+                    HttpHandler::redirect('/inventario/inventario/ver_hoja_retaceo?cod='.$id_hoja);
                 }
             }else{
-                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
             }
         }else{
-            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');   
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
         }
     }
-    
+
     public function ver_hoja_retaceo(){
         if(isset($_GET['cod'])){
             $hoja_retaceo = $this->model->get_child('hoja_retaceo');
@@ -346,23 +894,23 @@ class inventarioController extends controller
                     $detalle = $this->model->get_child('detalle_retaceo')->filter('id_hoja_retaceo', $id_hoja);
                     $this->view->ver_hoja_retaceo($id_hoja, $hoja_retaceo->total_gastos, $detalle);
                 }else{
-                    HttpHandler::redirect('/inventario/inventario/editar_hoja_retaceo?cod='.$id_hoja);    
+                    HttpHandler::redirect('/inventario/inventario/editar_hoja_retaceo?cod='.$id_hoja);
                 }
             }else{
-                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
             }
         }else{
-            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');   
+            HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
         }
     }
-    
+
     public function guardar_detalle_retaceo(){
         if(isset($_POST)){
             $id_hoja = $_POST['id_hoja_retaceo'];
             $hoja_retaceo = $this->model->get_child('hoja_retaceo');
             if($hoja_retaceo->exists($id_hoja)){
                 $data = $_POST;
-                if($data['gasto']<0) $data['gasto'] *= -1 ; 
+                if($data['gasto']<0) $data['gasto'] *= -1 ;
                 $detalle_retaceo = $this->model->get_child('detalle_retaceo');
                 $detalle_retaceo->get(0);
                 $detalle_retaceo->change_status($data);
@@ -370,15 +918,15 @@ class inventarioController extends controller
                 $hoja_retaceo->get($id_hoja);
                 $hoja_retaceo->total_gastos += $data['gasto'];
                 $hoja_retaceo->save();
-                HttpHandler::redirect('/inventario/inventario/editar_hoja_retaceo?cod='.$id_hoja);    
+                HttpHandler::redirect('/inventario/inventario/editar_hoja_retaceo?cod='.$id_hoja);
             }else{
-                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
             }
         }else{
             HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
         }
     }
-    
+
     public function confirmar_hoja_retaceo(){
         if(isset($_GET)){
             $id_hoja = $_GET['cod'];
@@ -387,50 +935,50 @@ class inventarioController extends controller
                 $hoja_retaceo->get($id_hoja);
                 $hoja_retaceo->confirmada = 1;
                 $hoja_retaceo->save();
-                HttpHandler::redirect('/inventario/inventario/hoja_retaceo?confirmacion=ok');    
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo?confirmacion=ok');
             }else{
-                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');    
+                HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
             }
         }else{
             HttpHandler::redirect('/inventario/inventario/hoja_retaceo');
         }
     }
-    
+
     public function guardar_hoja_retaceo(){
         if(isset($_POST)){
             $hoja_retaceo = $this->model->get_child('hoja_retaceo');
             $hoja_retaceo->get($_POST['cod']);
             $hoja_retaceo->change_status($_POST);
             $hoja_retaceo->save();
-            
+
             HttpHandler::redirect('/inventario/inventario/hoja_retaceo?estado=ok');
         }
     }
-    
+
     public function reporte_inventario(){
-        
+
         $this->view->reporte_inventario();
     }
 
     public function reporte_kardex(){
-        
+
         $this->view->reporte_kardex();
     }
-    
+
     public function imprimir_reporteComparativo(){
         if(isset($_GET['data'])&&!empty($_GET['data']) && isset($_GET['tipo'])&&!empty($_GET['tipo'])){
             $json = json_decode($_GET['data']);
             $Li = $json->{"lineaInf"};
             $Ls = $json->{"lineaSup"};
             $Ps = $json->{"provSup"};
-            $Pi = $json->{"provInf"}; 
-            $bodega = $json->{"bodega"};   
+            $Pi = $json->{"provInf"};
+            $bodega = $json->{"bodega"};
             $tipo = $_GET['tipo'];
             $cache = array();
             $query = "";
             $total = 0;
             $data = array();
-             
+
             switch($tipo){
                 case 1:
                     if($bodega == 0){
@@ -438,9 +986,9 @@ class inventarioController extends controller
                     }else{
                         $query = "SELECT  linea.id as id_linea, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) WHERE bodega.id = $bodega AND  (articulo.linea >= $Li AND articulo.linea<= $Ls) GROUP BY linea.id ORDER BY no DESC";
                     }
-                    
+
                     $cache[0] = data_model()->cacheQuery($query);
-                    
+
                     break;
                 case 2:
                     if($bodega == 0){
@@ -448,18 +996,18 @@ class inventarioController extends controller
                     }else{
                         $query = "SELECT  linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE bodega.id = $bodega AND (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id ORDER BY no DESC";
                     }
-                    
+
                     $cache[0] = data_model()->cacheQuery($query);
                     break;
                 case 3:
                     $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
-                    
+
                     $cache['proveedores'] = data_model()->cacheQuery($provQ);
-                    
+
                     $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
-                    
+
                     data_model()->executeQuery($provQ);
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['proveedores'][] = $row;
                         if($bodega == 0){
@@ -468,17 +1016,17 @@ class inventarioController extends controller
                             $cache['proveedor_'.$row['id_proveedor']] = data_model()->cacheQuery("SELECT  articulo.estilo as estilo, linea.id as id_linea, proveedor.nombre as proveedor, linea.nombre as linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as stock FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON producto.proveedor = proveedor.id WHERE proveedor.id=".$row['id_proveedor']." AND bodega.id = $bodega AND (articulo.linea >= $Li AND articulo.linea<= $Ls) AND (producto.proveedor >= $Pi AND producto.proveedor<= $Ps) GROUP BY linea.id, proveedor.id, articulo.estilo ORDER BY no DESC");
                         }
                     }
-                    
+
                     break;
                 case 4:
                     $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
-                    
+
                     $cache['proveedores'] = data_model()->cacheQuery($provQ);
-                    
+
                     $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
-                    
+
                     data_model()->executeQuery($provQ);
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['proveedores'][] = $row;
                         if($bodega == 0){
@@ -490,13 +1038,13 @@ class inventarioController extends controller
                     break;
                 case 5:
                     $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
-                    
+
                     $cache['proveedores'] = data_model()->cacheQuery($provQ);
-                    
+
                     $provQ = "SELECT proveedor.nombre as proveedor, proveedor.id as id_proveedor from kardex left join articulo on articulo.id = kardex.codigo left join producto on (articulo.estilo = producto.estilo and articulo.linea = producto.linea) left join proveedor on producto.proveedor = proveedor.id group by proveedor.id";
-                    
+
                     data_model()->executeQuery($provQ);
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['proveedores'][] = $row;
                         if($bodega == 0){
@@ -507,14 +1055,14 @@ class inventarioController extends controller
                     }
                     break;
             }
-            
+
             $system = $this->model->get_child('system');
             $system->get(1);
-            
+
             $this->view->imprimir_reporteComparativo($cache, $tipo, $system, $total, $data);
         }
     }
-    
+
     public function imprimir_reporteInventario(){
         if(isset($_GET['typeReport'])&&!empty($_GET['typeReport'])){
             $tipo = $_GET['typeReport'];
@@ -522,77 +1070,77 @@ class inventarioController extends controller
             $cache = array();
             $data = array();
             $fecha = "";
-            
-            
+
+
             $condQ = "WHERE bodega.tiene_stock='si' ";
-         
+
             $costoQ = " (SUM(ent_costo_total)-SUM(sal_costo_total)) ";
             $precioQ = " (SUM(precio * ent_cantidad) - SUM( precio * sal_cantidad)) ";
-        
+
             if(isset($_GET['pc'])&&!empty($_GET['pc'])){
                 $pc = $_GET['pc'];
-                
+
                 if($pc == "no"){
-                    $costoQ = "''";            
+                    $costoQ = "''";
                 }
-        
+
             }
-        
+
             if(isset($_GET['pv'])&&!empty($_GET['pv'])){
                 $pv = $_GET['pv'];
-                
+
                 if($pv == "no"){
-                    $precioQ = "''";            
+                    $precioQ = "''";
                 }
-        
+
              }
-            
+
             if(isset($_GET['filtros'])&&!empty($_GET['filtros'])){
                 $filtros = str_replace("\"", "",substr($_GET['filtros'],2, strlen($_GET['filtros']) - 3 ));
                 //echo $filtros;
                 $campos = explode(',', $filtros);
-            
+
                 if(isset($_GET['suprimir'])&&!empty($_GET['suprimir'])){
                     $suprimir = $_GET['suprimir'];
-                    
+
                     if($suprimir == "si"){
-                        $condQ .= " HAVING ((SUM(ent_cantidad) - SUM(sal_cantidad)) > 0 ) ";            
+                        $condQ .= " HAVING ((SUM(ent_cantidad) - SUM(sal_cantidad)) > 0 ) ";
                     }
-            
+
                 }
-            
+
                 $condQ = " WHERE bodega.tiene_stock ='si' AND ";
-            
+
                 if(isset($_GET['fecha'])&&!empty($_GET['fecha'])){
                     $fecha = $_GET['fecha'];
                     $condQ .= " kardex.fecha <= '{$fecha}' AND ";
                 }
-            
+
                 $temp = array();
-                
+
                 foreach($campos as $filtro){
                     $partes = explode(';', $filtro);
-               
+
                     $p1 = $partes[0];
                     $p2 = $partes[1];
-                    
+
                     $p1 = explode(':', $p1);
                     $p2 = explode(':', $p2);
-                    
+
                     $f1 = $p1[0];
                     $v1 = $p1[1];
-                    
+
                     $f2 = $p2[0];
                     $v2 = $p2[1];
-                    
+
                     $temp[] = " ( $f1 >= '{$v1}' AND $f2 <= '{$v2}' ) ";
                 }
-            
+
                 $condQ.= implode(' AND ', $temp);
-           
+
             }
-            
-            
+
+
             switch($tipo){
                 case "bodega":
                     /* Inventario por bodega, agrupa y sumariza las cantidades por bodegas */
@@ -610,16 +1158,16 @@ class inventarioController extends controller
                     while($row = data_model()->getResult()->fetch_assoc()){
                         /* almacena las bodegas consultadas */
                         $data['bodegas'][] = $row['bodega'];
-                        
+
                         /* extrae registros para una tabla por bodega */
                         /* se agrupan por bodega y por linea */
                         /* se filtran en WHERE por la bodega */
-                        $cache["bodega_".$row['bodega']] = data_model()->cacheQuery("SELECT  linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) WHERE bodega.id=".$row['bodega']." $condQ GROUP BY bodega.id, linea.id ORDER BY no DESC"); 
+                        $cache["bodega_".$row['bodega']] = data_model()->cacheQuery("SELECT  linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) WHERE bodega.id=".$row['bodega']." $condQ GROUP BY bodega.id, linea.id ORDER BY no DESC");
                     }
-                    
+
                     /* extrae los datos de las bodegas para mostrarlos */
                     $cache['bodegas'] = data_model()->cacheQuery("SELECT bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) GROUP BY kardex.bodega");
-                    
+
                     break;
                 case "proveedor":
                     /* Inventario por proveedor */
@@ -629,12 +1177,12 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']] = data_model()->cacheQuery("SELECT  proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." $condQ GROUP BY bodega.id, linea.id, proveedor.id ORDER BY no DESC"); 
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']] = data_model()->cacheQuery("SELECT  proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." $condQ GROUP BY bodega.id, linea.id, proveedor.id ORDER BY no DESC");
                     }
-                    
+
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id GROUP BY kardex.bodega, articulo.linea");
-                    
+
                     break;
                 case "estilo":
                     $data['bodegasylineas'] = array();
@@ -643,14 +1191,14 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo ORDER BY no DESC"); 
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares, $costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo ORDER BY no DESC");
                     }
-                    
+
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     break;
-                    
+
                  case "color":
                     $data['bodegasylineas'] = array();
                     $bodegaQ = "SELECT bodega, articulo.linea as linea, proveedor.id as proveedor FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY bodega, linea, proveedor.id";
@@ -658,14 +1206,14 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color ORDER BY no DESC"); 
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color ORDER BY no DESC");
                     }
-                    
+
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     break;
-                    
+
                 case "talla":
                     $data['bodegasylineas'] = array();
                     $bodegaQ = "SELECT bodega, articulo.linea as linea, proveedor.id as proveedor FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY bodega, linea, proveedor.id";
@@ -673,14 +1221,14 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC"); 
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC");
                     }
-                    
+
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT articulo.talla, proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     break;
-                    
+
                 case "provmar":
                     $data['bodegasylineas'] = array();
                     $bodegaQ = "SELECT bodega, articulo.linea as linea, proveedor.id as proveedor FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY bodega, linea, proveedor.id";
@@ -688,19 +1236,19 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT marca.id as marca, marca.nombre as nombre_marca, color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) LEFT JOIN marca ON producto.marca = marca.id WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC"); 
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT marca.id as marca, marca.nombre as nombre_marca, color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares,$costoQ as total_costo, $precioQ as total_precio FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) LEFT JOIN marca ON producto.marca = marca.id WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC");
                     }
-                    
+
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT articulo.talla, proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
-                    break;           
+
+                    break;
             }
-            
+
             $system = $this->model->get_child('system');
             $system->get(1);
-            
-            $this->view->imprimir_reporteInventario($cache, $tipo, $system, $data, $fecha);   
+
+            $this->view->imprimir_reporteInventario($cache, $tipo, $system, $data, $fecha);
         }
     }
 
@@ -712,51 +1260,51 @@ class inventarioController extends controller
             $data = array();
             $fecha = "";
             $fecha2 = "";
-            
-            
+
+
             $condQ = "";
-        
-        
+
+
         if(isset($_GET['filtros'])&&!empty($_GET['filtros'])){
             $filtros = str_replace("\"", "",substr($_GET['filtros'],2, strlen($_GET['filtros']) - 3 ));
             //echo $filtros;
             $campos = explode(',', $filtros);
-            
+
             $condQ = " WHERE ";
-            
+
             if(isset($_GET['fecha'])&&!empty($_GET['fecha']) && isset($_GET['fecha2'])&&!empty($_GET['fecha2'])){
                 $fecha  = $_GET['fecha'];
                 $fecha2 = $_GET['fecha2'];
                 $condQ .= " (kardex.fecha >= '{$fecha}' AND kardex.fecha <= '{$fecha2}') AND ";
             }
-            
-            
-            
+
+
+
             $temp = array();
-            
+
             foreach($campos as $filtro){
                 $partes = explode(';', $filtro);
-           
+
                 $p1 = $partes[0];
                 $p2 = $partes[1];
-                
+
                 $p1 = explode(':', $p1);
                 $p2 = explode(':', $p2);
-                
+
                 $f1 = $p1[0];
                 $v1 = $p1[1];
-                
+
                 $f2 = $p2[0];
                 $v2 = $p2[1];
-                
+
                 $temp[] = " ( $f1 >= '{$v1}' AND $f2 <= '{$v2}' ) ";
             }
-            
+
             $condQ.= implode(' AND ', $temp);
-           
+
         }
-            
-            
+
+
             switch($tipo){
                 case "bodega":
                     $condQ2 = str_replace("WHERE","AND", $condQ);
@@ -782,30 +1330,30 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         //$data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion, articulo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where k.nombre_proveedor = kardex.nombre_proveedor and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ order by proveedor,no"); 
-                        
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion, articulo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where k.nombre_proveedor = kardex.nombre_proveedor and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ order by proveedor,no");
+
                         if( data_model()->numRowsFromCache($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]) > 0 ){
                             $bodegas_sa[] = $row['bodega'];
                             $lineas_sa[] = $row['linea'];
-                            $proveedores_sa[] = $row['proveedor']; 
+                            $proveedores_sa[] = $row['proveedor'];
                         }else{
                             unset($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]);
-                        } 
+                        }
                     }
-                    
+
                     $bodegas_sa = "(".implode(",", $bodegas_sa).")";
                     $lineas_sa = "(".implode(",", $lineas_sa).")";
                     $proveedores_sa = "(".implode(",", $proveedores_sa).")";
-                    
+
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor,proveedor.nacionalidad as nacionalidad_proveedor,  proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     data_model()->executeQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
                     }
-                    
+
                     break;
                 case "proveedor":
                     $condQ2 = str_replace("WHERE","AND", $condQ);
@@ -823,32 +1371,32 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         //$data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion, articulo.estilo as estilo, articulo, CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2 ) as saldo, bodega.nombre as bodega from kardex join articulo on codigo = articulo.id join bodega on bodega=bodega.id  join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ  order by articulo.estilo, no"); 
-                        
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion, articulo.estilo as estilo, articulo, CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2 ) as saldo, bodega.nombre as bodega from kardex join articulo on codigo = articulo.id join bodega on bodega=bodega.id  join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id  WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ  order by articulo.estilo, no");
+
                         if( data_model()->numRowsFromCache($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]) > 0 ){
                             $bodegas_sa[] = $row['bodega'];
                             $lineas_sa[] = $row['linea'];
-                            $proveedores_sa[] = $row['proveedor']; 
+                            $proveedores_sa[] = $row['proveedor'];
                         }else{
                             unset($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]);
-                        } 
+                        }
                     }
-                    
+
                      $bodegas_sa = "(".implode(",", $bodegas_sa).")";
                     $lineas_sa = "(".implode(",", $lineas_sa).")";
                     $proveedores_sa = "(".implode(",", $proveedores_sa).")";
 
 
                     $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor,proveedor.nacionalidad as nacionalidad_proveedor, proveedor.nombre as proveedor_nombre, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                   
-                    
+
+
                     data_model()->executeQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
                     }
-                    
+
                     break;
                 case "estilo":
                     $condQ2 = str_replace("WHERE","AND", $condQ);
@@ -865,18 +1413,18 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         //$data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion,articulo, CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto,  CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and k.bodega = kardex.bodega and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor  $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ  order by articulo.estilo, articulo.color, no"); 
-                        
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion,articulo, CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto,  CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and k.bodega = kardex.bodega and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor  $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ  order by articulo.estilo, articulo.color, no");
+
                          if( data_model()->numRowsFromCache($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]) > 0 ){
                             $bodegas_sa[] = $row['bodega'];
                             $lineas_sa[] = $row['linea'];
-                            $proveedores_sa[] = $row['proveedor']; 
+                            $proveedores_sa[] = $row['proveedor'];
                         }else{
                             unset($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]);
-                        } 
+                        }
                     }
-                    
+
                      $bodegas_sa = "(".implode(",", $bodegas_sa).")";
                      $lineas_sa = "(".implode(",", $lineas_sa).")";
                      $proveedores_sa = "(".implode(",", $proveedores_sa).")";
@@ -884,17 +1432,17 @@ class inventarioController extends controller
 
 
                      $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor,proveedor.nacionalidad as nacionalidad_proveedor, proveedor.nombre as proveedor_nombre, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                   
-                    
+
+
                     data_model()->executeQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
                     }
-                    
-                    
+
+
                     break;
-                    
+
                  case "color":
                     $condQ2 = str_replace("WHERE","AND", $condQ);
                     $condQ2 = str_replace("producto","prod", $condQ2);
@@ -910,34 +1458,34 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         //$data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion,articulo, CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo,articulo.talla, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and ar.talla = articulo.talla and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."'  $condQ order by articulo.estilo, articulo.color, articulo.talla, no "); 
-                    
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("select CASE(referencia_recateo_no) WHEN 0 THEN '' ELSE referencia_recateo_no END as referencia_recateo_no,producto.descripcion as descripcion,articulo, CONCAT(linea.id,' ',linea.nombre) as linea, linea.id as id_linea,articulo.color, articulo.estilo as estilo,articulo.talla, proveedor.nombre as proveedor, proveedor.id as id_proveedor, fecha, numero as documento, transacciones.nombre as concepto, CASE(ent_cantidad) WHEN 0 THEN '' ELSE ent_cantidad END as entradas, CASE(sal_cantidad) WHEN 0 THEN '' ELSE sal_cantidad END as salidas, (select sum(ent_cantidad - sal_cantidad) from kardex k join articulo ar on ar.id = k.codigo join producto prod on ar.linea = prod.linea and ar.estilo = prod.estilo join bodega bod on k.bodega = bod.id where ar.linea = articulo.linea and ar.estilo = articulo.estilo and articulo.color = ar.color and ar.talla = articulo.talla and k.no <= kardex.no and kardex.bodega=k.bodega and producto.proveedor = prod.proveedor $condQ2 ) as saldo, bodega.nombre as bodega from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join transacciones on transaccion=transacciones.cod join linea on articulo.linea = linea.id WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."'  $condQ order by articulo.estilo, articulo.color, articulo.talla, no ");
+
                     if( data_model()->numRowsFromCache($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]) > 0 ){
                             $bodegas_sa[] = $row['bodega'];
                             $lineas_sa[] = $row['linea'];
-                            $proveedores_sa[] = $row['proveedor']; 
+                            $proveedores_sa[] = $row['proveedor'];
                         }else{
                             unset($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]);
-                        } 
+                        }
                     }
-                    
+
                      $bodegas_sa = "(".implode(",", $bodegas_sa).")";
                      $lineas_sa = "(".implode(",", $lineas_sa).")";
                      $proveedores_sa = "(".implode(",", $proveedores_sa).")";
 
 
                    $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor,proveedor.nacionalidad as nacionalidad_proveedor, proveedor.nombre as proveedor_nombre, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                   
-                    
+
+
                     data_model()->executeQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
                     }
-                    
+
                     break;
-                    
+
                 case "talla":
                     $bodegas_sa = array();
                     $lineas_sa = array();
@@ -949,45 +1497,45 @@ class inventarioController extends controller
                     $condQ = str_replace("WHERE","AND", $condQ);
                     while($row = data_model()->getResult()->fetch_assoc()){
                         //$data['bodegasylineas'][] = $row;
-                        
-                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC"); 
-                    
+
+                        $cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']] = data_model()->cacheQuery("SELECT  color.id as color, color.nombre as nombre_color, proveedor.id as id_proveedor, proveedor.nombre as nombre_proveedor, linea.id as id_linea, linea.nombre as nombre_linea, bodega.nombre as nombre_bodega, bodega, (SUM(ent_cantidad) - SUM(sal_cantidad)) as pares FROM kardex LEFT JOIN articulo ON codigo=articulo.id LEFT JOIN bodega ON bodega.id = bodega LEFT JOIN control_precio c ON (c.control_estilo = articulo.estilo AND c.linea = articulo.linea AND c.color = articulo.color AND c.talla = articulo.talla) LEFT JOIN producto ON (producto.estilo = articulo.estilo AND producto.linea = articulo.linea) LEFT JOIN proveedor ON (producto.proveedor = proveedor.id) LEFT JOIN linea on (articulo.linea = linea.id) LEFT JOIN color on (articulo.color = color.id) WHERE bodega.id=".$row['bodega']." AND articulo.linea=".$row['linea']." AND proveedor.id='".$row['proveedor']."' $condQ GROUP BY bodega.id, linea.id, proveedor.id, articulo.estilo, articulo.color, articulo.talla ORDER BY no DESC");
+
                     if( data_model()->numRowsFromCache($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]) > 0 ){
                             $bodegas_sa[] = $row['bodega'];
                             $lineas_sa[] = $row['linea'];
-                            $proveedores_sa[] = $row['proveedor']; 
+                            $proveedores_sa[] = $row['proveedor'];
                         }else{
                             unset($cache["bodega_".$row['bodega']."_".$row['linea']."_".$row['proveedor']]);
-                        } 
+                        }
                     }
-                    
+
                      $bodegas_sa = "(".implode(",", $bodegas_sa).")";
                      $lineas_sa = "(".implode(",", $lineas_sa).")";
                      $proveedores_sa = "(".implode(",", $proveedores_sa).")";
-                    
+
                      $cache['bodegasylineas'] = data_model()->cacheQuery("SELECT proveedor.id as proveedor,proveedor.nacionalidad as nacionalidad_proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                   
-                    
+
+
                     data_model()->executeQuery("SELECT proveedor.id as proveedor, proveedor.nombre as proveedor_nombre, articulo.estilo as estilo, linea.id as linea, linea.nombre as linea_nombre, bodega.id as bodega, bodega.nombre as bodega_nombre FROM kardex LEFT JOIN bodega on (kardex.bodega = bodega.id) LEFT JOIN articulo ON articulo.id = codigo LEFT JOIN linea ON articulo.linea = linea.id LEFT JOIN producto on (articulo.estilo = producto.estilo AND articulo.linea = producto.linea) LEFT JOIN proveedor on producto.proveedor=proveedor.id WHERE bodega.id in $bodegas_sa AND linea.id in $lineas_sa AND proveedor.id in $proveedores_sa GROUP BY kardex.bodega, articulo.linea, proveedor.id");
-                    
+
                     while($row = data_model()->getResult()->fetch_assoc()){
                         $data['bodegasylineas'][] = $row;
                     }
-                    
+
                     break;
-                    
+
                 case "provmar":
                     $query = "select transacciones.nombre as concepto, SUM(ent_cantidad) as entradas, SUM(ent_cantidad * costo) as costo_ent, SUM(sal_cantidad) as salidas, SUM(sal_cantidad * costo) as costo_sal from kardex join bodega on bodega=bodega.id join articulo on codigo = articulo.id join producto on producto.estilo = articulo.estilo and producto.linea = articulo.linea join proveedor on producto.proveedor = proveedor.id join linea on linea.id = articulo.linea join transacciones on transaccion=transacciones.cod join control_precio on articulo.estilo = control_estilo and articulo.linea = control_precio.linea and articulo.color = control_precio.color and articulo.talla = control_precio.talla $condQ group by transacciones.cod order by kardex.tipo asc";
                     //echo $query;
                     $cache[0] = data_model()->cacheQuery($query);
-                    
-                    break;           
+
+                    break;
             }
-            
+
             $system = $this->model->get_child('system');
             $system->get(1);
-            
-            $this->view->imprimir_reporteKardex($cache, $tipo, $system, $data, $fecha, $fecha2);   
+
+            $this->view->imprimir_reporteKardex($cache, $tipo, $system, $data, $fecha, $fecha2);
         }
     }
 
@@ -995,8 +1543,8 @@ class inventarioController extends controller
 
         $this->view->kits();
     }
-    
-    public function validar_kit(){
+
+    public function ValidateSession_kit(){
         if(isset($_POST) && !empty($_POST['estilo'])){
             $estilo  = "KT".$_POST['estilo'];
             $product = $this->model->get_child('producto');
@@ -1004,29 +1552,29 @@ class inventarioController extends controller
             echo json_encode(array("existe"=>$product->exists($estilo)));
         }
     }
-    
+
     public function guardar_kit(){
         $estilo      = $_POST['estilo'];
         $linea       = "0";
         $descripcion = $_POST['descripcion'];
         $precio      = $_POST['precio'];
-        
+
         $producto = $this->model->get_child('producto');
-        
+
         $producto->get(array("estilo"=>0, "linea"=>0));
         $producto->estilo = $estilo;
         $producto->linea = $linea;
         $producto->descripcion = $descripcion;
         $producto->fecha_ingreso = date("Y-m-d");
         $producto->force_save();
-        
+
         $color_producto = $this->model->get_child("color_producto");
         $color_producto->get(0);
         $color_producto->color_estilo_producto = $estilo;
         $color_producto->linea = $linea;
         $color_producto->color = 1;
         $color_producto->force_save();
-        
+
         $talla_producto = $this->model->get_child("talla_producto");
         $talla_producto->get(0);
         $talla_producto->talla_estilo_producto = $estilo;
@@ -1034,7 +1582,7 @@ class inventarioController extends controller
         $talla_producto->color = 1;
         $talla_producto->talla = 1;
         $talla_producto->force_save();
-        
+
         $control_precio = $this->model->get_child("control_precio");
         $control_precio->get(0);
         $control_precio->control_estilo = $estilo;
@@ -1044,7 +1592,7 @@ class inventarioController extends controller
         $control_precio->precio = $precio;
         $control_precio->costo  = 0;
         $control_precio->force_save();
-        
+
         $estado_bodega = $this->model->get_child('estado_bodega');
         $estado_bodega->get(0);
         $estado_bodega->estilo  = $estilo;
@@ -1054,23 +1602,23 @@ class inventarioController extends controller
         $estado_bodega->stock = 0;
         $estado_bodega->bodega = 1;
         $estado_bodega->force_save();
-        
+
         echo json_encode(array("success"=>true));
     }
-    
+
     public function guardar_elemento_kit(){
-        
+
         $this->model->guardar_elemento_kit();
-        
+
         echo json_encode(array("msg"=>""));
     }
-    
+
     public function eliminar_item_kit(){
         if(isset($_POST)){
             $elemento_kit = $this->model->get_child('elemento_kit');
             $elemento_kit->delete($_POST['id']);
         }
-        
+
         echo json_encode(array("msg"=>""));
     }
 
@@ -1084,7 +1632,7 @@ class inventarioController extends controller
         $tamPag          = (isset($_POST['tamPag']) && !empty($_POST['tamPag'])) ? $_POST['tamPag']: null;
 
         $datos = $this->model->DATOS_PRODUCTO(
-                $fields, 
+                $fields,
                 $conditions,
                 $group_by_fields,
                 $order_by_field,
@@ -1098,7 +1646,7 @@ class inventarioController extends controller
     }
 
     public function json_productos_sugeridos(){
-        
+
         $linea  = (isset($_POST['linea']) && !empty($_POST['linea'])) ? $_POST['linea']: null;
         $estilo = (isset($_POST['estilo']) && !empty($_POST['estilo'])) ? $_POST['estilo']: null;
         $datos = $this->model->get_child('productos_sugeridos')->obtener_productos_sugeridos($linea, $estilo, "data");
@@ -1110,7 +1658,7 @@ class inventarioController extends controller
         $linea  = (isset($_POST['linea']) && !empty($_POST['linea'])) ? $_POST['linea']: null;
         $estilo = (isset($_POST['estilo']) && !empty($_POST['estilo'])) ? $_POST['estilo']: null;
         $estilo_sugerencia = (isset($_POST['estilo_sugerencia']) && !empty($_POST['estilo_sugerencia'])) ? $_POST['estilo_sugerencia']: null;
-        $prod   = $this->model->get_child('productos_sugeridos'); 
+        $prod   = $this->model->get_child('productos_sugeridos');
         $datos  = $prod->obtener_productos_sugeridos($linea, $estilo, "data");
 
         if(count($datos)==0){
@@ -1127,7 +1675,7 @@ class inventarioController extends controller
             echo json_encode(array("msg"=>"Peticion procesada con exito!"));
         }else{
             echo json_encode(array("msg"=>"Los datos ya han sido asignados"));
-        }           
+        }
     }
 
     public function detalle_de_producto(){
@@ -1138,7 +1686,7 @@ class inventarioController extends controller
             $cache_stock     = array();
             $cache_transito  = array();
             $cache_sugeridos = array();
-            
+
             foreach ($lineas as $linea) {
                 $cache_stock[$linea] = $this->model->detalle_producto_stock($linea, data_model()->sanitizeData($_GET['estilo']));
             }
@@ -1167,27 +1715,12 @@ class inventarioController extends controller
         $this->model->actualizarMinimo($linea, $grupo, $minimo_stock);
     }
 
-    public function actualizarFoto(){
-        $lineas = $this->model->get_child('linea')->get_list('', '', array('nombre'));
-        $this->view->actualizarFoto($lineas);
-    }
-
-    public function productosSugeridos(){
-        $lineas = $this->model->get_child('linea')->get_list('', '', array('nombre'));
-        $this->view->productosSugeridos($lineas);   
-    }
-
     public function obtenerEstilos(){
         $this->model->obtenerEstilos($_POST['linea']);
     }
 
-    public function actualizarFotoProducto(){
-        upload_image(APP_PATH.'static/img/productos', 'archivo', $_POST['linea'].'_'.$_POST['estilo'].".jpg");
-        httpHandler::redirect('/'.MODULE.'/inventario/actualizarFoto?linea='.$_POST['linea'].'&estilo='.$_POST['estilo']);
-    }
-
     public function promociones() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $cache = array(
             $this->model->get_child('linea')->get_list('', '', array('nombre'))
@@ -1197,25 +1730,25 @@ class inventarioController extends controller
     }
 
     public function colores() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $this->view->mantenimiento_de_colores($usuario);
     }
 
     public function lineas() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $this->view->mantenimiento_de_lineas($usuario);
     }
 
     public function generos() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $this->view->mantenimiento_de_generos($usuario);
     }
 
     public function marcas() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $this->view->mantenimiento_de_marcas($usuario);
     }
@@ -1229,23 +1762,14 @@ class inventarioController extends controller
 
     public function proveedores() {
         if(!isInstalled("compras")){
-            $this->validar();
+            $this->ValidateSession();
             $usuario = Session::getUser();
             $paises = $this->model->get_child('paises')->get_list();
             $this->view->mantenimiento_de_proveedores($usuario, $paises);
         }else{
             $this->view->acceso_restringido();
         }
-       
-    }
 
-    public function obtenerBodegas(){
-
-        $bodegas = array();
-        $bds     = $this->model->get_child('bodega');
-        $bodegas = $bds->get_list_array('','', array("nombre"));
-       
-        echo safe_json_encode($bodegas);
     }
 
     public function movKardex(){
@@ -1273,7 +1797,7 @@ class inventarioController extends controller
 
     // acceso solo admin
     public function cambio_de_linea() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::singleton()->getUser();
         $acceso = Session::singleton()->getLevel();
         $data = array(
@@ -1289,7 +1813,7 @@ class inventarioController extends controller
 
     // acceso solo admin
     public function cambio_de_grupo() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::singleton()->getUser();
         $acceso  = Session::singleton()->getLevel();
         $data    = array(
@@ -1362,7 +1886,7 @@ class inventarioController extends controller
     }
 
     public function comparativo_fisico_teorico() {
-        $this->validar();
+        $this->ValidateSession();
         $cache    = array();
         $cache[0] = $this->model->get_child('bodega')->get_list('','',array('nombre'));
         //$activo   = $this->model->comparativo_activo();
@@ -1394,7 +1918,7 @@ class inventarioController extends controller
     }
 
     public function hacer_comparativo() {
-        $this->validar();
+        $this->ValidateSession();
         $estilo     = $_POST['estilo'];
         $tipoQuery  = $_POST['tipoQuery'];
         $bodega     = $_POST['bodega'];
@@ -1410,7 +1934,7 @@ class inventarioController extends controller
     }
 
     public function orden_compra() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->get_child('proveedor')->get_list('','',array('nombre'));
         $cache[1] = $this->model->get_child('color')->get_list('','',array('nombre'));
@@ -1427,76 +1951,6 @@ class inventarioController extends controller
         data_model()->executeQuery($query);
         $ret = data_model()->getResult()->fetch_assoc();
         echo json_encode($ret);
-    }
-
-    public function guardar_producto() {
-        if (isset($_POST) && !empty($_POST)):
-
-            // variables que no pueden ser nulas
-            $not_null = array(
-                'estilo'
-                , 'linea'
-                , 'codigo_origen'
-                , 'descripcion'
-                , 'proveedor'
-                , 'catalogo'
-                , 'n_pagina'
-                , 'genero'
-                , 'marca'
-                , 'propiedad'
-                , 'fecha_ingreso'
-                , 'numero_documento'
-            );
-
-
-            $dataTCosto = array();
-            $dataDocPro = $_POST;
-            $TCostoMod = $this->model->get_child('tarjeta_costo');
-            $docProMod = $this->model->get_child('documento_producto');
-
-            /**
-             * Creacion de la tarjeta de costos
-             */
-            $TCostoMod->get(0);
-            $TCostoMod->CESTILO = $_POST['estilo'];
-            $TCostoMod->LINEA = $_POST['linea'];
-            $TCostoMod->CODORIGEN = $_POST['codigo_origen'];
-            $TCostoMod->CCOLOR = $_POST[''];
-            $TCostoMod->DESCRIP = $_POST['descripcion'];
-            $TCostoMod->PROVEEDOR = $_POST['proveedor'];
-            $TCostoMod->CATALOGO = $_POST['catalogo'];
-            $TCostoMod->PAGINA = $_POST['n_pagina'];
-            $TCostoMod->GENERO = $_POST['genero'];
-            $TCostoMod->MARCA = $_POST['marca'];
-            $TCostoMod->PROPIEDAD = $_POST['propiedad'];
-            $TCostoMod->OBSERVACIO = $_POST['observacion'];
-            $TCostoMod->FEINGRESA = $_POST['fecha_ingreso'];
-            $TCostoMod->NODOC = $_POST['numero_documento'];
-            $TCostoMod->RUN1 = 0;
-            $TCostoMod->RUN2 = 0;
-            $TCostoMod->save();
-
-        //$prod = $this->model->get_child('documento_producto');
-        //$prod->not_null($not_null);
-        //$prod->get(0);
-        //$prod->change_status($data);
-        //$prod->save();
-        //HttpHandler::redirect('/'.MODULE.'/inventario/doc_productos?documento='.$_POST['numero_documento']);
-        else:
-            HttpHandler::redirect('/'.MODULE.'/inventario/doc_productos?documento=' . $_POST['numero_documento']);
-        endif;
-    }
-
-    public function guardar_proveedor() {
-        if (isset($_POST) && !empty($_POST)):
-            $model = $this->model->get_child('proveedor'); 
-            $model->get(0);
-            $model->change_status($_POST);
-            $model->save();
-            HttpHandler::redirect('/'.MODULE.'/inventario/proveedores');
-        else:
-            HttpHandler::redirect('/'.MODULE.'/inventario/proveedores');
-        endif;
     }
 
     public function guardar_linea() {
@@ -1679,7 +2133,7 @@ class inventarioController extends controller
     }
 
     public function ofertas() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->ofertas();
         $cache[1] = $this->model->ofertas();
@@ -1724,7 +2178,7 @@ class inventarioController extends controller
             $id_bodega = $data['bodega_destino_r'];
             $data['bodega_destino'] = $data['bodega_destino_r'];
         }
-        
+
         if($id==0){
             $transaccion = $this->model->get_child('transacciones');
             $transaccion->setVirtualId('cod');
@@ -1735,7 +2189,7 @@ class inventarioController extends controller
         }else{
             $data['cod'] = $id;
         }
-        
+
         if (!isset($data['proveedor_origen'])) {
             $data['proveedor_origen'] = $data['proveedor_origen_r'];
         }
@@ -1751,7 +2205,7 @@ class inventarioController extends controller
         if (!isset($data['transaccion'])) {
             $data['transaccion'] = $data['transaccion_r'];
         }
-        
+
         if (!isset($data['referencia_retaceo'])) {
             $data['referencia_retaceo'] = $data['referencia_retaceo_r'];
         }
@@ -1767,7 +2221,7 @@ class inventarioController extends controller
         if (!isset($data['total_costo'])) {
             $data['total_costo'] = $data['total_costo_r'];
         }
-        
+
         $hoja_retaceo = $this->model->get_child('hoja_retaceo');
         $hoja_retaceo->get($data['referencia_retaceo']);
         $hoja_retaceo->aplicada = 1;
@@ -1781,9 +2235,9 @@ class inventarioController extends controller
         }
 
         $data['usuario'] = Session::singleton()->getUser();
-        
+
         $id = $tc->obtenerId($data['cod'], $data['transaccion']);
-        
+
         $tc->get($id);
         $tc->change_status($data);
         $tc->save();
@@ -1791,7 +2245,7 @@ class inventarioController extends controller
         if ($id == 0) {
             $id = $tc->last_insert_id();
         }else{
-            
+
         }
 
         HttpHandler::redirect('/'.MODULE.'/inventario/detalle_traslado?id=' . $id);
@@ -1806,76 +2260,6 @@ class inventarioController extends controller
         }
 
         echo json_encode(array("msg"=>""));
-    }
-
-    public function detalle_traslado() {
-        
-        $this->validar();
-        $id = $_GET['id'];
-
-        ### inicializacion ###
-        # comunes 
-        $cache = array();
-        $id_bodega_ = 0; // origen
-        $nombre_bodega_ = "";
-        $id_bodega = 0; // destino
-        $nombre_bodega = "";
-        $oConsigna = $this->model->get_child('traslado');
-        $system = $this->model->get_child('system');
-        $system->get(1);
-
-        if ($oConsigna->exists($id) && !empty($id)) {
-
-            $oConsigna->get($id);
-
-            # solo traslado
-            $total_costo = 0.0;
-            $total_pares = 0;
-
-            #solo consigna
-            $credito = 0.0;
-            $usado = 0.0;
-            $saldo = 0.0;
-            $consigna = 0;
-            $cliente = 0;
-
-            ### asignaciones ###
-            # comunes
-
-            $id_bodega_ = $oConsigna->get_attr('bodega_origen');
-            $id_bodega = $oConsigna->get_attr('bodega_destino');
-            $nombre_bodega_ = $this->model->obtenerBodega($id_bodega_);
-            $nombre_bodega = $this->model->obtenerBodega($id_bodega);
-            $consigna = $oConsigna->get_attr('consigna');
-            $transaccion = $oConsigna->get_attr('transaccion');
-
-            if ($consigna != 1) {
-                # solo traslado
-                $consigna = 0;
-                $proveedor   = $oConsigna->get_attr('proveedor_origen');
-                $total_costo = $oConsigna->get_attr('total_costo');
-                $total_pares = $oConsigna->get_attr('total_pares');
-            } else {
-                $cliente = $oConsigna->get_attr('cliente');
-            }
-
-            $cache[0] = $this->model->get_child('linea')->get_list();
-            $this->view->detalle_traslado(Session::singleton()->getUser(), $id, $id_bodega, $nombre_bodega, $id_bodega_, $nombre_bodega_, $transaccion, $total_costo, $total_pares, $cache, $cliente, $consigna, $system->tolerancia, $proveedor);
-        } else {
-            HttpHandler::redirect('/'.MODULE.'/error/not_found');
-        }
-    }
-
-    public function traslados() {
-        $this->validar();
-        $cache = array();
-        $cache[0] = $this->model->get_child('proveedor')->get_list('','',array('nombre'));
-        $cache[1] = $this->model->get_child('proveedor')->get_list('','',array('nombre'));
-        $cache[2] = $this->model->get_child('bodega')->get_list('','',array('nombre'));
-        $cache[3] = $this->model->get_child('bodega')->get_list('','',array('nombre'));
-        $cache[4] = $this->model->get_child('transacciones')->transaccionesTraslados();
-        $cache[5] = $this->model->get_child('hoja_retaceo')->aplicables();
-        $this->view->traslados(Session::singleton()->getUser(), $cache);
     }
 
     public function datos_oferta() {
@@ -1938,13 +2322,13 @@ class inventarioController extends controller
                 $bodega_model->get($ultimo_en_blanco);
                 unset($data['id']);
             }
-            
+
             if(isset($_POST['tiene_stock'])){
                 $data['tiene_stock'] = "si";
             }else{
                 $data['tiene_stock'] = "no";
             }
-            
+
             $bodega_model->bodega_consigna = $bodega_consigna;
             $bodega_model->change_status($data);
             $bodega_model->save();
@@ -1957,15 +2341,9 @@ class inventarioController extends controller
 
     ###### (FIN ACCIONES MANTENIMIENTOS) ##########
 
-    public function nuevo_producto() {
-        $this->validar();
-        $usuario = Session::getUser();
-        $cache[0] = $this->model->get_documents($usuario);
-        $this->view->nuevo_producto($usuario, $cache);
-    }
 
     /* public function stock(){
-      $this->validar();
+      $this->ValidateSession();
       $usuario = Session::getUser();
       $this->view->actualizar_stock($usuario);
       } */
@@ -1978,31 +2356,31 @@ class inventarioController extends controller
     }
 
     public function resumenGeneralStock() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->resumenGeneralStock(Session::singleton()->getUser());
     }
 
     public function resumenGeneralProducto() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->resumenGeneralProducto(Session::singleton()->getUser());
     }
 
     public function exportarEstadoBodegaImg() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->get_child('estado_bodega')->get_list();
         $this->view->exportarEstadoBodegaImg($cache, Session::singleton()->getUser());
     }
 
     public function exportarEstadoBodega() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->get_child('estado_bodega')->get_list();
         $this->view->exportarEstadoBodega($cache, Session::singleton()->getUser());
     }
 
     public function exportarResumenProducto() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->get_child('producto')->get_list();
         $this->view->exportarResumenProducto($cache, Session::singleton()->getUser());
@@ -2121,9 +2499,9 @@ class inventarioController extends controller
         $filtrar = $filtrar || (isset($_GET['propietario'])&&!empty($_GET['propietario']));
         $filtrar = $filtrar || (isset($_GET['fecha'])&&!empty($_GET['fecha']));
         $filtrar = $filtrar || (isset($_GET['estado'])&& (strlen($_GET['estado'])>0) && $_GET['estado']!=3 );
-        
+
         if($filtrar){
-            
+
             if(isset($_GET['fecha'])&&!empty($_GET['fecha'])){
                 $fecha = str_replace('.','-',$_GET['fecha']);
                 $fecha_ps = explode('-',$fecha);
@@ -2132,51 +2510,51 @@ class inventarioController extends controller
                 $fecha_ps[2] = $tmp;
                 $fecha = implode('-',$fecha_ps);
             }
-            
-            
+
+
             if(isset($data['estado'])){
               if(empty($data['estado'])){
                   $data['estado'] = "{0}";
-              }  
+              }
             }
-            
+
             $data = array();
             if(isset($_GET['doc'])&&!empty($_GET['doc'])) $data["id_documento"] = data_model()->sanitizeData($_GET['doc']);
             if(isset($_GET['propietario'])&&!empty($_GET['propietario'])) $data["propietario"] = data_model()->sanitizeData($_GET['propietario']);
             if(isset($_GET['fecha'])&&!empty($_GET['fecha'])) $data["fecha_creacion"] = data_model()->sanitizeData($fecha);
             if(isset($_GET['estado'])&& (strlen($_GET['estado'])>0) && $_GET['estado']!=3 ) $data["estado"] = data_model()->sanitizeData($_GET['estado']);
-            
-             
-            
+
+
+
             $url_str = "";
             if(isset($_GET['doc'])&&!empty($_GET['doc'])) $url_str.="doc=".$data['id_documento']."&";
             if(isset($_GET['propietario'])&&!empty($_GET['propietario'])) $url_str.="propietario=".$data['propietario']."&";
             if(isset($_GET['fecha'])&&!empty($_GET['fecha'])) $url_str.="fecha=".$_GET['fecha']."&";
             if(isset($_GET['estado'])&&!empty($_GET['estado'])&& $_GET['estado']!=3) $url_str.="estado=".$data['estado']."&";
-           
+
             $numeroRegistros = $this->model->get_child('documento')->MultyQuantify($data);
             $url_filtro = "/inventario/inventario/inventarioHistorial?".$url_str;
             list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
-            
+
             $cache[0] = $this->model->get_child('documento')->Multyfilter($data, $limitInf, $tamPag);
         }else{
             $numeroRegistros = $this->model->get_child('documento')->quantify();
             $url_filtro = "/inventario/inventario/inventarioHistorial?";
             list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
             $cache = array();
-            $cache[0] = $this->model->get_child('documento')->documentos($limitInf, $tamPag);   
+            $cache[0] = $this->model->get_child('documento')->documentos($limitInf, $tamPag);
         }
-        
+
         $this->view->inventarioHistorial(Session::singleton()->getUser(), $cache, $paginacion_str);
     }
 
     public function reporteDocumentoPr(){
         $docDetail = $this->model->detalleDocumento($_GET['id']);
-        
-        
+
+
         $system = $this->model->get_child('system');
         $system->get(1);
-        
+
         $this->view->reporteDocumentoPr($docDetail, $_GET['id'], $system);
     }
 
@@ -2186,12 +2564,12 @@ class inventarioController extends controller
         import('scripts.paginacion');
         $numeroRegistros = $this->model->cantidadOc($_POST);
         $url_filtro = "/'.MODULE.'/inventario/orden_compra?";
-       
-        
+
+
         if($_POST['pendiente'] == 'true'){ $url_filtro .= "p=true&"; }
         if($_POST['rechazado'] == 'true'){ $url_filtro .= "r=true&"; }
         if($_POST['entregado'] == 'true'){ $url_filtro .= "e=true&"; }
-        
+
 
         list($paginacion_str, $limitInf, $tamPag) = paginar($numeroRegistros, $url_filtro);
         $cache[0] = $this->model->transito($_POST, $limitInf, $tamPag);
@@ -2247,12 +2625,12 @@ class inventarioController extends controller
     }
 
     public function catalogos() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->catalogos(Session::singleton()->getUser());
     }
 
     public function stockHistorial() {
-        $this->validar();
+        $this->ValidateSession();
         if (Session::singleton()->getLevel() != 1):
             HttpHandler::redirect('/'.MODULE.'/error/e403');
         else:
@@ -2325,7 +2703,7 @@ class inventarioController extends controller
             $orden->get($id);
             $proveedor = $this->model->get_child('proveedor');
             $proveedor->get($orden->proveedor);
-           
+
             $this->view->recibir_oc($detalle, $id, $orden, $proveedor, $anexos);
         }
     }
@@ -2360,7 +2738,7 @@ class inventarioController extends controller
         $detalle = $this->model->get_child("detalle_orden_compra");
         $detalle->get($_POST['id_detalle']);
         $detalle->cancelados =  $detalle->cantidad -  $detalle->recibidos;
-        $detalle->save();   
+        $detalle->save();
         $rep->descripcion = "De baja ".$detalle->cancelados." unidades del producto ".$detalle->linea."-".$detalle->estilo."-".$detalle->color."-".$detalle->talla." [Orden No".$_POST['id_orden']."]";
         $rep->save();
         echo json_encode(array("cancelados"=>$detalle->cancelados, "id"=>$_POST['id_detalle']));
@@ -2374,7 +2752,7 @@ class inventarioController extends controller
         $detalle->cancelados =  0;
         $detalle->recibidos  =  0;
         $detalle->save();
-        echo json_encode(array("id"=>$id_detalle));   
+        echo json_encode(array("id"=>$id_detalle));
     }
 
     public function procesarOrdenCompra(){
@@ -2410,7 +2788,7 @@ class inventarioController extends controller
 
 
                 $transacciones->ultimo = $ultima_transaccion + 1;
-                $transacciones->save(); 
+                $transacciones->save();
                 $traslado->save();
                 $id_traslado = $traslado->last_insert_id();
 
@@ -2422,7 +2800,7 @@ class inventarioController extends controller
                 }
 
                 foreach ($detalle_orden_compra as $item) {
-                    
+
                     $detalle_traslado = $this->model->get_child('detalle_traslado');
                     $detalle_traslado->get(0);
                     $detalle_traslado->id_ref = $id_traslado;
@@ -2487,7 +2865,7 @@ class inventarioController extends controller
 
     public function stock() {
         if (isset($_GET['doc']) && !empty($_GET['doc'])):
-            $this->validar();
+            $this->ValidateSession();
             $doc = $_GET['doc'];
             $this->model->actualizarControlPrecio($doc);
             if ($this->model->get_child('documento')->exists($doc)):
@@ -2507,13 +2885,13 @@ class inventarioController extends controller
     }
 
     public function crear_documento() {
-        $this->validar();
+        $this->ValidateSession();
         $user = Session::getUser();
         $this->view->nuevo_documento($user);
     }
 
     public function stock_documentos() {
-        $this->validar();
+        $this->ValidateSession();
         $user = Session::singleton()->getUser();
         $cache = array();
         $cache[0] = $this->model->documentoStock($user);
@@ -2563,32 +2941,6 @@ class inventarioController extends controller
         HttpHandler::redirect('/'.MODULE.'/inventario/nuevo_producto');
     }
 
-    public function salvarCatalogo() {
-        $data = $_POST;
-        $data['inicio'] = $this->getDateFromString($data['inicio']);        
-        $catalogo = $this->model->get_child('catalogo');
-        $catalogo->get(0);
-        $final = $data['inicio'];
-        $id = 0;
-        $query = "SELECT max(id) as id FROM catalogo";
-        data_model()->executeQuery($query);
-        while($row=data_model()->getResult()->fetch_assoc()){
-            $id = $row['id'];
-        }
-        $query = "UPDATE catalogo SET final='$final' WHERE id = $id";
-        data_model()->executeQuery($query);
-        //$data['final'] = $this->getDateFromString($data['final']);
-        $catalogo->change_status($data);
-        $catalogo->save();
-        upload_image(APP_PATH . 'static/img/catalogo', 'archivo', $catalogo->last_insert_id().".jpg");
-        HttpHandler::redirect('/'.MODULE.'/inventario/catalogos?success=ok');
-    }
-
-    public function getDateFromString($String) {
-        $DateArray = explode(".", $String);
-        return $DateArray[2] . "-" . $DateArray[1] . "-" . $DateArray[0];
-    }
-
     public function salvarDocumentoStock() {
         $data = array();
         $data['propietario'] = Session::singleton()->getUser();
@@ -2604,7 +2956,7 @@ class inventarioController extends controller
     /* Abre un nuevo documento */
 
     public function seleccion_documento() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $doc = (isset($_GET) && !empty($_GET)) ? $_GET['documento'] : 0;
         if ($this->model->document_acces($usuario, $doc)):
@@ -2630,19 +2982,11 @@ class inventarioController extends controller
         }
         $this->model->cambiarDatosGenerales($linea, $estilo, $data);
     }
-    
+
     public function revision_de_salida(){
         $query = "SELECT serie FROM serie WHERE tipo='FC'";
         $series = data_model()->cacheQuery($query);
         $this->view->revision_de_salida($series);
-    }
-
-    public function cambiarPrecios() {
-        $this->validar();
-        $cache = array();
-        //$cache[0] = $this->model->get_child('proveedor')->get_list();
-        $cache[0] = $this->model->get_child('catalogo')->get_list();
-        $this->view->cambiarPrecios(Session::singleton()->getUser(), $cache);
     }
 
     public function DatosGeneralesProducto() {
@@ -2650,7 +2994,7 @@ class inventarioController extends controller
         $linea  = $_POST['linea'];
         echo json_encode($this->model->DatosGeneralesProducto($linea, $estilo));
     }
-    
+
     public function autorizacion() {
         $clave = $_POST['clave'];
         $ret = array();
@@ -2662,35 +3006,6 @@ class inventarioController extends controller
         }
 
         echo json_encode($ret);
-    }
-
-    public function doc_productos() {
-        $this->validar();
-        $usuario = Session::getUser();
-        $doc = (isset($_GET) && !empty($_GET)) ? $_GET['documento'] : 0;
-        if ($this->model->document_acces($usuario, $doc)):
-            $cache     = array();
-            $cache[0]  = $this->model->get_child('linea')->get_list('', '', array('nombre'));
-            $cache[1]  = $this->model->get_child('marca')->get_list('', '', array('nombre'));
-            $cache[2]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
-            $cache[3]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
-            $cache[4]  = $this->model->get_child('genero')->get_list('', '', array('nombre'));
-            $cache[5]  = $this->model->get_child('linea')->get_list('', '', array('nombre'));
-            $cache[6]  = $this->model->get_child('marca')->get_list('', '', array('nombre'));
-            $cache[7]  = $this->model->get_child('proveedor')->get_list('', '', array('nombre'));
-            $cache[8]  = $this->model->get_child('color')->get_list('', '', array('nombre'));
-            $cache[9]  = $this->model->get_child('genero')->get_list('', '', array('nombre'));
-            $cache[10] = $this->model->get_child('catalogo')->get_list('', '', array('nombre'));
-            $cache[11] = $this->model->get_child('catalogo')->get_list('', '', array('nombre'));
-            $cache[12]  = $this->model->get_child('tacon')->get_list('', '', array('nombre'));
-            $cache[13]  = $this->model->get_child('suela')->get_list('', '', array('nombre'));
-            $cache[14]  = $this->model->get_child('material')->get_list('', '', array('nombre'));
-            $cache[15]  = $this->model->get_child('concepto')->get_list('', '', array('nombre'));
-            $cache[16]  = $this->model->get_child('grupo')->get_list('', '', array('nombre'));
-            $this->view->doc_mantenimiento_de_productos($cache, $doc, $usuario);
-        else:
-            HttpHandler::redirect('/'.MODULE.'/inventario/principal');
-        endif;
     }
 
     public function borrar_colores() {
@@ -2707,19 +3022,19 @@ class inventarioController extends controller
     }
 
     public function verificacionProveedor() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->passProveedor();
     }
 
     public function vericarPermisoPrecio() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->passPrecio();
     }
 
     /* Lista de documentos */
 
     public function abrir_documento() {
-        $this->validar();
+        $this->ValidateSession();
         $usuario = Session::getUser();
         $cache = array();
         $cache[0] = $this->model->get_documents($usuario);
@@ -2817,7 +3132,7 @@ class inventarioController extends controller
     }
 
     public function historial() {
-        $this->validar();
+        $this->ValidateSession();
         $cache[0] = $this->model->get_child('historial')->get_list();
         $this->view->historial($cache);
     }
@@ -2885,11 +3200,11 @@ class inventarioController extends controller
                 $prodTmp->set_attr('visible', '0');
                 $prodTmp->set_attr('numero_documento', $doc);
                 $prodTmp->save();
-            }  
-            
+            }
+
             $query = "UPDATE tarjeta_costo SET RUN1 = $inf_corrida, RUN2 = $sup_corrida WHERE CESTILO='{$estilo}' AND CCOLOR=$color AND LINEA=$linea AND NODOC = $doc";
             data_model()->executeQuery($query);
-            
+
             $sql = "";
             $medios = (isset($_POST['medios']) && $_POST['medios'] == "on" ) ? true : false;
             $tallas = array();
@@ -2924,7 +3239,7 @@ class inventarioController extends controller
     }
 
     public function administrar() {
-        $this->validar();
+        $this->ValidateSession();
         $doc = $_GET['documento'];
         $usuario = Session::getUser();
         $this->view->administrar($doc, $usuario);
@@ -2947,7 +3262,7 @@ class inventarioController extends controller
     }
 
     public function productos() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->get_child('linea')->get_list();
         $cache[1] = $this->model->get_child('marca')->get_list();
@@ -2985,7 +3300,7 @@ class inventarioController extends controller
             echo $ret;
         endif;
     }
-    
+
     public function guardarNuevoProducto(){
         header('Content-type:text/javascript;charset=UTF-8');
         $json        = $_POST['productInfo'];
@@ -3004,9 +3319,9 @@ class inventarioController extends controller
 
         $prodTmp->setVirtualId('estilo');
         $prodSys->setVirtualId('estilo');
-        
+
         /**
-         * COSAS QUE SE DAN POR HECHO: 
+         * COSAS QUE SE DAN POR HECHO:
          * 1. Si un producto existe en la tabla documento_producto esto quiere decir
          *    que existe una entrada en la tabla tarjeta_costo para ese producto la cual
          *    todavia es posible editarla.
@@ -3019,32 +3334,32 @@ class inventarioController extends controller
          *    ni en los documentos del producto.
          * 4. Por regla general tampoco es posible que exista un producto en la tabla de productos o los
          *    documentos del producto si no existe una entrada para el mismo en las tarjetas de costos
-         * 
+         *
          * Algunas aclaraciones para recordar:
          * 1. Cuando se crea un nuevo producto primero se verifica si no existe en algun documento no aprobado
-         *    o en los catalogos de la empresa. Si el producto no existe se procede a crear primeramente su 
+         *    o en los catalogos de la empresa. Si el producto no existe se procede a crear primeramente su
          *    entrada en la tarjeta de costos. Despues de crear la entrada se ingresa a las tablas temporales
          *    las cuales contienen los datos mas detallados. Algo importante a resaltar es que solo se ingresan
          *    los datos generales del producto y los colores. Por lo tanto en la tarjeta de costos la corrida inicial
-         *    hasta la final se establecen como 0 ("cero") y se guardan los datos recibidos. Para poder modificar 
-         *    estas corridas pueden darse varios casos. 
-         * 
-         *    Si el producto acaba de ser ingresado en una tarjeta de costos (el registro se encuentra en 
+         *    hasta la final se establecen como 0 ("cero") y se guardan los datos recibidos. Para poder modificar
+         *    estas corridas pueden darse varios casos.
+         *
+         *    Si el producto acaba de ser ingresado en una tarjeta de costos (el registro se encuentra en
          *    la tabla documento_producto). Entonces es necesario encontrar la tarjeta de costos para el producto
          *    , estilo y color en cuestion y modificar las corriadas limite adecuadamente. (En esta funcion NO
-         *    se modifican corridas, eso se hace en otra seccion) 
-         * 
+         *    se modifican corridas, eso se hace en otra seccion)
+         *
          *    Si el producto es uno que ya esta en catalogo entonces se debera crear una entrada nueva en la tarjeta
          *    de costo para los colores nuevos que no se hayan agregado.
-         *     
+         *
          */
-        
-        
+
+
         $tmp = $prodTmp->exists($estilo);
         $sys = $prodSys->exists($estilo);
-        
+
         $response['found'] = ($tmp || $sys);
-        
+
         if(!$response['found']){
             // NO SE ENCONTRO EL PRODUCTO EN NINGUNA TABLA
             # inserta
@@ -3055,7 +3370,7 @@ class inventarioController extends controller
                 $param['color']  = $color;
                 if(!$colorml->exists($param)){
                     $modelo->setVirtualId('id');
-                    $modelo->get(0);      
+                    $modelo->get(0);
                     $modelo->CESTILO    = $estilo;
                     $modelo->LINEA      = $linea;
                     $modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
@@ -3076,11 +3391,11 @@ class inventarioController extends controller
                     $modelo->RUN2       = 0;
                     $modelo->save();
                     $colorCount++;
-                }    
+                }
             }
 
             # 2. Crear producto temporal
-            
+
             if($colorCount>0){
                 $target = $prodTmp;
                 $target->get(array("estilo"=>"0", "linea"=>"0"));
@@ -3105,9 +3420,9 @@ class inventarioController extends controller
                 $target->set_attr("visible", '0');
                 $target->set_attr("garantia", $productInfo->{"dias_garantia"});
                 $target->set_attr('numero_documento', $productInfo->{"documento"});
-                $target->save();    
+                $target->save();
             }
-            
+
             # 3. Guardar colores
             foreach($productInfo->{"colores"} as $color){
                 $estilo  = $estilo;
@@ -3122,7 +3437,7 @@ class inventarioController extends controller
                     $colorml->force_save();
                 }
             }
-            
+
         }else{
             // actualiza
             // Si es temporal se actualizan los datos y se insertan los nuevos colores
@@ -3142,8 +3457,8 @@ class inventarioController extends controller
                         $colorml->force_save();
                     }
 
-                    $modelo->setVirtualId('id');  // se pierde id en alguna operacion       
-                    $modelo->get($id);      
+                    $modelo->setVirtualId('id');  // se pierde id en alguna operacion
+                    $modelo->get($id);
                     $modelo->CESTILO    = $estilo;
                     $modelo->LINEA      = $linea;
                     $modelo->CODORIGEN  = $productInfo->{"codigo_origen"};
@@ -3178,17 +3493,17 @@ class inventarioController extends controller
                     $target->set_attr("visible", '0');
                     $target->set_attr("garantia", $productInfo->{"dias_garantia"});
                     $target->set_attr('numero_documento', $productInfo->{"documento"});
-                    $target->save();    
+                    $target->save();
                 }
             }else{
 
                 $prodSys->setVirtualId('estilo');
                 $prodTmp->setVirtualId('estilo');
-                    
+
                 $prodSys->get($estilo);
-                    
+
                 $fields = $prodSys->get_fields();
-                    
+
                 $prodTmp->get(0);
 
                 foreach ($fields as $field) {
@@ -3208,11 +3523,11 @@ class inventarioController extends controller
                         $colorml->set_attr('linea', $linea);
                         $colorml->set_attr('color', $color);
                         $colorml->force_save();
-                    } 
+                    }
                 }
             }
         }
-        
+
         echo json_encode($response);
     }
 
@@ -3288,24 +3603,24 @@ class inventarioController extends controller
     /**
      * Esta funcion es llamada para comprobar si un estilo ya existe. Esta comprobacion se hace antes
      * de permitir al usuario crear un nuevo estilo ya que no puede ingresarse un estilo ya existente.
-     * Si el estilo ya existe se cargan los datos para que el usuario los pueda obervar, sin embargo, 
-     * la edicion de los mismo no es posible ya que existe un modulo especial para dicha tarea. 
+     * Si el estilo ya existe se cargan los datos para que el usuario los pueda obervar, sin embargo,
+     * la edicion de los mismo no es posible ya que existe un modulo especial para dicha tarea.
      */
     public function comprobar_estilo() {
         $resp   = array();            #arreglo de respuesta al cliente
         $estilo = $_POST['estilo'];   #estilo enviado como parametro
         $doc    = $_POST['doc'];      #numero de documento actual
         $fecha  = date("yyyy-mm-dd"); #fecha actual
-        
+
         // se cargan dos modelos. El temporal (para documentos) y el operativo a modo
         // de verificar la existencia del producto y evitar duplicados con otros documentos
         $prod   = $this->model->get_child('producto');
         $temp   = $this->model->get_child('documento_producto');
-        
+
         // se fuerza al estilo como identificador
         $temp->setVirtualId('estilo');
         $prod->setVirtualId('estilo');
-        
+
         // se verifica si existe en alguna tabla
         $flg1 = $temp->exists($estilo);
         $flg2 = $prod->exists($estilo);
@@ -3316,7 +3631,7 @@ class inventarioController extends controller
         $resp['auth']  = true;              # autorizado a cambios en documento
         $resp['ref_doc'] = -1;
 
-        
+
         // si se encuentra se recogen los datos
         if ($resp['found']) {
             // target es la tabla donde se ha encontrado el producto
@@ -3327,15 +3642,15 @@ class inventarioController extends controller
             foreach ($fields as $key) {
                 $resp['data'][$key] = $target->$key;
             }
-            
-            
+
+
             // en esta seccion se obtiene los colores asociados al producto, tanto nombre como identificador
             $colorMod = null;
-            
-            
 
-            $colorMod = $this->model->get_child('documento_color_producto'); 
-            $colorsT  = $colorMod->get_colors($estilo);  
+
+
+            $colorMod = $this->model->get_child('documento_color_producto');
+            $colorsT  = $colorMod->get_colors($estilo);
             $colorMod = $this->model->get_child('color_producto');
             $colorsS  = $colorMod->get_colors($estilo);
             $colorsF = array();
@@ -3360,7 +3675,7 @@ class inventarioController extends controller
                 $resp['auth']  = ($doc ==  $aux);
                 $resp['ref_doc'] = $aux;
             }
-            
+
         }
 
         echo json_encode($resp);
@@ -3396,7 +3711,7 @@ class inventarioController extends controller
     }
 
     public function consigna() {
-        $this->validar();
+        $this->ValidateSession();
         $cache = array();
         $cache[0] = $this->model->get_child('bodega')->get_list();
         $cache[1] = $this->model->get_child('proveedor')->get_list();
@@ -3494,75 +3809,13 @@ class inventarioController extends controller
         echo json_encode($data);
     }
 
-    public function salvar_traslado_detalle() {
-        $json = json_decode(stripslashes($_POST["productos"]));
-        $ret = array();
-        $ret["error"] = false;
-
-        foreach ($json as $item) {
-            $estilo = $item->{"estilo"};
-            $linea = $item->{"linea"};
-            $color = $item->{"color"};
-            $talla = $item->{"talla"};
-            $cantidad = $item->{"cantidad"};
-            $consigna = $item->{"consigna"};
-            $costo = $item->{"costo"};
-            $val = false;
-
-            /* CAMBIO DE COSTO */
-            // YA NO SE PERMITE CAMBIO DE COSTO, ES UNICAMENTE MOMENTANEO
-            //$this->model->get_child('control_precio')->cambiar_costo($linea, $estilo, $color, $talla, $costo);
-
-            /* COSTO */
-
-            $data = array();
-
-            $data['estilo'] = $item->{"estilo"};
-            $data['linea'] = $item->{"linea"};
-            $data['color'] = $item->{"color"};
-            $data['talla'] = $item->{"talla"};
-            $data['cantidad'] = $item->{"cantidad"};
-            $data['costo'] = $item->{"costo"};
-            $data['total'] = $item->{"total"};
-            $data['id_ref'] = $item->{"id_ref"};
-            $dt = $this->model->get_child('detalle_traslado');
-
-            if ($consigna == 0) {
-                //$this->model->suplir_orden( $estilo, $linea, $color, $talla, $cantidad );
-                $val = $this->model->get_child('traslado')->es_valido($data['cantidad'], $data['total'], $data['id_ref']);
-            } else {
-                $val = $this->model->get_sibling('cliente')->es_valido($data['id_ref'], $data['total']);
-            }
-
-            if ($val) {
-
-                $existe = $this->model->get_child('detalle_traslado')->existe($estilo, $linea, $color, $talla, $data['id_ref']);
-                if (!$existe) {
-                    $dt->get(0);
-                    $dt->change_status($data);
-                    $dt->save();
-                } else {
-                    $this->model->get_child('detalle_traslado')->actualizar($estilo, $linea, $color, $talla, $cantidad, $data['total'], $data['id_ref']);
-                }
-                $this->model->get_child('traslado')->actualizar($data['cantidad'], $data['total'], $data['id_ref']);
-                if ($consigna == 1) {
-                    $this->model->get_sibling('cliente')->actualizar_saldo($data['id_ref'], $data['total']);
-                    $this->model->get_child('traslado')->actualizar2($data['cantidad'], $data['total'], $data['id_ref']);
-                }
-            } else {
-                $ret['error'] = true;
-            }
-        }
-        echo json_encode($ret);
-    }
-
     public function listadoTraslado() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->listadoTraslado(Session::singleton()->getUser());
     }
 
     public function listadoConsigna() {
-        $this->validar();
+        $this->ValidateSession();
         $this->view->listadoConsigna(Session::singleton()->getUser());
     }
 
@@ -3621,7 +3874,7 @@ class inventarioController extends controller
     public function imprimirTraslado($id) {
         set_time_limit(9999999999999999);
         $cache = array();
-        $this->validar();
+        $this->ValidateSession();
         $cache[0] = $this->model->reporteTraslado($id);
         $ta = $this->model->get_child('traslado');
         $ta->get($id);
@@ -3636,7 +3889,7 @@ class inventarioController extends controller
     }
 
     public function imprimirConsigna($id, $tipo) {
-        $this->validar();
+        $this->ValidateSession();
         if ($tipo == 1) {
             $cache = array();
             $cache[0] = $this->model->reporteTraslado($id);
@@ -3751,7 +4004,7 @@ class inventarioController extends controller
         endfor;
         $fin .= implode(' AND ', $art);
 
-        //*/  
+        //*/
         //to get how many records totally.
         $sql = "select count(*) as cnt from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo $fin";
         $handle = mysqli_query(conManager::getConnection(), $sql);
@@ -3762,7 +4015,7 @@ class inventarioController extends controller
         if ($pageNo < 1 || $pageNo > ceil(($totalRec / $pageSize))):
             $pageNo = 1;
         endif;
-        
+
         if ($json->{'action'} == 'load'):
             $sql = "select control_estilo as estilo,control_precio.linea as linea,control_precio.color as color,control_precio.talla as talla,precio,costo,stock,bodega from control_precio left join estado_bodega on control_estilo=estilo AND estado_bodega.linea = control_precio.linea AND estado_bodega.color = control_precio.color AND estado_bodega.talla = control_precio.talla join producto on control_precio.linea = producto.linea AND control_precio.control_estilo = producto.estilo $fin  limit  " . ($pageNo - 1) * $pageSize . ", " . $pageSize;
             $sql;
@@ -3925,9 +4178,9 @@ class inventarioController extends controller
 
     public function salvarCambiosStock() {
         $doc = (isset($_GET['doc']) && !empty($_GET['doc'])) ? $_GET['doc'] : 0;
-        $sql = "DELETE FROM control_precio_documento 
-            WHERE CONCAT(control_estilo,linea,talla,color) IN 
-            (SELECT CONCAT(control_estilo,linea,talla,color) as cod 
+        $sql = "DELETE FROM control_precio_documento
+            WHERE CONCAT(control_estilo,linea,talla,color) IN
+            (SELECT CONCAT(control_estilo,linea,talla,color) as cod
               FROM control_precio) AND documento=$doc;";
 
         data_model()->executeQuery($sql);
@@ -3979,9 +4232,9 @@ class inventarioController extends controller
         $pageNo = $json->{'pageInfo'}->{'pageNum'};
         $pageSize = 15; //10 rows per page
         //to get how many records totally.
-        
+
         $fin = "";
-        
+
         if(isset($_POST['filtros'])&&!empty($_POST['filtros'])){
             $filtros   = $_POST['filtros'];
             $temp = explode(',', $filtros);
@@ -3990,7 +4243,7 @@ class inventarioController extends controller
                 $tt = explode(':', $parts);
                 $filtros[$tt[0]] = $tt[1];
             }
-    
+
             /* CADENA DE CONDICION */
             //*/
             $fin = " WHERE  ";
@@ -4004,28 +4257,28 @@ class inventarioController extends controller
             endfor;
             $fin .= implode(' AND ', $art);
         }
-        
+
         if(!empty($_POST['del'])){
             if(strlen($fin)==0){
                 $fin = " WHERE ";
             }else{
                 $fin = " AND ";
             }
-            
+
             $str = "";
             if(!empty($_POST['al'])){
                 $del = $_POST['del'];
                 $al = $_POST['al'];
-                
+
                 $str = " (fecha_ingreso >= '{$del}' AND fecha_ingreso <=  '{$al}')";
             }else{
                 $del = $_POST['del'];
                 $str = " fecha_ingreso = '{$del}'";
             }
-            
+
             $fin.= $str;
         }
-        
+
         $sql = "select count(*) as cnt from producto $fin";
         $handle = mysqli_query(conManager::getConnection(), $sql);
         $row = mysqli_fetch_object($handle);
@@ -4045,7 +4298,7 @@ class inventarioController extends controller
             endwhile;
             $data = json_encode($retArray);
             if(!empty($data)){
-                
+
                 $ret = "{data:" . $data . ",\n";
                 $ret .= "pageInfo:{totalRowNum:" . $totalRec . "},\n";
                 $ret .= "recordType : 'object'}";
@@ -4072,39 +4325,39 @@ class inventarioController extends controller
         $tblname = $_POST['tblname'];
         _updatedata($this, $tblname);
     }
-    
+
     public function _actualizarLinea(){
         actualizarLinea($this);
     }
-    
+
     public function _actualizarColor(){
         actualizarColor($this);
     }
-    
+
     public function _actualizarGenero(){
         actualizarGenero($this);
     }
-    
+
     public function _actualizarMarca(){
         actualizarMarca($this);
     }
-    
+
     public function _actualizarGrupo(){
         actualizarGrupo($this);
     }
-    
+
     public function _actualizarConcepto(){
         actualizarConcepto($this);
     }
-    
+
     public function _actualizarTacon(){
         actualizarTacon($this);
     }
-    
+
     public function _actualizarSuela(){
         actualizarSuela($this);
     }
-    
+
     public function _actualizarMaterial(){
         actualizarMaterial($this);
     }
@@ -4315,7 +4568,7 @@ class inventarioController extends controller
             $header .= "<hr/><p><br/></p>";
             $gridHandler->exportPDF('P', 'A4', '', $header);
         } else {
-            //to get the data from data base. // 
+            //to get the data from data base. //
             $data1 = getProveedorData();
 
             if ($type == 'xml') {

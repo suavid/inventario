@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -11,7 +11,7 @@
     <noscript>
         Para que el sistema trabaje correctamente necesita tener activado Javascript,
         si usted puede leer este mensaje significa que javascript se encuentra desactivado.
-        Active Javascript y recarge la p&aacute;gina; si no sabe como activarlo contacte 
+        Active Javascript y recarge la p&aacute;gina; si no sabe como activarlo contacte
         con el administrador.
     </noscript>
     <div id="blsBScreen"></div>
@@ -37,14 +37,20 @@
         }
 
         function ver_detalle_producto() {
-            window.open('/{systemModuleName}/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val(), '_blank');
+            window.open('/inventario/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val(), '_blank');
+        }
+
+        function VerificarEntero(a) {
+            if (isNaN($(a).val())) {
+                $(a).val("0");
+            }
         }
     </script>
 
     <div>
         <nav class="navigation-bar light fixed-top shadow">
             <nav class="navigation-bar-content">
-                <a href="/{systemModuleName}/inventario/principal" class="element brand">
+                <a href="/inventario/inventario/principal" class="element brand">
                     <i class="icon-home"></i> Inicio
                 </a>
                 <span class="element-divider place-left"></span>
@@ -55,101 +61,64 @@
                     <a class="dropdown-toggle" href="#"><i class="icon-tools"></i> Mantenimientos</a>
                     <ul class="dropdown-menu" data-role="dropdown">
                         <li>
-                            <a href="/{systemModuleName}/inventario/segmentacion"><i class="icon-list"></i> Segmentación</a>
+                            <a href="/inventario/inventario/segmentacion"><i class="icon-list"></i> Segmentación</a>
                         </li>
                         <li>
-                            <a href="/{systemModuleName}/inventario/bodegas"><i class="icon-box"></i> Bodegas</a>
+                            <a href="/inventario/inventario/bodegas"><i class="icon-box"></i> Bodegas</a>
                         </li>
                         <li>
-                            <a href="/{systemModuleName}/inventario/catalogos"><i class="icon-broadcast"></i> Campañas</a>
+                            <a href="/inventario/inventario/catalogos"><i class="icon-broadcast"></i> Campañas</a>
                         </li>
                         <li>
-                            <a class="dropdown-toggle" href="#">
-                                <i class="icon-basket"></i> Productos
-                            </a>
-                            <ul class="dropdown-menu" data-role="dropdown">
-                                <li>
-                                    <a href="/{systemModuleName}/inventario/nuevo_producto"><i class="icon-file"></i> Nuevo producto</a>
-                                </li>
-                                <li>
-                                    <a href="/{systemModuleName}/inventario/resumenGeneralProducto"><i class="icon-book"></i> Catálogo</a>
-                                </li>
-                                <li>
-                                    <a href="/{systemModuleName}/inventario/productoEntrante"><i class="icon-cycle"></i> En tránsito</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a class="dropdown-toggle" href="#">
-                                <i class="icon-tab"></i> Transacciones
-                            </a>
-                            <ul class="dropdown-menu" data-role="dropdown">
-                                <li>
-                                    <a href="/{systemModuleName}/inventario/traslados">Traslados</a>
-                                </li>
-                                <li>
-                                    <a href="/{systemModuleName}/inventario/listadoTraslado">Historial de traslados</a>
-                                </li>
-                            </ul>
+                            <a href="/inventario/inventario/nuevo_producto"><i class="icon-basket"></i> Productos</a>
                         </li>
                     </ul>
                 </div>
-
+                <a class="element" href="/inventario/inventario/traslados"><i class="icon-tab"></i>   Traslados</a>
                 <div class="element">
-                    <a class="dropdown-toggle" href="#"><i class="icon-plus-2"></i> Más</a>
+                    <a class="dropdown-toggle" href="#">Utilería</a>
                     <ul class="dropdown-menu" data-role="dropdown">
-                        <li><a href="/{systemModuleName}/inventario/revision_de_salida"><i class="icon-checkmark"></i> Revisión de salida</a></li>
-                        <li><a href="/{systemModuleName}/inventario/hoja_retaceo"><i class="icon-clipboard-2"></i> Hoja de retaceo</a></li>
-                        <li><a href="/{systemModuleName}/inventario/movKardex"><i class="icon-clipboard"></i> Kardex</a></li>
-                        <li><a href="#" class="dropdown-toggle"><i class="icon-printer"></i> Reportes</a>
+                        <li><a href="{REPORT_URL}=/Kardex/Kardex+-+Informe" target="_blank"><i class="icon-clipboard"></i> Kardex</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle"><i class="icon-printer"></i> Reportes</a>
                             <ul class="dropdown-menu" data-role="dropdown">
-                                <li><a href="">Cuadre mensual</a></li>
-                                <li><a href="">Devolución sobre venta</a></li>
-                                <li><a href="/{systemModuleName}/inventario/reporte_inventario">Inventarios</a></li>
-                                <li><a href="/inventario/inventario/reporte_kardex">Kardex</a></li>
-                                <li><a href="">Entradas y salidas (mes)</a></li>
-                                <li><a href="">Ventas</a></li>
+                                <!--<li><a href="">Inventarios</a></li>
+                                <li><a href="">Entradas y salidas (mes)</a></li>-->
+                                <li><a href="{REPORT_URL}=/Reportes+administrativos/ReporteVentas_porfecha" target="_blank">Ventas</a></li>
+                                <li><a href="{REPORT_URL}=/Kardex/Catalogo" target="_blank">Catálogo</a></li>
+                                <!--<li><a href="/inventario/inventario/productoEntrante">En tránsito</a></li>-->
                             </ul>
                         </li>
-                        <div class="divider"></div>
-                        <li><a href="/{systemModuleName}/inventario/comparativo_fisico_teorico"> Recuento de inventario</a></li>
-                        <li><a href="/{systemModuleName}/inventario/ofertas"> Preparación de ofertas</a></li>
-
                     </ul>
                 </div>
-
-                <span class="element-divider"></span>
-                <div class="element input-element">
+                <!--<span class="element-divider"></span>-->
+                <!--<div class="element input-element">
                     <form>
                         <div class="input-control text">
                             <input id="navBusquedaProducto" type="text" placeholder="Código de producto">
                             <button class="btn-search" type="button" onclick="ver_detalle_producto();"></button>
                         </div>
                     </form>
-                </div>
+                </div>-->
                 <div class="element place-right">
                     <a class="dropdown-toggle" href="#">
                         <span class="icon-cog"></span> &nbsp;&nbsp;&nbsp;
                     </a>
                     <ul class="dropdown-menu place-right" data-role="dropdown">
-                        <li><a href="/{systemModuleName}/logout/user">Salir</a></li>
+                        <li><a href="/inventario/logout/user">Salir</a></li>
                     </ul>
                 </div>
                 <span class="element-divider"></span>
                 <button class="element place-right">
-                        <i class="icon-user"></i> &nbsp;&nbsp;<strong>{username}</strong>
-                    </button>
+                    <i class="icon-user"></i> &nbsp;&nbsp;<strong>{username}</strong>
+                </button>
                 <span class="element-divider place-right"></span>
                 <a class="element place-right" href="#">
-                    <p class="subheader-secondary" style="margin-top:-5px;"><i class="icon-enter"></i> {TITULO}</p>
+                    <p style="margin-top:-5px;">{TITULO}</p>
                 </a>
             </nav>
         </nav>
-        <br/>
-        <br/>
-
-
-        <div class="page-region" style="padding-left:30px; padding-top: 30px;padding-right: 15px;">
+        <div class="page-region" style="padding-left:30px; padding-top: 10px;padding-right: 15px;">
             {content}
         </div>
         <div style="clear:both;"></div>

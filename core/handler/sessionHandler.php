@@ -50,12 +50,15 @@ class Session {
         if (self::ValidateSession()) {
             return $_SESSION[MODULE.'_user'];
         }
+
+        return null;
     }
 
     public static function getLevel() {
         if (self::ValidateSession()) {
             return $_SESSION['level'];
         }
+        return null;
     }
 
     /**
@@ -75,7 +78,6 @@ class Session {
      *
      */
     public static function logOut() {
-
         $_SESSION = array();
         session_destroy();
         $parametros_cookies = session_get_cookie_params();

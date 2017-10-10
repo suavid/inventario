@@ -1,10 +1,5 @@
 <?php
 
-if (!defined('BUSINESS_MANAGER')) {
-    echo 'WRONG CALL PROCEDURE';
-    exit();
-}
-
 /**
  * This class provides method to generate html from templates
  *

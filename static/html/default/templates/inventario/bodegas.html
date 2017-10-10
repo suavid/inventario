@@ -1,6 +1,6 @@
 <script type="text/javascript" >
 
-    var grid_demo_id = "bodega_grid";
+    var bodega_grid = "bodega_grid";
 
 
     var dsOption = {
@@ -16,7 +16,7 @@
     var colsOption = [
         {id: 'id', header: "Código", width: 50},
         {id: 'nombre', header: "Nombre", width: 250},
-        {id: 'usuario', header: "Encargado", width: 80},
+        {id: 'encargado', header: "Encargado", width: 80},
         {id: 'descripcion', header: "Descripcion", width: 180},
         {id: 'tiene_stock', header: "Stock", width: 57}
 
@@ -24,11 +24,11 @@
 
 
     var gridOption = {
-        id: grid_demo_id,
-        loadURL: '/{systemModuleName}/grid_tables/bodega_grid_1',
+        id: bodega_grid,
+        loadURL: '/inventario/inventario/ObtenerBodegas',
         saveURL: '',
-        width: "620", //"100%", // 700,
-        height: "280", //"100%", // 330,
+        width: "630", //"100%", // 700,
+        height: "380", //"100%", // 330,
         container: 'gridbox',
         replaceContainer: true,
         encoding: 'UTF-8', // Sigma.$encoding(), 
@@ -38,172 +38,16 @@
         skin: 'mac',
         clickStartEdit: false,
         defaultRecord: {'id': "00", 'nombre': ""},
-        pageSize: 10,
+        pageSize: 100,
         toolbarContent: 'reload | nav state'
     };
 
 
     var mygrid = new Sigma.Grid(gridOption);
-    Sigma.Util.onLoad(function() {
+
+    Sigma.Util.onLoad(function () {
         mygrid.render();
     });
-
-    $(document).ready(function() {
-        $('#id_').bind('change', obtenerBodega);
-        $('#id_').bind('keyup', validarId);
-        $('#btnBorrar').bind('click', eliminarBodega);
-        $('#esConsigna').bind('click', alternarCombo);
-
-        var url_parser = new url_handler();
-        url_parser.initialize();
-        if (url_parser.isKey('err_no')) {
-            if (url_parser.getValue('err_no') == 404) {
-                var not = $.Notify({
-	    		caption: "Error",
-	        	content: "La bodega no existe",
-	        	timeout: 3000,
-				style: {background: 'red', color: 'white'}
-	    	});
-            }
-        }
-        
-        if(url_parser.isKey('insert')){
-            var not = $.Notify({
-	    		caption: "Actualización exitosa",
-	        	content: "Los datos se han escrito en la base de datos",
-	        	timeout: 3000,
-				style: {background: 'green', color: 'white'}
-	    	});
-        }
-        if(url_parser.isKey('modify')){
-            var not = $.Notify({
-	    		caption: "Modificación exitosa",
-	        	content: "El registro fue actualizado de forma correcta",
-	        	timeout: 3000,
-				style: {background: 'green', color: 'white'}
-	    	});
-        }
-        if(url_parser.isKey('del')){
-            var not = $.Notify({
-	    		caption: "Modificación exitosa",
-	        	content: "El registro fue eliminado de forma correcta",
-	        	timeout: 3000,
-				style: {background: 'green', color: 'white'}
-	    	});
-        }
-    });
-
-    function eliminarBodega() {
-        var _idBodega = $('#id_').val().trim();
-        if (isNaN(_idBodega)) {
-            $('#id_').val("");
-        } else {
-            var des = confirm("Esta seguro?, no puede deshacer la operacion.");
-            if (des) {
-                var uri = '/{systemModuleName}/inventario/eliminar_bodega?id=';
-                location.href = uri + _idBodega;
-            }
-        }
-    }
-
-    function validarId() {
-        var _idBodega = $('#id_').val().trim();
-        if (isNaN(_idBodega)) {
-            $('#id_').val("");
-        }
-    }
-
-    function obtenerBodega() {
-        var uri = '/{systemModuleName}/inventario/obtenerBodega';
-        var _idBodega = $('#id_').val().trim();
-        var data = {
-            idBodega: _idBodega
-        };
-
-        if (isNaN(_idBodega))
-            $('#id_').val("");
-        else {
-            var post_r = $.post(uri, data, function(d) {
-                var esConsigna = !(d.bodega_consigna == "");
-                $('#nombre').val(d.nombre);
-                $('#descripcion').val(d.descripcion);
-                
-                if(d.tiene_stock == "si"){
-                    $("#tiene_stock").attr("checked", "checked");
-                }else{
-                    $("#tiene_stock").removeAttr("checked");
-                }
-                
-                if (esConsigna) {
-                    // sustituir empleado por cliente
-                } else {
-                    $("#encargado option[value=" + d.encargado + "]").attr("selected", true);
-                }
-            }, "json");
-        }
-    }
-
-    function alternarCombo() {
-        if ($('#esConsigna').attr("checked")) {
-            $('#propietario').removeAttr("disabled");
-            $('#propietarioc').css("display", "block");
-            $('#encargadoc').css("display", "none");
-            $('#encargado').attr("disabled", "disabled");
-        } else {
-            $('#encargado').removeAttr("disabled");
-            $('#encargadoc').css("display", "block");
-            $('#propietarioc').css("display", "none");
-            $('#propietario').attr("disabled", "disabled");
-        }
-    }
-    
-    function filtrarResultados(e){
-        var term = $(e.target).val();
-        var grid = Sigma.$grid("bodega_grid");
-        grid.loadURL = '/{systemModuleName}/grid_tables/bodega_grid_1?term='+term;
-    	grid.reload();
-    }
-    
-    function verificar(){
-        if(!$('#tiene_stock').prop("checked")){
-           $('#tiene_stock').prop("checked", true);
-            $.Dialog({
-                    overlay: true,
-                    shadow: true,
-                    flat: true,
-                    title: 'Necesita autorización',
-                    content: '',
-                    width:500,
-                    onShow: function(_dialog){
-                        var content = _dialog.children('.content');
-                        html = ['<div style="padding:30px;">',
-                            '<br/>',
-                            '<h4>Proveea la clave de autorización</h4>',
-                            '<input type="password" id="pass" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" onclick="auth_imp();">Autorizar</button>',
-                            '<br/>',
-                            '<br/>',
-                            '</div>'].join("");
-                        content.html(html);
-                    }
-                });
-        }
-    }
-    
-    function auth_imp()
-    {
-        pass = $('#pass').val();
-        uri  = "/inventario/inventario/autorizacion";
-        data = {"clave":pass};
-        res  = $.post(uri, data, function(d){
-            if (d.auth){
-                $('#tiene_stock').prop("checked", false);
-            } else{
-                alert("No tiene autorizacion");
-            }
-        }, "json");
-        
-        $.Dialog.close();
-    }
 
 </script>
 <style>
@@ -211,65 +55,50 @@
         margin-bottom: 5px;
     }
 </style>
-<div id="page-container">
+<div id="page-container" ng-controller="BodegaController as vm">
     <div id="content">
         <div class="grid fuild">
             <div class="row">
-                
                 <div class="panel span5" data-role="panel">
                     <div class="panel-header">Crear bodega</div>
                     <div class="panel-content">
-                        <form action="/{systemModuleName}/inventario/guardar_bodega" method="post" style="float: left;">
+                        <form action="" method="post" style="float: left;">
                             <div>
-                                <input type="checkbox" name="rellenar" id="rellenar" />
+                                <input type="checkbox" ng-model="vm.bodega.reutilizarCorrelativos"/>
                                 Rellenar correlativos vacíos  
                             </div>
                             <div>
-                                <input type="checkbox" name="tiene_stock" checked="checked" id="tiene_stock" onclick="verificar();"/>
+                                <input type="checkbox"  ng-model="vm.bodega.manejaStock"/>
                                 Maneja stock  
                             </div>
-                            <br/> 
-                            <div class="input-control text">
-                                Código (0 = Nueva bodega)
-                                <br/>
-                                <input type="text" style="width:300px;" name="id" id="id_" value="0" />
-                            </div>
                             <br/>
                             <br/>
-                            <div class="input-control text"  id="n_bodega"> 
+                            <div class="input-control text"> 
                                 <span class="fg-red">*</span> Nombre
                                 <br/>
-                                <input type="text" style="width:300px;" name="nombre" id="nombre" required/>
+                                <input type="text" style="width:300px;" ng-model="vm.bodega.nombre"/>
                             </div> 
                             <br/>
                             <br/> 
-                            <div class="input-control select" id="encargadoc">
+                            <div class="input-control select">
                                 Encargado
                                 <br/>
-                                <select style="width:300px;" name="encargado" id="encargado">
-                                    <!-- START empleados -->
-                                    <option value="{id_datos}">{usuario}</option>
-                                    <!-- END empleados -->
+                                <select style="width:300px;" ng-model="vm.bodega.encargado">
+                                    <option ng-repeat="empleado in vm.listaDeEmpleados" value="{{empleado.id}}">
+                                        {{empleado.usuario}}
+                                    </option>
                                 </select>
                             </div>
                             <br/>
-                            <div class="input-control select" id="propietarioc" style="display:none;">
-                                <select style="width:300px;" name="encargado" id="propietario" disabled="disabled">
-                                    <!-- START clientes -->
-                                    <option value="{codigo_afiliado}">{primer_nombre} {primer_apellido} [{codigo_afiliado}]</option>
-                                    <!-- END clientes -->
-                                </select>
-                            </div>
                             <br/>
                             <div class="input-control textarea">
                                 <span class="fg-red">*</span> Descripción
                                 <br/>
-                                <textarea style="width:300px;" name="descripcion" id="descripcion" required></textarea>
+                                <textarea style="width:300px;" ng-model="vm.bodega.descripcion"></textarea>
                             </div>
                             <br/>
                             <br/>
-                            <button type="submit" class="info">Guardar</button>
-                            <button type="button" id="btnBorrar"><i class="icon-cancel"></i> Eliminar</button>
+                            <button type="button" class="info" ng-click="vm.GuardarBodega();">Guardar</button>
                             <br /><br />
                         </form>
                     </div>
@@ -278,11 +107,6 @@
                 <div class="panel span9" data-role="panel">
                     <div class="panel-header">Bodegas</div>
                     <div class="panel-content">
-                        <div class="input-control text span8">
-                            <input type="text" placeholder="Introduzca el nombre o el código de una bodega" onkeyup="filtrarResultados(event);"/>
-                            <button class="btn-search" type="button"></button>
-                        </div>
-                        <br/><br/>
                         <div id="bigbox" style="margin:15px;display:!none;margin:0 auto;left:0px;right:0px;">
                             <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;margin:0 auto;left:0px;right:0px;" >
             

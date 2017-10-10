@@ -1,416 +1,51 @@
-<style type="text/css">
-    .nymsaAdvice{
-        padding: 10px;
-        background-color: #F6CECE;
-        width: auto;
-        height: auto;
-        border: solid 2px #F78181;         
-        border-radius: 5px 5px 5px 5px;
-        margin-bottom: 15px;  
-    }
- </style>
-
 <script>
-    
-    $(document).ready(function(){
-        window.nymsaLinea = null;
-        $('#proveedor').bind('change',obtenerPrefijo);
-    });
 
-    function obtenerPrefijo(){
-        var prov = $('#proveedor').val();
-        var rest = "";
-        if(prov < 10) { 
-            rest = "000"+prov;
-        }else if(prov >= 10 && prov < 100) {
-            rest = "00"+prov;
-        }else if(prov >= 100 && prov < 1000){
-            rest = "0"+prov;
-        }else{
-            rest = prov;
-        }
-
-        $('#fgs').val(rest);
-    }
-
-    var grid_demo_id  = "producto_grid";
-    var grid_demo2_id = "producto2_grid";
-    var grid_demo3_id = "producto3_grid";
-    var _nColorBuffer = [];
-    var _nDebugSystem = true; 
-    
-    function sendT(){
-        $('#talla_prod').submit();
-    }
-    
-    // carga los datos de productos ya existentes
-    function xTESt(event){             
-        var nuevo_estilo = $(event.target).val().trim();
-        var rq_url       = '/{systemModuleName}/inventario/comprobar_estilo'; 
-        var grid         = Sigma.$grid("producto2_grid"); 
-        var grid2        = Sigma.$grid("producto3_grid"); 
-        var http_request = $.post(rq_url, {estilo:nuevo_estilo, doc:{documento}, linea: $('#linea').val()}, function(data){
-            
-            if (data.found){
-                if(data.auth){
-                    clearColorContainer();
-                    resetColorContainer();
-                    window.nymsaLinea = data.data.linea;
-                    for(var j = 0; j < data.data.colors.length; j++){
-                        appendColorE(data.data.colors[j].color);
-                    }
-
-                    $('#cfslinea').val(data.data.linea);
-                    $('#codigo_origen').val(data.data.codigo_origen);
-                    $('#descripcion').val(data.data.descripcion);
-                    $('#n_pagina').val(data.data.n_pagina);
-                    $('#dias_garantia').val(data.data.garantia);
-                    $('#fecha_ingreso').val(data.data.fecha_ingreso);
-                    $('#observacion').val(data.data.observacion);
-                    if(data.data.linea!=null && data.data.linea.trim()!="")
-                        $("#linea option[value=" + data.data.linea + "]").attr("selected", true);
-                    if(data.data.proveedor!=null && data.data.proveedor.trim()!="")
-                        $("#proveedor option[value=" + data.data.proveedor + "]").attr("selected", true);
-                    if(data.data.tacon!=null && data.data.tacon.trim()!="")
-                        $("#tacon option[value=" + data.data.tacon + "]").attr("selected", true);
-                    if(data.data.suela!=null && data.data.suela.trim()!="")
-                        $("#suela option[value=" + data.data.suela + "]").attr("selected", true);
-                    if(data.data.grupo!=null && data.data.grupo.trim()!="")
-                        $("#grupo option[value=" + data.data.grupo + "]").attr("selected", true);
-                    if(data.data.material!=null && data.data.material.trim()!="")
-                        $("#material option[value=" + data.data.material + "]").attr("selected", true);
-                    if(data.data.concepto!=null && data.data.concepto.trim()!="")
-                        $("#concepto option[value=" + data.data.concepto + "]").attr("selected", true);
-                    if(data.data.catalogo!=null && data.data.catalogo.trim()!="")
-                        $("#catalogo option[value=" + data.data.catalogo + "]").attr("selected", true); 
-                    if(data.data.genero!=null && data.data.genero.trim()!="")
-                        $("#genero option[value=" + data.data.genero + "]").attr("selected", true);
-                    if(data.data.marca!=null && data.data.marca.trim()!="")
-                        $("#marca option[value=" + data.data.marca + "]").attr("selected", true);
-                    if(data.data.propiedad!=null && data.data.propiedad.trim()!="")
-                        $("#propiedad option[value=" + data.data.propiedad + "]").attr("selected", true); 
-                    $('#nota').val(data.data.nota); 
-
-                    if(!data.temp){
-                        $('#nw_b input').attr('disabled', 'disabled');
-                        $('#nw_b select').attr('disabled', 'disabled');
-                        $('#nw_b button').attr('disabled', 'disabled');
-                        $('#nw_b textarea').attr('disabled', 'disabled');
-                    }
-
-                    $('#coloresProducto').removeAttr("disabled");
-                    $('#color').removeAttr("disabled");
-                    $('#btnAddColor').removeAttr("disabled");
-                    $('#btnSaveProduct').removeAttr("disabled");
-
-                    $('.nd_s').removeAttr('disabled'); 
-                    grid.loadURL = '/{systemModuleName}/inventario/cargar_stock_ce/'+nuevo_estilo;
-                    grid2.loadURL = '/{systemModuleName}/inventario/cargar_ce/' +nuevo_estilo;
-                    grid.reload();
-                    grid2.reload();
-
-                    /**************BOTON***************/
-                    $('#CTBTN').bind('click', function(){
-                        $('#seleccionado').html($('#fgs').val());
-                        $('#estado_seleccion').val('1');
-                        $('#res_t img').remove();
-                        $('#corrida select').removeAttr('disabled');
-                        $('#corrida button').removeAttr('disabled');
-                        //$('#res_t').append('<img src=" ../static/img/producto s/thumbnail_'+record[ 'estilo']+'" alt=" Imagen no asignada"   width="400"/>');
-                        mostrar();
-                        showPane('editCyT');
-                    });
-
-                    $('#CTBTN').addClass('default');
-                    $('#CTBTN').removeClass('disabled');
-                }else{
-                    $('#fgs').val("");
-                    $('#codigo_origen').val("");
-                    $('#fgs').focus();
-                    alert("El estilo ya existe en otro documento (No."+data.ref_doc+")");
-                }    
-
-            } else{
-                $('#nw_b input').removeAttr('disabled');
-                $('#nw_b select').removeAttr('disabled');
-                $('#nw_b button').removeAttr('disabled');
-                $('#nw_b textarea').removeAttr('disabled');
-                $('#CTBTN').unbind('click');
-                $('#CTBTN').addClass('disabled');
-                $('#CTBTN').removeClass('default');
-            }
-        }, "json");
-    }
-
-    function xst(event){
-        event.preventDefault();
-        $('#fgs').val('');
-        $('#nw_b input').removeAttr('disabled');
-        $('#nw_b select').removeAttr('disabled');
-        $('#nw_b button').removeAttr('disabled');
-        $('#nw_b textarea').removeAttr('disabled');
-    }
-
-    function url_render(value, record, columnObj, grid, colNo, rowNo){
-        var estilo = $("#prod").html().trim();
-        var color  = record['color'];
-        $('#estilo').val(estilo);
-        $('#color').val(color);
-        return "<a href=\"javascript: void(0);\" onclick=\"show_hidden_form(event,'corrida');\">Agregar corrida</a>";
-    }
-
-    function nuevo_color(event){
-        event.preventDefault();
-        var estilo  = $('#fproducto').val();
-        var _color  = $('#color').val();
-        var _linea  = window.nymsaLinea;
-        var url_consulta = '/{systemModuleName}/inventario/salvar_color';
-        var exists = false;
-        $('#pcolores  option').each(function(){
-            if(this.value == _color)  {
-                exists = true;
-            }
-        });
-        if (!exists){
-            var ajax = $.post(url_consulta, {"color_estilo_producto":estilo, "color":_color, "linea":_linea});
-            ajax.done(function(data){
-                var id    = data.trim();
-                var color = $('#opt_color_'+id).html().trim();
-                $('#pcolores').append('<option value="'+id+'" selected="selected">'+color +'</option>');
-            });
-        }
-    }
-
-    function edicionTallas(){     
-        $('#estilo').val($('#fgs').val());
-        $('#corrida').css('display', 'none');
-        $('#nueva_corrida').css('display', 'block');
-        $('#gtp').css('display', 'block'); 
-        $('#gts').css('display', 'block');
-        $('#foto').css('display', 'block');
-        $('#foto2').css('display', 'block');
-    }
-
-    function edicionColores() {
-        $('#corrida').css('display', 'block');
-        $('#nueva_corrida').css('display', 'none');
-        $('#gtp').css('display', 'none');
-        $('#gts').css('display', 'none');
-        $('#foto').css('display', 'none');
-        $('#foto2').css('display', 'none');
-    }
-
-    function mostrar(){
-        var record = new Array();
-        record['estilo'] = $('#seleccionado').html().trim();
-        $('#fproducto').val(record['estilo']);
-        $('#pcolores option').remove();
-        var url_consulta = '/{systemModuleName}/inventario/colores_producto';
-        var ajax = $.post(url_consulta, {estilo: record['estilo']});
-        ajax.done(function(data){
-            var colores = data.trim().split(',');
-            for (var i = 0; i < colores.length; i++){
-                var id = colores[i].split('(')[1].split(')')[0];
-                var color = colores[i].split('(')[0];
-                $('#pcolores').append('<option value="' + id + '" selected="selected">' + color + '</option>'); 
-                $('#pcolores option').removeAttr('selected');
-            }
-        }); 
-    }
-
-    function foto(event){
-        var record = new Array();
-        if(($('#estado_seleccion').val().trim()) != '0')
-        {
-            record['estilo'] = $('#seleccionado').html().trim();
-            $('#foproducto').html(record['estilo']);
-            $('#foestilo').val(record['estilo']);
-            show_hidden_form_ne('foto');
-        }else{
-            alert('Selecciona un producto para editar');
-        }
-    }
-
-    function eliminar_color(event){
-        event.preventDefault();
-        var colores = $('#pcolores').val();
-        var _estilo = $('#seleccionado').html().trim();
-        var url_request = '/{systemModuleName}/inventario/borrar_colores';
-        var ajax = $.post(url_request, {string_colores:colores, estilo:_estilo});
-        window.color_ = colores;
-        ajax.done(function(data){
-            if(data.trim() == ""){
-                $("#pcolores").find("option[value='" + window.color_ + "']").remove();
-            }else{
-                alert(data);
-            }
-        });
-    }
+    var grid_demo_id = "documento";
 
     var dsOption = {
 
         fields :[
             {name : 'estilo'  },
-            {name : 'linea'  }, 
-             {name : 'codigo_origen'  },
-            {name : 'descripcion'  },
-            {name : 'proveedor'  },
-            {name : 'catalogo'  },
-            {name : 'n_pagina'  },
-            {name : 'genero'  },
-            {name : 'marca'  },
-            {name : 'propiedad'  },
-            {name : 'observacion'  },
-            {name : 'fecha_ingreso'},
-            {name : 'nota'  }
         ],
         uniqueField: 1,
         recordType : 'object'
     }
 
-    var dsOption2 = {
-        fields :[
-            {name : 'estilo'  },
-            {name : 'color'  },
-            {name : 'talla'  }
-        ],
-        recordType : 'object'
-    }
-
-    var dsOption3 = {
-        fields :[
-            {name : 'estilo'  },
-            {name : 'linea'  },
-            {name : 'codigo_origen'  },
-            {name : 'descripcion'  },
-            {name : 'proveedor'  },
-            {name : 'catalogo'  },
-            {name : 'n_pagina'  },
-            {name : 'genero'  },
-            {name : 'marca'  },
-            {name : 'propiedad'  },
-            {name : 'observacion'  },
-            {name : 'fecha_ingreso'},
-            {name : 'nota'  }
-        ],
-        uniqueField: 1,
-        recordType : 'object'
-    }
-
+  
     var colsOption = [
-        {id: 'estilo', header: "Estilo", width:90 },
-        {id: 'linea', header: "Linea", width:50},
-        {id: 'codigo_origen', header: "Codigo de origen", width :110},
-        {id: 'catalogo', header: "Catalogo", width :70},
-        {id: 'n_pagina', header: "N. Pagina", width :80},
-        {id: 'fecha_ingreso' , header: "Ingresa el " , width :95}
+        { id: 'estilo', header: "Estilo", width: 80 },
+        { id: 'codigo_origen', header: "Código de origen", width: 115 },
+        { id: 'catalogo', header: "Catálogo", width: 65 },
+        { id: 'n_pagina', header: "N. Página", width: 70 },
+        { id: 'descripcion', header: "Descripción", width: 95 },
+        { id: 'corrida_a', header: "Corrida - desde", width: 95 },
+        { id: 'corrida_b', header: "Corrida - hasta", width: 95 },
+        { id: 'fraccion_corrida', header: "Facción corrida", width: 95 },
+        { id: 'observacion', header: "observación", width: 95 }
     ];
 
 
-var colsOption2 = [
-     {id: 'estilo' , header: "Estilo" , width :80 },
-     {id: 'color' , header: "Color" , width :100},
-     {id: 'talla' , header: "Talla" , width :100}
-       
-];
+
+    var gridOption = {
+        id: grid_demo_id,
+        loadURL: '/inventario/inventario/ObtenerDocumentoDetalle/{documento}',
+        saveURL: '',
+        width: "810px",  //"100%", // 700,
+        height: "260",  //"100%", // 330,
+        container: 'gridbox',
+        replaceContainer: true,
+        encoding: 'UTF-8', // Sigma.$encoding(), 
+        dataset: dsOption,
+        columns: colsOption,
+        clickStartEdit: true,
+        defaultRecord: { 'id': "00" },
+        pageSize: 10,
+        allowCustomSkin: true,
+        skin: 'mac',
+        toolbarContent: 'nav state'
+    };
 
 
-var colsOption3 = [
-     {id: 'estilo' , header: "Estilo" , width :90},
-     {id: 'linea' , header: "Linea" , width :50 },
-     {id: 'codigo_origen' , header: "Codigo de origen" , width :110},
-     {id: 'catalogo' , header: "Catalogo" , width :70 },
-     {id: 'n_pagina' , header: "N. Pagina" , width :80 },
-     {id: 'fecha_ingreso' , header: "Ingresa el " , width :95}      
-];
-
-
-var gridOption={
-  id : grid_demo_id,
-  loadURL : '/{systemModuleName}/inventario/cargar_cf?tblname=documento_producto&value={documento}&field=numero_documento',
-  saveURL : '',
-  width: "100%",  //"100%", // 700,
-  height: "260",  //"100%", // 330,
-  container : 'gridbox', 
-  onCellClick  : function(value, record , cell, row,  colNO, rowNO,columnObj,grid){
-    if(colNO == 0 && record['estilo'].trim()!="")
-    {
-        $('#fgs').focus();
-        $('#linea').val(record['linea']);
-        $('#fgs').val(record['estilo']);
-        $('#fgs').change();
-        closePane('thisDoc');
-    }
-  },
-  replaceContainer : true,
-  encoding : 'UTF-8', // Sigma.$encoding(), 
-  dataset : dsOption ,
-  columns : colsOption ,
-  clickStartEdit : true ,
-  defaultRecord : {'id':"00"},
-  pageSize:10,
-  allowCustomSkin: true,
-  skin: 'mac',
-  toolbarContent : ' filter | nav state'
-};
-
-
-var gridOption2={
-  id : grid_demo2_id,
-  loadURL : '',
-  saveURL : '/{systemModuleName}/inventario/establecer_stock',
-  width: "100%",  //"100%", // 700,
-  height: "260",  //"100%", // 330,
-  container : 'gridbox2', 
-  replaceContainer : true,
-  encoding : 'UTF-8', // Sigma.$encoding(), 
-  dataset : dsOption2 ,
-  columns : colsOption2 ,
-  clickStartEdit : true ,
-  defaultRecord : {'id':"00",'nombre':""},
-  pageSize:10,
-  allowCustomSkin: true,
-  skin: 'mac',
-  toolbarContent : 'reload filter nav state'
-};
-
-
-var gridOption3={
-  id : grid_demo3_id,
-  loadURL : '',
-  saveURL : '/{systemModuleName}/inventario/actualizar?tblname=producto',
-  width: "100%",  //"100%", // 700,
-  height: "260",  //"100%", // 330,
-  container : 'gridbox3', 
-  replaceContainer : true,
-  encoding : 'UTF-8', // Sigma.$encoding(), 
-  dataset : dsOption3 ,
-  columns : colsOption3 ,
-  clickStartEdit : true ,
-  defaultRecord : {'id':"00"},
-  pageSize:10,
-  allowCustomSkin: true,
-  skin: 'mac',
-  toolbarContent : 'filter | nav state'
-};
-
-function ver_tallas(){
-  var colores = $('#pcolores').val();
-  var last    = colores[colores.length - 1].toString();
-  $('#corrida_color').html($("#pcolores").find("option[value='"+last+"']").html());
-  $('#foto_color').html($("#pcolores").find("option[value='"+last+"']").html());
-  $('#color_form').val(last);
-  $('#estilo').val($('#fproducto').val());
-  $('#talla_prod input').removeAttr('disabled');
-  $('#foto input').removeAttr('disabled');
-  $('#foestilo').val($('#seleccionado').html().trim()+'_'+last);
-  $('#res_t img').remove();
-  //$('#res_t').append('<img src="../static/img/productos/thumbnail_'+$('#seleccionado').html().trim()+'_'+last+'" alt="Imagen no asignada" width="200"/>');
-  var ajax = $.post('/{systemModuleName}/inventario/preliminar_tallas',{estilo:$('#seleccionado').html().trim(),color:last});
-  ajax.done(function(data){
-    $('#tallas_tabla').html(data);
-  });
-}
 
 var mygrid = new Sigma.Grid( gridOption );
 
@@ -418,593 +53,143 @@ Sigma.Util.onLoad(function(){
   mygrid.render()
 });
 
-var mygrid2=new Sigma.Grid( gridOption2 );
-Sigma.Util.onLoad(function(){mygrid2.render()}); 
-
-var mygrid3=new Sigma.Grid( gridOption3 );
-Sigma.Util.onLoad(function(){mygrid3.render()}); 
-
-  $('#talla_prod').on('submit',function(event){
-      var status = confirm("seguro de realizar esta accion?");
-      if(status){
-        var flg1 = true;
-        var flg2 = true;
-        var flg3 = true;
-        if(($('#inf_corrida').val()+0.0) <= 0 || isNaN($('#inf_corrida').val())){
-          flg1 = false;
-        }
-        if(($('#sup_corrida').val()+0.0) <= 0 || isNaN($('#sup_corrida').val())){
-          flg2 = false;
-        }
-        if(($('#sup_corrida').val())-($('#inf_corrida').val())<0) flg3 = false;
-            if(!(flg1 && flg2 && flg3)) 
-                alert('Ingrese valores validos');
-        return (flg1 && flg2 && flg3);
-      }else{
-        return status;
-      }
-  });
-
-function saveNewProduct(){
-    if(confirm("Desea confirmar sus cambios?")){
-        var selectedColors  = _nColorBuffer.length;
-        var currentVal      = '';
-        var dataSend        = {};
-        var validFormFlag   = true;
-        var requiredValues  = [
-            'fgs'
-            ,'linea'
-            ,'descripcion'
-            ,'proveedor'
-            ,'catalogo'
-            ,'n_pagina'
-            ,'genero'
-            ,'marca'
-            ,'material'
-            ,'concepto'
-            ,'propiedad'
-            ,'fecha_ingreso'
-            ,'tacon'
-            ,'suela'
-            ,'grupo'
-        ];
-
-        if(selectedColors < 1){
-            alert("Por favor, Ingrese al menos un color");
-        }else{
-            for(var m = 0; m < requiredValues.length; m++){
-                currentVal  = $('#'+requiredValues[m]).val();
-                if(!currentVal) currentVal = '';
-                if(currentVal.trim()=="" || typeof(currentVal)==undefined || currentVal == -1){
-                    validFormFlag = false;
-                    if(requiredValues[m]!='fgs')
-                        alert("Error: Falta "+requiredValues[m]);
-                    else
-                        alert("Error: Falta estilo");
-                }
-            }
-
-            /* organizar datos a ser enviador al servidor */
-            if(validFormFlag){
-             
-                dataSend = {
-                    "estilo" : $('#fgs').val().trim(),
-                    "linea"  : $('#linea').val().trim(),
-                    "codigo_origen" : $('#codigo_origen').val().trim(),
-                    "descripcion":$('#descripcion').val().trim(),
-                    "proveedor":$('#proveedor').val().trim(),
-                    "catalogo":$('#catalogo').val().trim(),
-                    "n_pagina":$('#n_pagina').val().trim(),
-                    "genero":$('#genero').val().trim(),
-                    "marca":$('#marca').val().trim(),
-                    "suela":$('#suela').val().trim(),
-                    "concepto":$('#concepto').val().trim(),
-                    "grupo":$('#grupo').val().trim(),
-                    "tacon":$('#tacon').val().trim(),
-                    "material":$('#material').val().trim(),
-                    "propiedad":$('#propiedad').val().trim(),
-                    "fecha_ingreso":$('#fecha_ingreso').val().trim(),
-                    "dias_garantia":$('#dias_garantia').val().trim(),
-                    "colores":_nColorBuffer,
-                    "observacion":$('#observacion').val().trim(),
-                    "nota":$('#nota').val().trim(),
-                    "documento":{documento}
-                };
-            
-
-                var uri  = "/{systemModuleName}/inventario/guardarNuevoProducto";
-                var data = { "productInfo" : JSON.stringify(dataSend) };
-                
-                $.post(uri, data, function(d){
-                    if(d.found){
-                        alert("el producto se ha actualizado exitosamente");
-                        location.href = location.href;     // reload current page
-                    }else{
-                        alert("El producto se ha ingresado exitosamente");
-                        location.href = location.href;     // reload current page
-                    }
-                }, "json");
-            }
-        }
-    }    
- }
-
-  function closePane(idPane){
-    if($('#'+idPane).css('right') == '0px'){
-      $('#'+idPane).animate({
-        'right':'-620px'
-      },500);
-    }
-  }
-
- function showPane(idPane){
-    $('.sidePane').animate({
-        'right':'-620px'
-    },500);
-    
-    if($('#'+idPane).css('right') == '-620px'){
-        $('#'+idPane).animate({
-            'right':'0px'
-        },400);
-    }
- }
-
-  function colorExist(newColor){
-    var cLenght = _nColorBuffer.length;
-    for(var i = 0; i < cLenght; i++){
-      if(_nColorBuffer[i] == newColor) return true;
-    } return false;
-  }
-
-  function colorAdd(newColor){
-    _nColorBuffer.push(newColor);
-  }
-
-  function appendColorE(idColor){
-    var selectedColor = idColor;
-    if(!colorExist(selectedColor)){
-        colorAdd(selectedColor);
-        resetColorContainer();
-        updateColorContainer();
-    }else{
-        alert("Error: Ya existe color.");
-    } 
-  }
-
-  function clearColorContainer(){
-     _nColorBuffer = [];
-  }
-
-  function appendColor(event){
-    var selectedColor = $('#color').val();
-    if(!colorExist(selectedColor)){
-        colorAdd(selectedColor);
-        resetColorContainer();
-        updateColorContainer();
-    }else{
-        alert("Error: Ya existe color.");
-    }
-  }
-
-  function checkSelected(){
-    var selectedColors  = $('#coloresProducto').val();
-    var quantiy         = selectedColors.length;
-    if(quantiy > 0){
-      $('#selectedColors').html(quantiy + ' seleccionados (<a href="javascript: void(0);" onclick="removeSelectedColors();">eliminar</a>)');
-    }else{
-      $('#selectedColors').html("");
-    }
-  }
-
-  function removeSelectedColors(){
-    var selectedColors  = $('#coloresProducto').val();
-    var quantiy         = selectedColors.length;
-    for(var k = 0; k < quantiy; k++){
-      _nColorBuffer.splice(_nColorBuffer.indexOf(selectedColors[k]),1);
-    }
-    resetColorContainer();
-    updateColorContainer();
-    $('#selectedColors').html("");
-  }
-
-  function resetColorContainer(){
-    $('#coloresProducto').find('option').remove();
-  }
-
-  function updateColorContainer(){
-    var cLenght   = _nColorBuffer.length;
-    var colorName = '';
-    var optStr    = '';
-
-    for(var k = 0; k < cLenght; k++){
-      colorName = $("#color option[value='"+_nColorBuffer[k]+"']").text();
-      optStr    = '<option value="'+_nColorBuffer[k]+'">'+colorName+'</option>';
-      $('#coloresProducto').append(optStr);
-    } 
-  }
-  
-function checkNumber(event, id){
-    var dias = $('#'+id).val().trim();
-    if(isNaN(dias)){
-        $('#'+id).val("");
-        $('#'+id).focus();
-    }
-}
-
-function copyCode(event){
-    var estilo = $('#fgs').val().trim();
-    $('#codigo_origen').val(estilo);
-}
-
 </script>
 
-<div id="page-container" style="margin-bottom: 0px;">
-    <div style="margin-right:30px;margin-bottom: 0px;">      
-        <form id="nw_b">
-            <div style="border:solid 1px #D3D3D3;padding:35px;display:table;padding-bottom:0px;margin-bottom: 0px;">
-                <div style="padding: 30px;">
-                    <div style="margin-left:5px;">
-                        <a href="javascript: void(0);" onclick="showPane('thisDoc');"><i class="icon-new"></i> Ver productos registrados en este documento </a> &nbsp;&nbsp;&nbsp;&nbsp;  
-                        <a href="javascript: void(0);" onclick="showPane('general');"><i class="icon-database"></i> Ver productos que ya han sido registrados </a> &nbsp;&nbsp;&nbsp;&nbsp;  
-                        <a href="javascript: void(0);" onclick="showPane('detail');"><i class="icon-list"></i> Ver detalle del producto seleccionado </a> &nbsp;&nbsp;&nbsp;&nbsp;
+<div id="page-container" style="margin-bottom: 0px;" ng-controller="DocumentoController as vm">
+    <div class="grid fuild">
+        <div class="row">
+            <div class="panel span5" data-role="panel" ng-show="vm.ProductStep==1">
+                <div class="panel-header">Datos generales</div>
+                <div class="panel-content">
+                    <input type="hidden" ng-model="vm.TarjetaCosto.documento"  ng-init="vm.TarjetaCosto.documento={documento}"/>
+                    <div class="input-control select">
+                        <label>Proveedor</label>
+                        <select ng-model="vm.TarjetaCosto.proveedor">
+                            <option ng-repeat="proveedor in vm.ListaDeProveedores" value="{{proveedor.id}}">{{proveedor.nombre}}</option>
+                        </select>
                     </div>
+                    <br />
+                    <div class="input-control text">
+                        <input type="text" placeholder="Estilo" ng-model="vm.TarjetaCosto.estilo"/>
+                    </div>
+                    <br />
+                    <div class="input-control text">
+                        <input type="text" placeholder="Código de origen" ng-model="vm.TarjetaCosto.codigo_origen"/>
+                    </div>
+                    <br />
+                    <div class="input-control textarea">
+                        <textarea placeholder="Descripcion del producto" ng-model="vm.TarjetaCosto.descripcion"></textarea>
+                    </div>
+                    <br />
+                    <div class="input-control text">
+                        <label>Días de garantía</label>
+                        <input type="text" placeholder="Días de garantía" ng-model="vm.TarjetaCosto.dias_garantia" ng-keyup="vm.VerificarEntero(vm.TarjetaCosto, 'dias_garantia');" />
+                    </div>
+                    <br />
                     <br/>
-                    <div style="width:200px; float:left; text-align: right; margin:10px;margin-bottom:10px;">
-                        <div class="input-control select"> 
-                            <select name="proveedor" style="margin-bottom:5px;" id="proveedor"  required/>
-                                <option value="-1">--- Seleccione un proveedor ---</option>
-                                <!-- START proveedor_ -->
-                                <option value="{id}">{nombre}</option>
-                                <!-- END proveedor_ -->
-                            </select>
-                        </div> 
-                        <br/>
-                        <div class="input-control select"> 
-                            <select name="linea" id="linea" required/>
-                            <option value="-1">--- Seleccione una linea ---</option>
-                            <!-- START lineas_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END lineas_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control text">
-                            <input type="text" placeholder="Estilo" onkeyup="copyCode(event);" name="estilo" id="fgs" class="nd_s" onchange="xTESt(event);" required/>
-                        </div>
-                        <br/>
-                        <div class="input-control text">
-                            <input type="text" style="margin-bottom:5px;" placeholder="Código de origen" name="codigo_origen" id="codigo_origen" required/>
-                        </div>
-                        <br/>
-                        <div class="input-control textarea">
-                            <textarea name="descripcion" placeholder="Descripcion del producto" id="descripcion" required></textarea>
-                        </div>
-                        <br/>
-                        <div class="input-control text">
-                            <input type="text" readonly name="fecha_ingreso" value="{fecha}" id="fecha_ingreso" required/>
-                        </div>
-                        <br/>
-                        <div class="input-control text"> 
-                            <input type="text" placeholder="Días de garantía"  name="dias_garantia" id="dias_garantia" onchange="checkNumber(event, 'dias_garantia');" />
-                        </div>
-                        <br/>
-                        <div class="input-control select">
-                            <select name="catalogo" id="catalogo" required>
-                                <option value="-1">--- Seleccione un catálogo ---</option>
-                                <!-- START catalogo -->
-                                <option value="{id}">{nombre}</option>
-                                <!-- END catalogo -->
-                            </select>
-                        </div>
+                    <div class="input-control select">
+                        <label>Catálogo</label>
+                        <select ng-model="vm.TarjetaCosto.catalogo">
+                            <option ng-repeat="catalogo in vm.ListaDeCatalogos" value="{{catalogo.id}}">{{catalogo.nombre}}</option>
+                        </select>
                     </div>
-                    <div style="width:200px; float:left; text-align: right; padding-top: 10px;">
-                        <div class="input-control text">
-                            <input type="text" placeholder="No. Página del catálogo" onchange="checkNumber(event, 'n_pagina');" id="n_pagina" name="n_pagina" maxlength="9" required/>
-                        </div>
-                        <br/>
-                        <div class="input-control select">  
-                            <select name="genero" id="genero" required/>
-                            <option  value="-1">--- Seleccione un género ---</option>
-                            <!-- START genero_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END genero_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select">
-                            <select name="marca"  id="marca" required/>
-                            <option  value="-1">--- Seleccione una marca</option>
-                            <!-- START marca_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END marca_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select">  
-                            <select name="tacon" id="tacon" required/>
-                            <option  value="-1">--- Seleccione un tacón ---</option>
-                            <!-- START tacon_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END tacon_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select">  
-                            <select name="grupo" id="grupo" required/>
-                            <option  value="-1">--- Seleccione un grupo ---</option>
-                            <!-- START grupo_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END grupo_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select">
-                            <select name="suela" id="suela" />
-                            <option  value="-1">--- Seleccione una suela ---</option>
-                            <!-- START suela_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END suela_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select"> 
-                            <select name="concepto" id="concepto" required/>
-                            <option  value="-1">--- Seleccione un concepto ---</option>
-                            <!-- START concepto_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END concepto_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select">  
-                            <select name="material" id="material" />
-                            <option  value="-1">--- Seleccione un material ---</option>
-                            <!-- START material_ -->
-                            <option value="{id}">{nombre}</option>
-                            <!-- END material_ -->
-                            </select>
-                        </div>
-                        <br/>
-                        <div class="input-control select">
-                            <select name="propiedad" id="propiedad" required/>
-                                <option  value="-1">--- Seleccione una propiedad ---</option>
-                                <option value="1">Liquidacion</option>
-                                <option value="2">Comprado</option>
-                                <option value="3">Consignacion</option>
-                            </select>
-                        </div>
+                    <br />
+                    <div class="input-control text">
+                        <input type="text" placeholder="No. Página del catálogo" ng-model="vm.TarjetaCosto.n_pagina" ng-keyup="vm.VerificarEntero(vm.TarjetaCosto, 'n_pagina');" />
                     </div>
-                    <div style="width:300px; float:left; text-align: right; padding-top: 10px;">
-                        Colores
-                        <div class="input-control select span3">
-                            <select id="coloresProducto" onclick="checkSelected();" multiple="multiple" style="margin-bottom:10px;"></select> 
-                        </div>
-                        <br/>
-                        <span id="selectedColors">No se ha selecionado ningún color</span>
-                        <br/><br/>
-                        <div class="input-control select span3">
-                            <select id="color" name="color">
-                                <!-- START color -->
-                                <option id="opt_color_{id}" value="{id}">{nombre}</option>
-                                <!-- END color -->
-                            </select>
-                        </div>
-                        <button type="button" id="btnAddColor" onclick="appendColor(event);" >
-                            Agregar 
-                            <i class="icon-plus"></i>
-                        </button>
-                        <br/>
-                        <br/>
-                        <br/><br/><br/>
-                        <button type="button" id="CTBTN" class="default disabled">
-                            Editar tallas
+                    <br /><br />
+                    <div class="input-control select">
+                        <label>Propiedad</label>
+                        <select ng-model="vm.TarjetaCosto.propiedad">
+                            <option value="1">Liquidación</option>
+                            <option value="2">Comprado</option>
+                            <option value="3">Consignación</option>
+                        </select>
+                    </div>
+                    <br />
+                    <div style="text-align:center;">
+                        <button type="button" class="primary" ng-click="vm.NextStep();">
+                            Siguiente
                         </button>
                     </div>
-
-                    <div style="width:300px; float:left; text-align: right; padding-top: 10px;">
-                        <div class="input-control textarea span3">
-                            <textarea style="margin-bottom:5px;" placeholder="Observaciones" name="observacion" id="observacion"></textarea>
-                        </div>
-                        <br/>
-                        <div class="input-control textarea span3">
-                            <textarea style="margin-bottom:5px;" placeholder="Notas" name="nota" id="nota"></textarea>
-                        </div>
-                        <br/>
-                        <br/>
-                        <input type="hidden" name="numero_documento" value="{documento}" />
-                        <input type="hidden" name="visible" value="0" />
-
-                        <input type="reset" value="Reset"/>
-                        <button type="button" id="btnSaveProduct" class="primary" onclick="saveNewProduct();">
+                </div>
+            </div>
+            <div class="panel span5" data-role="panel" ng-show="vm.ProductStep==2">
+                <div class="panel-header">Segmentación</div>
+                <div class="panel-content">
+                    <div ng-repeat="categoria in vm.ListaDeCategorias" class="input-control select">
+                        <label>{{categoria.grupo_producto}}</label>
+                        <select multi-select-checker ng-model="vm.TarjetaCosto.categorias[categoria.id_grupo]" 
+                                ng-options="ce.id_categoria_especifica as ce.nombre for ce in vm.ListaDeCategoriasEspecificas[categoria.id_grupo]">
+                        </select>
+                    </div>
+                    <div style="text-align:center;">
+                        <button type="button" ng-click="vm.PrevStep();">
+                            Atrás
+                        </button>
+                        <button type="button" class="primary" ng-click="vm.NextStep();">
+                            Siguiente
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel span5" data-role="panel" ng-show="vm.ProductStep==3">
+                <div class="panel-header">Finalizando</div>
+                <div class="panel-content">
+                    <div class="input-control text">
+                        <label>Corrida desde</label>
+                        <input type="text" ng-model="vm.TarjetaCosto.corridaA" ng-keyup="vm.VerificarEntero(vm.TarjetaCosto, 'corridaA');"/>
+                    </div>
+                    <br/><br />
+                    <div class="input-control text">
+                        <label>Corrida hasta</label>
+                        <input type="text"  ng-model="vm.TarjetaCosto.corridaB" ng-keyup="vm.VerificarEntero(vm.TarjetaCosto, 'corridaB');"/>
+                    </div>
+                    <br /><br />
+                    <div class="input-control text">
+                        <label>Fracción corrida</label>
+                        <input type="text" ng-model="vm.TarjetaCosto.fraccionCorrida" ng-keyup="vm.VerificarEntero(vm.TarjetaCosto, 'fraccionCorrida');"/>
+                    </div>
+                    <br/><br /><br />
+                    <div class="input-control textarea">
+                        <textarea style="margin-bottom:5px;" placeholder="Observaciones" ng-model="vm.TarjetaCosto.observaciones"></textarea>
+                    </div>
+                    <br />
+                    <div class="input-control textarea">
+                        <textarea style="margin-bottom:5px;" placeholder="Notas" ng-model="vm.TarjetaCosto.notas"></textarea>
+                    </div>
+                    <br />
+                    <br />
+                    <div style="text-align:center;">
+                        <button type="button" ng-click="vm.PrevStep();">
+                            Atrás
+                        </button>
+                        <button type="button" class="primary" ng-click="vm.InsertarProducto();">
                             Registrar producto
                         </button>
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
+            <div class="panel span11" data-role="panel">
+                <div class="panel-header">Productos ingresados al documento</div>
+                <div class="panel-content">
+                    <div class="input-control text span2" style="margin-right:5px; margin-left: 15px;">
+                        <label>Documento #</label>
+                        <input type="text" ng-model="vm.TarjetaCosto.documento" disabled />
+                    </div>
+                    <div class="input-control text span2">
+                        <label>Estilo</label>
+                        <input type="text" ng-model="vm.TarjetaCosto.estilo" disabled/>
+                    </div>
+                    <div style="clear: both;"></div>
+                    <br/>
+                    <div id="bigbox" style="margin:15px;display:!none;">
+                        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;">
 
-    <div style="float:left;margin:15px;">
-        <!-- RESUMEN DE PRODUCTOS -->
-        <div id="resumen_prod" style="margin-top:50px;">
-            <!-- ESTADO PRODUCTO SELECCIONADO -->
-            <div style="font-size:18px;display:inline" id="res_t">
-                <input type="hidden" id="estado_seleccion" value="0"/>
-                <h2>
-                    <span id="seleccionado" style="display:none;">
-                        No ha sido seleccionado ning&uacute;n producto
-                    </span>
-                </h2>
-            </div><!-- FIN ESTADO PRODUCTO SELECCIONADO -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </div> 
 </div>
-
-<!-- PANELES -->
-<div id="thisDoc" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
-    <h3>En este documento</h3>
-    <button onclick="closePane('thisDoc')">Cerrar</button>
-    <div id="bigbox" style="margin:15px;display:!none;width:500px;">
-        <div id="gridbox" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-        </div>
-    </div>
-    <div class="tile quadro bg-cyan">
-        <div class="tile-content">
-            <p style="padding:15px;color:#fff;text-align: justify;">
-                Muestra los productos ingresados en el documento. Para conocer más detalles del producto ingrese el estilo en el campo 
-                <a href="javascript: void(0);" onclick="$('#fgs').focus();" style="color: white; font-weight: bold;">"Estilo"</a>
-                Del formulario y presione la tecla de tabulación (tab).
-                <br/>
-            </p>
-        </div>
-        <div class="brand">
-            <div class="badge alert"></div>
-        </div>
-    </div>
-</div>
-<div id="general" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
-    <h3>Registrados</h3>
-    <button onclick="closePane('general')">Cerrar</button>
-    <div id="bigbox3" style="margin:15px;display:!none;width:500px;">
-        <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-        </div>
-    </div>
-    <div class="tile quadro bg-cyan">
-        <div class="tile-content">
-            <p style="padding:15px;color:#fff;text-align: justify;">
-                Muestra los productos ingresados en el sistema. Para conocer más detalles del producto ingrese el estilo en el campo 
-                <a href="javascript: void(0);" onclick="$('#fgs').focus();" style="color: white; font-weight: bold;">"Estilo"</a>
-                Del formulario y presione la tecla de tabulación (tab).
-                <br/>
-            </p>
-        </div>
-        <div class="brand">
-            <div class="badge alert"></div>
-        </div>
-    </div>
-</div>
-<div id="detail" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
-    <h3>Detalle en inventario</h3>
-    <button onclick="closePane('detail')">Cerrar</button>
-    <div id="bigbox2" style="margin:15px;display:!none;width:500px;">
-        <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-        </div>
-    </div>
-    <div class="tile quadro bg-cyan">
-        <div class="tile-content">
-            <p style="padding:15px;color:#fff;text-align: justify;">
-                Colores y tallas registrados en el sistema para el producto seleccionado. (El sistema evita la duplicidad)
-            </p>
-        </div>
-        <div class="brand">
-            <div class="badge alert"></div>
-        </div>
-    </div>
-</div>
-
-<div id="editCyT" class="sidePane" style="width:600px;height:100%;background:#fff;position:fixed;top:0px;right:-620px;z-index:100000;box-shadow:-1px -1px 4px 2px #d3d3d3;padding-left:20px;">
-    <button onclick="closePane('editCyT'); edicionColores();" style="margin:10px;">Cerrar</button>
-    <div id="corrida" style="width:400px;text-align:left;background: #fff;padding-left:20px;" class="span5">
-        <form id="corrida_formulario" action="/{systemModuleName}/inventario/salvar_color" method="post">
-            <fieldset>
-                <input type="hidden" value="" id="fproducto" name="color_estilo_producto" /> 
-                <h3>Colores Disponibles</h3>
-                <ul>
-                    <li style="padding:5px;">
-                        Seleccione un color y presione 
-                        <button type="button" onclick="javascript:void(0);" >Agregar color <i class="icon-plus"></i></button> 
-                        para añadir un color al producto
-                    </li>
-                    <li style="padding:5px;">
-                        Seleccione un color de la lista de colores disponibles y presione 
-                        <button type="button" onclick="javascript:void(0);" >Eliminar <i class="icon-remove"></i></button> 
-                        para suprimir el color seleccionado para ese producto</li>
-                    <li style="padding:5px;">
-                        Seleccione un color de la lista de colores disponibles y presione 
-                        <button type="button" onclick="javascript:void(0);" >Editar <i class="icon-pencil"></i></button> 
-                        para editar las tallas del color seleccionado
-                    </li>
-                </ul>
-                <br/><br/>
-                <h4>Colores disponibles:</h4>
-                <select id="pcolores" style="width:300px;"></select>  
-                <br/><br/>
-                <button type="button" onclick="eliminar_color(event);" >
-                    Eliminar 
-                    <i class="icon-remove"></i>
-                </button>
-                <button type="button" onclick="editar_tallas(event);" >
-                    Editar 
-                    <i class="icon-pencil"></i>
-                </button>
-                <br/>
-            </fieldset>
-        </form>
-    </div><!-- FIN INFORMACION DE COLORES -->
-
-    <!-- TALLAS -->
-    <div id="nueva_corrida" style="display:none;margin-top:10px;">
-        <form id="talla_prod" action="/{systemModuleName}/inventario/agregar_corrida_doc?doc={documento}" style="width:300px;" method="post">
-            <fieldset style="padding:15px;border: solid 1px #D3D3D3;">
-                <p>
-                    <strong>Talla para color:</strong> <span id="corrida_color"></span>
-                </p>
-                <input type="hidden" id="estilo" name="estilo" />
-                <input type="hidden" id="cfslinea" name="linea" />
-                <input type="hidden" id="color_form" name="color" />
-                Corrida: 
-                <input type="text" id="inf_corrida" name="inf_corrida" disabled="disabled" style="width:50px;" required/>
-                <input type="text" id="sup_corrida" name="sup_corrida" disabled="disabled" style="width:50px;" required/>
-                - con medios
-                <input type="checkbox" name="medios" disabled="disabled" />
-                <br /><br />
-                <input type="button" onclick="sendT();" value="Agregar" class="button" />
-            </fieldset>
-        </form>
-    </div><!-- FIN TALLAS-->
-    <!--
-    <div id="foto" style="background:#fff;width:300px;display:none;margin-top:10px;">
-        <form id="foto2" action="/{systemModuleName}/inventario/subir_foto" style="display:none;" method="post" enctype="multipart/form-data">
-            <fieldset style="padding:15px;border: solid 1px #D3D3D3;margin-right:20px;">
-                <p>
-                    <strong>Foto para color:</strong> <span id="foto_color"></span>
-                </p>
-                <input type="hidden" name="estilo" id="foestilo" />
-                <input type="hidden" name="documento" value="{documento}" /> 
-                Foto: <input type="file" name="foto" disabled="disabled"/>
-                <br/>
-                <br/>
-                <input type="submit" class="boton" value="Subir" disabled="disabled" />
-            </fieldset>
-        </form>
-    </div>-->
-    <div>
-        <h5 id="gts" style="display:none;">Tallas disponibles</h5>
-        <div id="gtp" style="display:none;margin-left:25px;margin-top:10px;overflow:auto;height:100px;" class="span2">
-            <span id="tallas_tabla">
-            </span>
-        </div>
-    </div>
-</div>
-
-
-<script>
-    function registrar_estilo(event){
-        var nuevo_estilo = $('#nuevo_estilo').val();
-        var request_url = '/{systemModuleName}/inventario/comprobar_estilo';
-        var http_request = $.post(request_url, {estilo:nuevo_estilo, doc:{documento}});
-        http_request.done(function(data){
-            $('#estatus').html(data.trim());
-        });
-        var grid = Sigma.$grid(grid_demo_id);
-         grid.reload();
-    }
-
-    function editar_tallas(){
-        edicionTallas();
-        ver_tallas();
-    }
-</script>

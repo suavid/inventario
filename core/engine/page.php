@@ -38,6 +38,10 @@ class page {
     function __construct() {
         $this->tags['systemModuleName'] = MODULE;
         $this->mod['systemModuleName']  = true;
+        $this->tags['REPORT_URL'] = REPORT_URL;
+        $this->mod['REPORT_URL']  = true;
+        $this->tags['REPORT_SERVER_URL'] = REPORT_SERVER_URL;
+        $this->mod['REPORT_SERVER_URL']  = true;
     }
 
     /**

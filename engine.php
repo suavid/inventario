@@ -4,30 +4,20 @@ session_start();
 
 error_reporting(E_ALL);
 
-define("BUSINESS_MANAGER", false);
-
-require_once('settings/settings.php');  # carga configuraciones
-require_once('scripts/encryption.php'); # funciones de proteccion de datos
+require_once('settings/settings.php');
+require_once('scripts/encryption.php');
 
 import('core.bm_engine');
 
 date_default_timezone_set(TIMEZONE);
 
-import('core.engine.database');
 import('core.engine.template');
 import('core.engine.page');
 import('core.engine.frontController');
 import('core.handler.http');
 import('core.handler.controller');
-import('core.handler.object');
 import('core.handler.sessionHandler');
-import('core.handler.MysqliHandler');
-import('core.handler.debugHandler');
-import('core.orm.helper');
 
-import('scripts.loghandler');
-import('scripts.pdf.fpdf');
-import('scripts.pdf.report');
 import('scripts.alias');
 import('scripts.init_setup');
 
@@ -87,7 +77,6 @@ $plugins = array(
 );
 
 BM::singleton()->storeObject('template', 'temp');
-BM::singleton()->storeObject('database', 'db');
 BM::singleton()->storeSetting('default', 'skin');
 
 BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/jquery.min.js');
@@ -104,7 +93,7 @@ BM::singleton()->getObject('temp')->getPage()->setCss('../UI-Core/css/metro-boot
 BM::singleton()->getObject('temp')->getPage()->setCss('../UI-Core/css/metro-bootstrap.css');
 BM::singleton()->getObject('temp')->getPage()->setCss('../UI-Core/css/iconFont.min.css');
 
-BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/business.manager.1.0.js');
+BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/core.js');
 
 foreach ($plugins as $plugin) {
     BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/metro/' . $plugin . '.js');
@@ -117,10 +106,8 @@ BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/plugins/sigma/g
 BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/plugins/sigma/grid/flashchart/fusioncharts/FusionCharts.js');
 BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/hot.js');
 
-BM::storeSetting(array("trace" => 1, "exception" => true, "soap_version"=>SOAP_1_1), "SOAP_OPTIONS");
-
-$front = new frontController(array());  
-$front->run();                         
+$front = new frontController(array());
+$front->run();
 
 exit();
 

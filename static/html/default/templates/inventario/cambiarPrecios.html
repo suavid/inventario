@@ -1,13 +1,7 @@
 <script>
 
-    var grid_demo_id = "stock_grid";
-    var grid_demo3_id = "producto_grid";
-
-    function img_render(value, record, columnObj, grid, colNo, rowNo) {
-        var producto = record['control_estilo'];
-        var color = record['color'];
-        return '<img src="../static/img/productos/thumbnail_' + producto + '_' + color + '" alt="No disponible" width="100"/>';
-    }
+    var stock_grid = "stock_grid";
+    var producto_grid = "producto_grid";
 
     function precio_format(value, record, columnObj, grid, colNo, rowNo) {
         return '$' + record['precio'];
@@ -17,35 +11,7 @@
         return '$' + record['costo'];
     }
 
-    function stock_render(value, record, columnObj, grid, colNo, rowNo) {
-        var producto = record['control_estilo'];
-        var color = record['color'];
-        var talla = record['talla'];
-        var linea = record['linea'];
-        return '<span class="metrouicss"><a href="javascript: void(0);" class="button fg-color-white bg-color-green" onclick="cambiarPrecio(event,\'' + producto + '\',' + color + ',' + talla + ',' + linea + ');">Cambiar precio</a></span>';
-    }
-
-    function cambiarPrecio(event, estilo, color, talla, linea) {
-        var nuevoPrecio = prompt("Nuevo precio \nProducto " + estilo + "-" + color + "-" + talla + "-" + linea, "");
-        if (nuevoPrecio.toString().trim() == "" || (nuevoPrecio + 0.0) <= 0 || isNaN(nuevoPrecio)) {
-            alert('Es necesario que ingrese una cantidad valida');
-        } else {
-            if (confirm("Esta Seguro de querer realizar esta accion?")) {
-                uri = '/{systemModuleName}/inventario/nuevoPrecioProducto/' + parseFloat(nuevoPrecio) + '/' + estilo + '/' + color + '/' + parseFloat(talla) + '/' + linea;
-                data = {};
-                ajaxRq = $.post(uri, data, function(data) {
-                    if (data.status == 200) {
-                        alert("Precio actualizado correctamente");
-                        location.href = location.href;
-                    } else {
-                        alert("Error");
-                    }
-                }, "json");
-            }
-        }
-    }
-
-    var dsOption = {
+    var dsOptionStock = {
         fields: [
             {name: 'control_estilo'},
             {name: 'color'},
@@ -56,7 +22,7 @@
         recordType: 'object'
     }
 
-    var dsOption3 = {
+    var dsOptionProducto = {
         fields: [
             {name: 'estilo'},
             {name: 'linea'},
@@ -75,37 +41,34 @@
         recordType: 'object'
     }
 
-    var colsOption = [
+    var colsOptionStock = [
         {id: 'linea', header: "Linea", width: 90},
-        {id: 'control_estilo', header: "Estilo", width: 80},
+        {id: 'control_estilo', header: "Estilo", width: 90},
         {id: 'color', header: "Color", width: 90},
         {id: 'talla', header: "Talla", width: 90},
-        {id: 'precio', header: "Precio", width: 75, renderer: precio_format},
-        {id: 'costo', header: "Costo", width: 75, renderer: costo_format}
+        {id: 'precio', header: "Precio", width: 95, renderer: precio_format},
+        {id: 'costo', header: "Costo", width: 95, renderer: costo_format}
     ];
 
-    var colsOption3 = [
-        {id: 'linea', header: "Linea", width: 40},
-        {id: 'estilo', header: "Estilo", width: 60},
-        {id: 'descripcion', header: "Descripcion", width: 100},
-        {id: 'catalogo', header: "Catalogo", width: 50},
-        {id: 'n_pagina', header: "N. Pagina", width: 60},
-        {id: 'genero', header: "Genero", width: 50},
-        {id: 'marca', header: "Marca", width: 50},
-        {id: 'fecha_ingreso', header: "Fecha", width: 80}
+    var colsOptionProducto = [
+        {id: 'linea', header: "Línea", width: 70},
+        {id: 'estilo', header: "Estilo", width: 90},
+        {id: 'descripcion', header: "Descripción", width: 210},
+        {id: 'catalogo', header: "Catálogo", width: 100},
+        {id: 'n_pagina', header: "N. Pagina", width: 90}
     ];
 
-    var gridOption = {
-        id: grid_demo_id,
-        loadURL: '/{systemModuleName}/inventario/cargar_stock2',
+    var gridOptionStock = {
+        id: stock_grid,
+        loadURL: '',
         saveURL: '',
-        width: "100%", //"100%", // 700,
-        height: "280", //"100%", // 330,
+        width: "100%", 
+        height: "280", 
         container: 'gridbox',
         replaceContainer: true,
-        encoding: 'UTF-8', // Sigma.$encoding(), 
-        dataset: dsOption,
-        columns: colsOption,
+        encoding: 'UTF-8', 
+        dataset: dsOptionStock,
+        columns: colsOptionStock,
         allowCustomSkin: true,
         skin: 'mac',
         clickStartEdit: true,
@@ -114,17 +77,17 @@
         toolbarContent: 'reload filter nav state'
     };
 
-    var gridOption3 = {
-        id: grid_demo3_id,
-        loadURL: '/{systemModuleName}/inventario/cargar?tblname=producto',
+    var gridOptionProducto = {
+        id: producto_grid,
+        loadURL: '',
         saveURL: '',
-        width: "100%", //"100%", // 700,
-        height: "280", //"100%", // 330,
+        width: "100%", 
+        height: "280", 
         container: 'gridbox2',
         replaceContainer: true,
-        encoding: 'UTF-8', // Sigma.$encoding(), 
-        dataset: dsOption3,
-        columns: colsOption3,
+        encoding: 'UTF-8',
+        dataset: dsOptionProducto,
+        columns: colsOptionProducto,
         clickStartEdit: true,
         allowCustomSkin: true,
         skin: 'mac',
@@ -134,376 +97,20 @@
     };
 
 
-    var mygrid = new Sigma.Grid(gridOption);
-    Sigma.Util.onLoad(
-            function() {
-                mygrid.render();
-                Sigma.$('bigbox4').style.display = "none";
-                Sigma.$('bigbox3').style.display = "none";
-            });
+    var StockGrid = new Sigma.Grid(gridOptionStock);
 
-    var mygrid2 = new Sigma.Grid(gridOption3);
-    Sigma.Util.onLoad(function() {
-        mygrid2.render();
+    Sigma.Util.onLoad(function () {
+        StockGrid.render();
     });
 
+    var ProductoGrid = new Sigma.Grid(gridOptionProducto);
 
-    $(function() {
-
-        $('#btnCambios').bind('click', function(event) {
-            event.preventDefault();     // prevenir eventos por defecto del navegador
-            mConfirmar = confirm("Esta seguro de realiar esta accion?"); // pide la confirmacion del usuario
-
-            if (mConfirmar) {
-                /* se confirma la realizacion de los cambios */
-                campos = $('#selecciones input[type="checkbox"]');  // obtiene todos los posibles cambios
-                selecciones = [];                                   // array de selecciones
-
-                /* obtener aquellos cambios que van a ser aplicados  */
-                ct = 0;
-                for (i = 0; i < campos.length; i++) {
-                    if (campos[i].checked) {
-                        selecciones[ct++] = $(campos[i]).attr("id").split("_")[1]; // si el campo esta marcado se agrega a selecciones
-                    }
-                }
-
-                /* verifica que ningun cambio confirmado posee un valor no valido  */
-                empty_var = false       // control de campo vacio
-                for (i = 0; i < selecciones.length; i++) {
-                    if ($("#n" + selecciones[i]).val().trim() == "") {
-                        empty_var = true;                   // un campo vacio evita que toda la informacion sea enviada
-                        $("#n" + selecciones[i]).focus();     // enfoca el campo respectivo (la primera ocurrencia)
-                    }
-                }
-
-                /* si no hay datos faltantes se procesa la peticion  */
-                if (!empty_var) {
-                    estilo = $('#estilo').val().trim(); // obtiene es estilo seleccionado
-                    linea = $('#linea').val().trim();  // obtiene la linea seleccionada 
-
-                    /* debe indicarse un estilo y una linea para reducir errores */
-                    if (estilo != "" || linea != "") {
-
-                        /* cambios que se aplican al producto independientemente del color o la talla */
-                        uriG = '/{systemModuleName}/inventario/cambiarDatoGeneral';  // url que manera la peticion de cambios
-
-                        // datos necesarios para este tipo de cambios
-                        dataG = {
-                            "estilo": estilo,
-                            "linea": linea
-                        };
-
-                        for (i = 0; i < selecciones.length; i++) {
-                            dataG[selecciones[i]] = $('#n' + selecciones[i]).val(); // obtiene los valores que se van a cambiar
-                        }
-
-                        /*  se realizan los cambios de manera asincrona y se actualiza el grid */
-                        GRqu = $.post(uriG, dataG, function(data) {
-                            grid = Sigma.$grid("producto_grid");
-                            grid.reload();
-                        }, "json");
-
-                        /******* cambios especificos (se puede filtrar por distintos colores y tallas) **********/
-
-                        /* cambio de precio */
-                        // encontrar precio
-                        pos = -1;
-
-
-                        for (i = 0; i < selecciones.length; i++)
-                            if (selecciones[i] == 'precio')
-                                pos = i; // verifica la posicion del precio dentro de las selecciones (-1 si no lo puede encontrar)
-
-                        // primero verificamos si el precio fue seleccionado para cambiar
-                        if (pos != -1) {
-                            // primero revisamos que el precio sea numerico
-                            if ($('#n' + selecciones[pos]).val().toString().trim() == "" || ($('#n' + selecciones[pos]).val() + 0.0) <= 0 || isNaN($('#n' + selecciones[pos]).val())) {
-                                alert('Es necesario que ingrese una cantidad valida'); // validamos que el tipo de dato sea correcto
-                            } else {
-                                //uri     = '/{systemModuleName}/inventario/CambioMasivoDePrecio';     // url que atendera la peticion de cambio de precio
-
-                                /* se obtienen los datos necesarios*/
-                                talla = $('#talla').val().trim();         // talla inferior
-                                talla2 = $('#talla2').val().trim();        // talla superior
-                                precio = $('#n' + selecciones[pos]).val();   // el nuevo precio a ser aplicado
-
-                                // si las tallas estan vacias asumimos su valor como cero
-                                if (talla == "")
-                                    talla = 0;
-                                if (talla2 == "")
-                                    talla2 = 0;
-
-                                if (((talla + 0.0) < 0 || isNaN(talla)) || ((talla2 + 0.0) < 0 || isNaN(talla2))) {
-                                    alert("No se han ingresado tallas validas"); // verificamos que cada valor de talla especificado sea valido
-                                } else {
-                                    color = $('#color').val().trim();                 // obtenemos el color (puede que no se haya ingresado)
-                                    uri = '/{systemModuleName}/inventario/efectuarCambioPrecios';  // url que atendera la peticion
-
-                                    // datos necesarios para completar la transaccion
-                                    data = {
-                                        "estilo": estilo,
-                                        "linea": linea,
-                                        "color": color,
-                                        "precio": precio,
-                                        "talla1": talla,
-                                        "talla2": talla2
-
-                                    };
-
-                                    // se realiza la peticion y se actualiza el grid
-                                    rqCP = $.post(uri, data, function(data) {
-                                        grid = Sigma.$grid("stock_grid");
-                                        grid.reload();
-                                    }, "json");
-                                }
-                            }
-
-                        } // fin de procedimiento para cambiar precio
-
-
-                        /* cambio de costo */
-                        // encontrar costo
-                        pos = -1;
-                        for (i = 0; i < selecciones.length; i++) {
-                            if (selecciones[i] == 'costo') {
-                                pos = i; // verifica la posicion del costo dentro de las selecciones (-1 si no lo puede encontrar)
-                            }
-                        }
-
-                        // primero verificamos si el costo fue seleccionado para cambiar
-                        if (pos != -1) {
-                            if ($('#n' + selecciones[pos]).val().toString().trim() == "" || ($('#n' + selecciones[pos]).val() + 0.0) <= 0 || isNaN($('#n' + selecciones[pos]).val())) {
-                                alert('Es necesario que ingrese una cantidad valida'); // primero revisamos que el costo sea numerico
-                            } else {
-
-                                // uri = '/{systemModuleName}/inventario/CambioMasivoDeCosto';
-
-                                // seleccionamos los datos que vamos a necesitar
-                                talla = $('#talla').val().trim();
-                                talla2 = $('#talla2').val().trim();
-                                costo = $('#n' + selecciones[pos]).val();
-
-                                // si los datos 
-                                if (talla == "")
-                                    talla = 0;
-                                if (talla2 == "")
-                                    talla2 = 0;
-
-                                if (((talla + 0.0) < 0 || isNaN(talla)) || ((talla2 + 0.0) < 0 || isNaN(talla2))) {
-                                    alert("No se han ingresado tallas validas"); // verifica que los datos de tallas sean validos
-                                } else {
-                                    color = $('#color').val().trim();                 // obtiene el color (no es un campo requerido y por lo tanto puede ir vacio)
-                                    uri = '/{systemModuleName}/inventario/efectuarCambioCostos';    // url que se va a encargar de manejar la peticion
-
-                                    // datos necesarios para realizar la peticion
-                                    data = {
-                                        "estilo": estilo,
-                                        "linea": linea,
-                                        "color": color,
-                                        "costo": costo,
-                                        "talla1": talla,
-                                        "talla2": talla2
-
-                                    };
-
-                                    // se realiza la pericion y se actualiza el grid
-                                    rqCP = $.post(uri, data, function(data) {
-                                        grid = Sigma.$grid("stock_grid");
-                                        grid.reload();
-                                    }, "json");
-                                }
-                            }
-
-                        } // fin de procedimiento para cambiar costo
-
-                    } else {
-                        alert("Seleccione una linea y un estilo");
-                    }
-
-                } else {
-                    alert("No puede dejar datos en blanco");
-                }
-            }
-        });
-
-        $('#estilo').bind('change', function(event) {
-            estilo = $('#estilo').val().trim();
-            linea = $('#linea').val().trim();
-
-            //fliltrar(estilo,linea);
-            FILTRO();
-            FILTRO_ESPECIFICO();
-            uri = "/{systemModuleName}/inventario/DatosGeneralesProducto";
-            data = {
-                "estilo": estilo,
-                "linea": linea
-            };
-            http_request = $.post(uri, data, function(data) {
-                $('#catalogo').val(data.catalogo);
-                $('#pagina').val(data.n_pagina);
-                $('#propiedad option[value='+data.propiedad+']').attr("selected","selected");
-            }, "json");
-
-        });
-
-        $('#linea').bind('change', function(event) {
-            estilo = $('#estilo').val().trim();
-            linea = $('#linea').val().trim();
-            FILTRO();
-            FILTRO_ESPECIFICO();
-        });
-
-        $('#color').bind('change', function(event) {
-            FILTRO();
-            FILTRO_ESPECIFICO();
-        });
-
-        $('#talla').bind('change', function(event) {
-            FILTRO();
-            FILTRO_ESPECIFICO();
-        });
-
-        $('#talla2').bind('change', function(event) {
-            FILTRO();
-            FILTRO_ESPECIFICO();
-        });
-
+    Sigma.Util.onLoad(function () {
+        ProductoGrid.render();
     });
-
-
-    //*****************************************************
-
-
-    function FILTRO() {
-        estilo = $('#estilo').val().trim();
-        linea = $('#linea').val().trim();
-        var filtros = [];
-        if (estilo != "")
-            filtros.push(['estilo', estilo].join(":"));
-        if (linea != "")
-            filtros.push(['linea', linea].join(":"));
-        if (linea != "" || estilo != "") {
-            var uri = "/{systemModuleName}/inventario/cargar_con_filtro?tblname=producto&filtros=" + filtros;
-            var grid = Sigma.$grid("producto_grid");
-            grid.loadURL = uri;
-            grid.reload();
-        }
-    }
-
-    function FILTRO_ESPECIFICO() {
-        estilo = $('#estilo').val().trim();
-        linea = $('#linea').val().trim();
-        color = $('#color').val().trim();
-        talla = $('#talla').val().trim();
-        talla2 = $('#talla2').val().trim();
-
-        var filtros = [];
-        if (estilo != "")
-            filtros.push(['control_estilo', estilo].join(":"));
-        if (linea != "")
-            filtros.push(['linea', linea].join(":"));
-        if (color != "")
-            filtros.push(['color', color].join(":"));
-
-        if (linea != "" || estilo != "") {
-            var uri = "/{systemModuleName}/inventario/cargar_stock2_con_filtro?filtros=" + filtros + '&talla=' + talla + '&talla2=' + talla2;
-            var grid = Sigma.$grid("stock_grid");
-            grid.loadURL = uri;
-            grid.reload();
-        }
-    }
-
-    /*************************************************/
-
-    function fliltrar(estilo, linea) {
-        var filterInfo = [
-            {
-                fieldName: "control_estilo",
-                logic: "equal",
-                value: estilo
-            },
-            {
-                fieldName: "linea",
-                logic: "equal",
-                value: linea
-            }
-        ]
-
-        var filterInfo2 = [
-            {
-                fieldName: "estilo",
-                logic: "equal",
-                value: estilo
-            },
-            {
-                fieldName: "linea",
-                logic: "equal",
-                value: linea
-            }
-        ]
-
-        var grid = Sigma.$grid("stock_grid");
-        var grid2 = Sigma.$grid("producto_grid");
-        var rowNOs = grid.applyFilter(filterInfo);
-        var rowNOs2 = grid2.applyFilter(filterInfo2);
-    }
-
-    function fliltrarColor(estilo, linea, color) {
-        var filterInfo = [
-            {
-                fieldName: "control_estilo",
-                logic: "equal",
-                value: estilo
-            },
-            {
-                fieldName: "linea",
-                logic: "equal",
-                value: linea
-            },
-            {
-                fieldName: "color",
-                logic: "equal",
-                value: color
-            }
-        ]
-        var grid = Sigma.$grid("stock_grid");
-        var rowNOs = grid.applyFilter(filterInfo);
-    }
-
-    function fliltrarTalla(estilo, linea, color, talla, talla2) {
-        var filterInfo = [
-            {
-                fieldName: "control_estilo",
-                logic: "equal",
-                value: estilo
-            },
-            {
-                fieldName: "linea",
-                logic: "equal",
-                value: linea
-            },
-            {
-                fieldName: "color",
-                logic: "equal",
-                value: color
-            },
-            {
-                fieldName: "talla",
-                logic: "greatEqual",
-                value: talla
-            },
-            {
-                fieldName: "talla",
-                logic: "lessEqual",
-                value: talla2
-            }
-        ]
-        var grid = Sigma.$grid("stock_grid");
-        var rowNOs = grid.applyFilter(filterInfo);
-    }
 
 </script>
-<div class="grid">
+<div class="grid" ng-controller="DocumentoController as vm ">
     <div class="row">
         <div class="panel span8">
             <div class="panel-header">
@@ -512,39 +119,31 @@
             <div class="panel-content">
                 <br />
                 <label>Datos del producto</label>
-                <div class="input-control text span3"> 
-                    <input type="text" name="linea" id="linea" placeholder="Linea"/>
+                <div class="input-control text"> 
+                    <input type="text" placeholder="Linea" ng-model="vm.Producto.linea"/>
                 </div>
-                <br />
-                <br />
-                <br />
-                <div class="input-control text span3">
-                    <input type="text" name="estilo" id="estilo" placeholder="Estilo"/>
+  
+                <div class="input-control text">
+                    <input type="text" placeholder="Estilo" ng-model="vm.Producto.estilo"/>
                 </div>
-                <br />
-                <br />
-                <br />
-                <div class="input-control text span3">        
-                    <input type="text" name="color" id="color" placeholder="Color"/>
+
+                <div class="input-control text">        
+                    <input type="text" placeholder="Color" ng-model="vm.Producto.color"/>
                 </div>
-                <br />
-                <br />
-                <br />
+
                 <label>Corrida</label>
-                <div class="input-control text span3">
-                    <input type="text" name="talla" id="talla" placeholder=" desde"/>  
+                <div class="input-control text ">
+                    <input type="text" placeholder="Desde" ng-model="vm.Producto.tallaInferior"/>  
                 </div>
-                <br />
-                <br />
-                <br />
-                <div class="input-control text span3">
-                    <input type="text" name="talla2" id="talla2" placeholder="hasta"/>
+
+                <div class="input-control text ">
+                    <input type="text" placeholder="Hasta" ng-model="vm.Producto.tallaSuperior"/>
                 </div> 
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
+
+                <p style="text-align:right;">
+                    <br/>
+                    <button class="primary" ng-click="vm.BuscarProductos();">Buscar</button>
+                </p>
             </div>
         </div>
         <div class="panel span8">
@@ -563,28 +162,28 @@
                             <tr>
                                 <td colspan="2"> 
                                     <div class="input-control text">
-                                        <input type="text" name="precio" id="precio" readonly placeholder="Precio actual"/>
+                                        <input type="text" placeholder="Precio actual" readonly ng-model="vm.DatosActuales.precio"/>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2"> 
                                     <div class="input-control text">
-                                        <input type="text" name="catalogo" id="catalogo" placeholder="Catálogo actual" readonly/>
+                                        <input type="text" placeholder="Catálogo actual" readonly ng-model="vm.DatosActuales.catalogo"/>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2"> 
                                     <div class="input-control text">
-                                        <input type="text" name="pagina" id="pagina" placeholder="Página de catálogo" readonly/>
+                                        <input type="text" placeholder="Página de catálogo" readonly ng-model="vm.DatosActuales.n_pagina"/>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
                                     <div class="input-control select"> 
-                                        <select name="propiedad" id="propiedad" disabled="disabled">
+                                        <select disabled="disabled" ng-model="vm.DatosActuales.propiedad">
                                             <option value="1">Liquidacion</option>
                                             <option value="2">Comprado</option>
                                             <option value="3">Consignacion</option>
@@ -594,10 +193,7 @@
                             </tr>
                         </table>
                     </form>
-            
-            
-            
-                    <form style="float:left;" id="selecciones">
+                    <form style="float:left;">
                         <table style="width:350px;" class="table bordered">
                             <caption>
                                 <p>
@@ -607,44 +203,44 @@
                             <tr>
                                 <td> 
                                     <div class="input-control text">
-                                        <input type="text" name="nprecio" id="nprecio" placeholder="Nuevo precio"/>
+                                        <input type="text" placeholder="Nuevo precio" ng-model="vm.DatosNuevos.precio"/>
                                     </div>
                                 </td>
                                 <td>
                                     Modificar? 
-                                    <input type="checkbox" name="_precio" id="_precio" />
+                                    <input type="checkbox" ng-model="vm.Modificar.precio"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <div class="input-control select"> 
-                                        <select name="ncatalogo" id="ncatalogo" style="padding: 7.5px;" />
-                                        <!-- START l_catalogos -->
-                                        <option value="{id}">{nombre} (ID:{id})</option>
-                                        <!-- END l_catalogos -->
+                                        <select style="padding: 7.5px;" ng-model="vm.DatosNuevos.catalogo">
+                                            <option ng-repeat="catalogo in vm.ListaDeCatalogos" value="{{catalogo.id}}">
+                                                {{catalogo.nombre}} (ID:{{catalogo.id}})
+                                            </option>
                                         </select>
                                     </div>
                                 </td>
                                 <td>
                                     Modificar?
-                                    <input type="checkbox" name="_catalogo" id="_catalogo" />
+                                    <input type="checkbox" ng-model="vm.Modificar.catalogo"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <div class="input-control text"> 
-                                        <input type="text" name="npagina" id="npagina" placeholder="Nueva página de catálogo"/>
+                                        <input type="text" placeholder="Nueva página de catálogo" ng-model="vm.DatosNuevos.n_pagina"/>
                                     </div>
                                 </td>
                                 <td>
                                     Modificar?
-                                    <input type="checkbox" name="_pagina" id="_pagina" />
+                                    <input type="checkbox" ng-model="vm.Modificar.n_pagina"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <div class="input-control select"> 
-                                        <select name="npropiedad" id="npropiedad">
+                                        <select ng-model="vm.DatosNuevos.propiedad">
                                             <option value="1">Liquidacion</option>
                                             <option value="2">Comprado</option>
                                             <option value="3">Consignacion</option>
@@ -653,24 +249,34 @@
                                 </td>
                                 <td>
                                     Modificar?
-                                    <input type="checkbox" name="_propiedad" id="_propiedad" />
+                                    <input type="checkbox" ng-model="vm.Modificar.propiedad"/>
                                 </td>
                             </tr>
                         </table>
                     </form>
                     <p style="text-align:right;">
-                        <button class="primary" id="btnCambios">Guardar los cambios realizados</button>
+                        <button class="primary" ng-click="vm.AplicarCambios();">Guardar cambios</button>
                     </p>
-                    </form>
                 </div>
             </div>
         </div>   
-        
     </div>
     <div class="row">
         <div class="panel span8">
             <div class="panel-header">
                 <i class="icon-database"></i> Productos
+            </div>
+            <div class="panel-content">
+                <div id="bigbox2" style="margin:15px;display:!none;">
+                    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;">
+
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="panel span8">
+            <div class="panel-header">
+                <i class="icon-list"></i> Detalle
             </div>
             <div class="panel-content">
                 <div id="bigbox" style="margin:15px;display:!none;">
@@ -679,33 +285,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="panel span8">
-            <div class="panel-header">
-                <i class="icon-list"></i> Detalle
-            </div>
-            <div class="panel-content">
-                <div id="bigbox2" style="margin:15px;display:!none;">
-                    <div id="gridbox2" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-            
-                    </div>
-                </div>
-            </div>
-        </div> 
-    </div>
-</div>
-    
-
-
-<div>  
-    <div id="bigbox3" style="margin:15px;display:!none;">
-        <div id="gridbox3" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
-        </div>
-    </div>
-    <div id="bigbox4" style="margin:15px;display:!none;">
-        <div id="gridbox4" style="border:0px solid #cccccc;background-color:#f3f3f3;padding:5px;height:200px;width:700px;" >
-
         </div>
     </div>
 </div>

@@ -1,15 +1,12 @@
 <?php
 
-$config_file = $_SERVER['DOCUMENT_ROOT'] . "/BM_CONFIG/inventario/options.conf";
+$config_file = $_SERVER['DOCUMENT_ROOT'] . "/inventario/ModuloInventario.ini";
 
 define('CONFIG_FILE', $config_file);
 
 function init_set() {
     $archivo = file(CONFIG_FILE);
     foreach ($archivo as $linea):
-        if ($contenido = strpos($linea, ";") != False):
-            $line = substr($linea, 0, $contenido);
-        endif;
         if (strpos($linea, "=") != False):
             list($variable, $valor) = explode("=", $linea);
             define(trim($variable), trim($valor));
