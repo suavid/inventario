@@ -493,7 +493,7 @@ class inventarioController extends controller
         $this->ValidateSession();
         $_data = $_POST;
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->VerEstadoInventario(array("proveedor"=>$_data["proveedor"], "linea"=>$_data["linea"], "estilo"=>$_data["estilo"], "color"=>$_data["color"], "talla"=>null, "bodega"=>$_data["bodega"]));
+        $result = $client->VerEstadoInventario(array("proveedor"=>$_data["proveedor"], "linea"=>$_data["linea"], "estilo"=>$_data["estilo"], "color"=>$_data["color"], "talla"=>null, "bodega_origen"=>$_data["bodega_origen"], "bodega_destino"=>$_data["bodega_destino"], "cod"=>$_data["cod"]));
         $data = json_decode($result->{"VerEstadoInventarioResult"});
 
         $ret = "{data:" . $result->{"VerEstadoInventarioResult"} . ",\n";

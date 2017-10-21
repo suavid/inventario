@@ -692,7 +692,7 @@ function TrasladoController($http, $scope) {
 
     function AplicarFiltros() {
         var grid = Sigma.$grid("grid_inventario");
-        grid.loadURL = '/inventario/inventario/CargarEstadoInventario?linea=' + vm.DatosTraslado.linea + '&estilo=' + vm.DatosTraslado.estilo + '&color=' + vm.DatosTraslado.color + '&proveedor=' + vm.DatosTraslado.proveedor_nacional + '&bodega=' + vm.DatosTraslado.bodega_destino;
+        grid.loadURL = '/inventario/inventario/CargarEstadoInventario?linea=' + vm.DatosTraslado.linea + '&estilo=' + vm.DatosTraslado.estilo + '&color=' + vm.DatosTraslado.color + '&proveedor=' + vm.DatosTraslado.proveedor_nacional + '&bodega_origen=' + vm.DatosTraslado.bodega_origen + '&bodega_destino=' + vm.DatosTraslado.bodega_destino + '&cod=' + vm.DatosTraslado.transaccion;
         grid.reload();
     }
 }
