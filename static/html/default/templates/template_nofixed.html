@@ -6,7 +6,6 @@
     <title></title>
     <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico" />
 </head>
-
 <body class="metro" ng-app="Inventario">
     <noscript>
         Para que el sistema trabaje correctamente necesita tener activado Javascript,
@@ -14,32 +13,7 @@
         Active Javascript y recarge la p&aacute;gina; si no sabe como activarlo contacte
         con el administrador.
     </noscript>
-    <div id="blsBScreen"></div>
-    <div id="blsMScreen" class="bg-blue">
-        <div id="blsMessage" class="span5">
-            <p class="fg-white" style="font-size: 20px; text-align: center;">
-                Por favor, espere un momento
-                <br />
-                <br />
-            </p>
-        </div>
-    </div>
-
     <script>
-        function porfavor_espere() {
-            $('#blsBScreen').css('display', 'blocK');
-            $('#blsMScreen').css('display', 'blocK');
-        }
-
-        function gracias_por_esperar() {
-            $('#blsBScreen').css('display', 'none');
-            $('#blsMScreen').css('display', 'none');
-        }
-
-        function ver_detalle_producto() {
-            window.open('/inventario/inventario/detalle_de_producto?estilo=' + $('#navBusquedaProducto').val(), '_blank');
-        }
-
         function VerificarEntero(a) {
             if (isNaN($(a).val())) {
                 $(a).val("0");
@@ -82,26 +56,14 @@
                         <li>
                             <a href="#" class="dropdown-toggle"><i class="icon-printer"></i> Reportes</a>
                             <ul class="dropdown-menu" data-role="dropdown">
-                                <!--<li><a href="">Inventarios</a></li>
-                                <li><a href="">Entradas y salidas (mes)</a></li>-->
-                                <li><a href="{REPORT_URL}Kardex/Kardex - Informe" target="_blank"><i class="icon-clipboard"></i> Informe de Kardex</a></li>
+                                <li><a href="{REPORT_URL}Kardex/Kardex - Informe" target="_blank">Informe de Kardex</a></li>
                                 <li><a href="{REPORT_URL}Reportes administrativos/ReporteVentas_porfecha" target="_blank">Ventas por fecha</a></li>
                                 <li><a href="{REPORT_URL}Reportes administrativos/ReporteVentas_porcatalogo" target="_blank">Ventas por catálogo</a></li>
                                 <li><a href="{REPORT_URL}Reportes administrativos/ReporteVentas_comparativoda" target="_blank">Comparativo de venta</a></li>
-                                <!--<li><a href="/inventario/inventario/productoEntrante">En tránsito</a></li>-->
                             </ul>
                         </li>
                     </ul>
                 </div>
-                <!--<span class="element-divider"></span>-->
-                <!--<div class="element input-element">
-                    <form>
-                        <div class="input-control text">
-                            <input id="navBusquedaProducto" type="text" placeholder="Código de producto">
-                            <button class="btn-search" type="button" onclick="ver_detalle_producto();"></button>
-                        </div>
-                    </form>
-                </div>-->
                 <div class="element place-right">
                     <a class="dropdown-toggle" href="#">
                         <span class="icon-cog"></span> &nbsp;&nbsp;&nbsp;
@@ -120,11 +82,10 @@
                 </a>
             </nav>
         </nav>
-        <div class="page-region" style="padding-left:30px; padding-top: 10px;padding-right: 15px;">
+        <div class="page-region" style="padding-left:30px; padding-top: 70px;padding-right: 15px;">
             {content}
         </div>
         <div style="clear:both;"></div>
     </div>
 </body>
-
 </html>

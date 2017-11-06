@@ -1,12 +1,8 @@
 <?php
 
-class LogoutController {
-
-    public function user() {
-
-        Session::logOut();
-    }
-
+class LogoutController 
+{
+    public function user() { Session::logOut(); }
 }
 
 ?>

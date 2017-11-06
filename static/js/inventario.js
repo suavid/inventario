@@ -1,6 +1,5 @@
 var AplicacionDeInventario = angular.module('Inventario');
 
-// Asignacion de controladores
 AplicacionDeInventario.controller('SegmentacionController', SegmentacionController);
 AplicacionDeInventario.controller('PrincipalController', PrincipalController);
 AplicacionDeInventario.controller('BodegaController', BodegaController);
@@ -8,22 +7,21 @@ AplicacionDeInventario.controller('CatalogoController', CatalogoController);
 AplicacionDeInventario.controller('DocumentoController', DocumentoController);
 AplicacionDeInventario.controller('TrasladoController', TrasladoController);
 
-// Directivas
 AplicacionDeInventario.directive('multiSelectChecker', function ($compile) {
     return {
         restrict: 'A',
         replace: false,
-        terminal: true, //terminal means: compile this directive only
-        priority: 50000, //priority means: the higher the priority, the "firster" the directive will be compiled
+        terminal: true, 
+        priority: 50000, 
         compile: function compile(element, attrs) {
-            element.removeAttr("multi-select-checker"); //remove the attribute to avoid indefinite loop
-            element.removeAttr("data-multi-select-checker"); //also remove the same attribute with data- prefix in case users specify data-multi-select-checker in the html
+            element.removeAttr("multi-select-checker");
+            element.removeAttr("data-multi-select-checker");
 
             return {
                 pre: function preLink(scope, iElement, iAttrs, controller) { },
                 post: function postLink(scope, iElement, iAttrs, controller) {
-                    if (scope.categoria.multilinea == true) {
-                        iElement[0].setAttribute('multiple', ''); //set the multiple directive, doing it the JS way, not jqLite way.
+                    if (scope.categoria.multilinea) {
+                        iElement[0].setAttribute('multiple', '');
                     }
                     $compile(iElement)(scope);
                 }
@@ -31,11 +29,6 @@ AplicacionDeInventario.directive('multiSelectChecker', function ($compile) {
         }
     };
 });
-
-
-// ************************************************************************************
-// Definicion de controladores
-// ************************************************************************************
 
 function SegmentacionController($http) {
     var vm = this;
@@ -45,7 +38,7 @@ function SegmentacionController($http) {
 
     vm.NuevaCategoriaEspecifica = null;
 
-    var DefaultHtml = '<p class = "text-center" ><br/><br/><br/><br/><br/><br/> Seleccione una de las categorías listadas en el panel de la izquierda para agregar, modificar o eliminar elementos.'
+    var DefaultHtml = '<p class = "text-center" ><br/><br/><br/><br/><br/><br/> Seleccione una de las categorías listadas en el panel de la izquierda para agregar, modificar o eliminar elementos.';
 
     vm.SegmentacionHTML = DefaultHtml;
 
@@ -85,7 +78,7 @@ function SegmentacionController($http) {
     }
 
     function GuardarNuevaCategoriaEspecifica(categoria) {
-        if (vm.NuevaCategoriaEspecifica != null && vm.NuevaCategoriaEspecifica.trim() != "") {
+        if (vm.NuevaCategoriaEspecifica !== null && vm.NuevaCategoriaEspecifica.trim() !== "") {
             $http.post('/inventario/inventario/GuardarNuevaCategoriaEspecifica', { id_grupo: categoria, nombre: vm.NuevaCategoriaEspecifica }, {
                 headers: {
                     "Content-Type": 'application/x-www-form-urlencoded;charset=utf-8'
@@ -112,8 +105,6 @@ function SegmentacionController($http) {
     }
 }
 
-// *****************************************************************************************
-
 function PrincipalController($http, $sce) {
     var vm = this;
 
@@ -121,7 +112,7 @@ function PrincipalController($http, $sce) {
     vm.Banners = {
         "b1": {},
         "b2": {}
-    }
+    };
 
     // Obtener los banners para mostrar en la pantalla principal
     $http.post('/inventario/inventario/ObtenerBanner', { id: 1 }, {
@@ -153,8 +144,6 @@ function PrincipalController($http, $sce) {
         vm.Banners.b2.descripcion = $sce.trustAsHtml(vm.Banners.b2.descripcion);
     });
 }
-
-// *****************************************************************************************
 
 function BodegaController($http) {
     var vm = this;
@@ -192,7 +181,7 @@ function BodegaController($http) {
     function GuardarBodega() {
         if (confirm("Por favor verifique que todos los datos sean correctos antes de guardar la información\n\n\n Está seguro que desea proseguir?")) {
 
-            if (vm.bodega.encargado != 0 && vm.bodega.nombre.trim() != "" && vm.bodega.descripcion.trim() != "") {
+            if (vm.bodega.encargado !== 0 && vm.bodega.nombre.trim() !== "" && vm.bodega.descripcion.trim() !== "") {
                 $http.post('/inventario/inventario/GuardarBodega', vm.bodega, {
                     headers: {
                         "Content-Type": 'application/x-www-form-urlencoded;charset=utf-8'
@@ -214,13 +203,9 @@ function BodegaController($http) {
     }
 }
 
-// *****************************************************************************************
-
 function CatalogoController($http) {
     var vm = this;
 }
-
-// *****************************************************************************************
 
 function DocumentoController($http, $scope) {
     var vm = this;
@@ -238,7 +223,7 @@ function DocumentoController($http, $scope) {
     vm.ListaDeCategoriasEspecificas = [];
 
     vm.TarjetaCosto = {
-        documento:null,
+        documento: null,
         proveedor: null,
         estilo: null,
         codigo_origen: null,
@@ -250,11 +235,11 @@ function DocumentoController($http, $scope) {
         categorias: {},
         observaciones: null,
         notas: null,
-        corridaA: 0, 
+        corridaA: 0,
         corridaB: 0,
         fraccionCorrida: 0,
         categoriasArr: null
-    }
+    };
 
     vm.Producto = {
         linea: null,
@@ -298,15 +283,15 @@ function DocumentoController($http, $scope) {
             case 1:
                 var missingData = false;
 
-                missingData = (vm.TarjetaCosto.proveedor == null || String(vm.TarjetaCosto.proveedor).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.categorias[29] == null || String(vm.TarjetaCosto.categorias[29]).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.estilo == null || String(vm.TarjetaCosto.estilo).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.codigo_origen == null || String(vm.TarjetaCosto.codigo_origen).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.descripcion == null || String(vm.TarjetaCosto.descripcion).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.dias_garantia == null || String(vm.TarjetaCosto.dias_garantia).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.catalogo == null || String(vm.TarjetaCosto.catalogo).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.n_pagina == null || String(vm.TarjetaCosto.n_pagina).trim() == '') || missingData;
-                missingData = (vm.TarjetaCosto.propiedad == null || String(vm.TarjetaCosto.propiedad).trim() == '') || missingData;
+                missingData = vm.TarjetaCosto.proveedor === null || String(vm.TarjetaCosto.proveedor).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.categorias[29] === null || String(vm.TarjetaCosto.categorias[29]).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.estilo === null || String(vm.TarjetaCosto.estilo).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.codigo_origen === null || String(vm.TarjetaCosto.codigo_origen).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.descripcion === null || String(vm.TarjetaCosto.descripcion).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.dias_garantia === null || String(vm.TarjetaCosto.dias_garantia).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.catalogo === null || String(vm.TarjetaCosto.catalogo).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.n_pagina === null || String(vm.TarjetaCosto.n_pagina).trim() === '' || missingData;
+                missingData = vm.TarjetaCosto.propiedad === null || String(vm.TarjetaCosto.propiedad).trim() === '' || missingData;
 
                 if (missingData) {
                     alert("TODOS los datos son obligatorios");
@@ -411,7 +396,7 @@ function DocumentoController($http, $scope) {
 
     function IsMultiple(id) {
         for (var i = 0; i < vm.ListaDeCategorias.length; i++) {
-            if (vm.ListaDeCategorias[i].id_grupo == id) {
+            if (vm.ListaDeCategorias[i].id_grupo === id) {
                 return vm.ListaDeCategorias[i].multilinea;
             }
         }
@@ -516,8 +501,6 @@ function DocumentoController($http, $scope) {
 
     CargarDocumentos();
 }
-
-// *****************************************************************************************
 
 function TrasladoController($http, $scope) {
     var vm = this;

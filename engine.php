@@ -7,16 +7,16 @@ error_reporting(E_ALL);
 require_once('settings/settings.php');
 require_once('scripts/encryption.php');
 
-import('core.bm_engine');
+require_once('../SystemCore/bm_engine.php');
 
 date_default_timezone_set(TIMEZONE);
 
-import('core.engine.template');
-import('core.engine.page');
-import('core.engine.frontController');
-import('core.handler.http');
-import('core.handler.controller');
-import('core.handler.sessionHandler');
+require_once('../SystemCore/engine/template.php');
+require_once('../SystemCore/engine/page.php');
+require_once('../SystemCore/engine/frontController.php');
+require_once('../SystemCore/handler/http.php');
+require_once('../SystemCore/handler/controller.php');
+require_once('../SystemCore/handler/sessionHandler.php');
 
 import('scripts.alias');
 import('scripts.init_setup');
