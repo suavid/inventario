@@ -1,4 +1,4 @@
-var AplicacionDeInventario = angular.module('Inventario');
+var AplicacionDeInventario = angular.module('ERPapp');
 
 AplicacionDeInventario.controller('SegmentacionController', SegmentacionController);
 AplicacionDeInventario.controller('PrincipalController', PrincipalController);

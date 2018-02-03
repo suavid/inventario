@@ -87,7 +87,6 @@
     <Compile Include="static\img\productos\thumbnail_1_1004.jpg" />
     <Compile Include="static\img\banner.jpg" />
     <Compile Include="static\img\banner.png" />
-    <Compile Include="static\js\init.js" />
     <Compile Include="static\js\inventario.js" />
     <Compile Include=".htaccess" />
     <Compile Include="engine.php" />

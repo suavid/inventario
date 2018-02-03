@@ -83,7 +83,7 @@ BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/jquery.min.j
 BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/jquery-ui.min.js');
 BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/angular.min.js');
 
-BM::singleton()->getObject('temp')->getPage()->setJs('static/js/init.js');
+BM::singleton()->getObject('temp')->getPage()->setJs('../UI-Core/js/app.js');
 BM::singleton()->getObject('temp')->getPage()->setJs('static/js/inventario.js');
 
 BM::singleton()->getObject('temp')->getPage()->setCss('../UI-Core/plugins/sigma/grid/gt_grid.css');
