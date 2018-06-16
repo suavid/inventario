@@ -14,14 +14,13 @@
   
     var colsOption = [
         { id: 'estilo', header: "Estilo", width: 80 },
-        { id: 'codigo_origen', header: "Código de origen", width: 115 },
-        { id: 'catalogo', header: "Catálogo", width: 65 },
+        { id: 'codigo_origen', header: "Código de origen", width: 125 },
+        { id: 'nombre_catalogo', header: "Catálogo", width: 190 },
         { id: 'n_pagina', header: "N. Página", width: 70 },
-        { id: 'descripcion', header: "Descripción", width: 95 },
-        { id: 'corrida_a', header: "Corrida - desde", width: 95 },
-        { id: 'corrida_b', header: "Corrida - hasta", width: 95 },
-        { id: 'fraccion_corrida', header: "Facción corrida", width: 95 },
-        { id: 'observacion', header: "observación", width: 95 }
+        { id: 'descripcion', header: "Descripción", width: 150 },
+        { id: 'corrida_a', header: "C - desde", width: 65 },
+        { id: 'corrida_b', header: "C - hasta", width: 65 },
+        { id: 'fraccion_corrida', header: "Facción C", width: 65 }
     ];
 
 
@@ -61,7 +60,7 @@ Sigma.Util.onLoad(function(){
             <div class="panel span5" data-role="panel" ng-show="vm.ProductStep==1">
                 <div class="panel-header">Datos generales</div>
                 <div class="panel-content">
-                    <input type="hidden" ng-model="vm.TarjetaCosto.documento"  ng-init="vm.TarjetaCosto.documento={documento}"/>
+                    <input type="hidden" ng-model="vm.TarjetaCosto.documento"  ng-init="vm.TarjetaCosto.documento={documento};vm.TarjetaCosto.serialnumber='{serialnumber}'"/>
                     <div class="input-control select">
                         <label>Proveedor</label>
                         <select ng-model="vm.TarjetaCosto.proveedor">
@@ -175,7 +174,7 @@ Sigma.Util.onLoad(function(){
                 <div class="panel-content">
                     <div class="input-control text span2" style="margin-right:5px; margin-left: 15px;">
                         <label>Documento #</label>
-                        <input type="text" ng-model="vm.TarjetaCosto.documento" disabled />
+                        <input type="text" ng-model="vm.TarjetaCosto.serialnumber" disabled />
                     </div>
                     <div class="input-control text span2">
                         <label>Estilo</label>

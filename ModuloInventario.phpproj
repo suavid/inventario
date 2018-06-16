@@ -50,7 +50,6 @@
     <Compile Include="static\html\default\templates\inventario\detalle_producto.html" />
     <Compile Include="static\html\default\templates\inventario\documentoProducto.html" />
     <Compile Include="static\html\default\templates\inventario\documentoStock.html" />
-    <Compile Include="static\html\default\templates\inventario\doc_existentes.html" />
     <Compile Include="static\html\default\templates\inventario\doc_inventario.html" />
     <Compile Include="static\html\default\templates\inventario\doc_productos.html" />
     <Compile Include="static\html\default\templates\inventario\editar_hoja_retaceo.html" />

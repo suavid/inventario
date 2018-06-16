@@ -77,15 +77,15 @@
     }
 
     var colsOptionInventario = [
-        {id: 'id_linea', header: "Linea", width :40 },
+        {id: 'linea', header: "Linea", width :110 },
         {id: 'estilo', header: "Estilo", width :100},
-        {id: 'id_color', header: "Color", width :45},
+        {id: 'color', header: "Color", width :45},
         {id: 'talla', header: "Talla", width :50},
         {id: 'ingresan', header: "Ingresan", width :60, renderer:input_render},
         {id: 'stock', header: "Stock", width :50, renderer:stock_render},
-        {id: 'costo', header: "Costo", width :100, editor:"text"},
-        {id: 'precio', header: "Precio", width :100},
-        {id: 'bodega', header: "Bodega", width :100}
+        {id: 'costo', header: "Costo", width :55, editor:"text"},
+        {id: 'precio', header: "Precio", width :55},
+        {id: 'bodega', header: "Bodega", width :130}
     ];
             
     var gridOptionInventario = {
@@ -292,7 +292,7 @@
                                     <h4>Costo total:</h4> 
                                     <h4>{{vm.DatosTraslado.total_costo | currency}}</h4>
                                     <br/>
-                                    <h4># Pares: </h4>
+                                    <h4># Unidades/Pares: </h4>
                                     <h4>{{vm.DatosTraslado.total_pares}}</h4>
                                     <br/>
                                     <button class="success large" ng-click="vm.ProcesarTraslado();" id="btnGuardar">Confirmar transacción</button>

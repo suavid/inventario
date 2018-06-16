@@ -1,8 +1,12 @@
 <div ng-controller="SegmentacionController as vm">
-    <nav class="sidebar light span3" style="float:left;">
+    <nav class="sidebar light span5" style="float:left;">
         <ul>
             <li class="title">Categorías</li>
-            <li class="" ng-repeat="categoria in vm.Categorias"><a href="javascript: void(0);" ng-click="vm.CargarDetalleCategoria(categoria.id_grupo, categoria.grupo_producto);"><i class="{{categoria.icono}}"></i> {{categoria.grupo_producto}}</a></li>
+            <li class="" ng-repeat="categoria in vm.Categorias">
+                <a href="javascript: void(0);" ng-click="vm.CargarDetalleCategoria(categoria.id_grupo, categoria.grupo_producto);">
+                    <i class="{{categoria.icono}}"></i> {{categoria.grupo_producto}}
+                </a>
+            </li>
         </ul>
     </nav>
     <div compile="vm.SegmentacionHTML">

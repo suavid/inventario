@@ -30,6 +30,8 @@ AplicacionDeInventario.directive('multiSelectChecker', function ($compile) {
     };
 });
 
+notificationService.$inject = ['$http', '$sce', 'CONFIG'];
+
 function SegmentacionController($http) {
     var vm = this;
 
@@ -105,17 +107,12 @@ function SegmentacionController($http) {
     }
 }
 
-function PrincipalController($http, $sce) {
+function PrincipalController($http, $sce, CONFIG) {
     var vm = this;
+    vm.Banners = [];
+    vm.Organizacion = {};
 
-    // Informacion de banners de la pantalla principal
-    vm.Banners = {
-        "b1": {},
-        "b2": {}
-    };
-
-    // Obtener los banners para mostrar en la pantalla principal
-    $http.post('/inventario/inventario/ObtenerBanner', { id: 1 }, {
+    $http.post('/inventario/inventario/ObtenerBanner', { modulo: "INVENTARIO" }, {
         headers: {
             "Content-Type": 'application/x-www-form-urlencoded;charset=utf-8'
         },
@@ -125,24 +122,27 @@ function PrincipalController($http, $sce) {
                 data;
         }]
     }).then(function(response) {
-        vm.Banners.b1 = response.data[0];
-        vm.Banners.b1.descripcion = $sce.trustAsHtml(vm.Banners.b1.descripcion);
+        vm.Banners = response.data;
+
+        for (var i = 0; i < vm.Banners.length; i++) {
+            vm.Banners[i].descripcion = $sce.trustAsHtml(vm.Banners[i].descripcion);
+        }
     });
 
-    // Obtener los banners para mostrar en la pantalla principal
-    $http.post('/inventario/inventario/ObtenerBanner', { id: 2 }, {
+    $http.post('/inventario/inventario/ObtenerInformacionDelSistema', { }, {
         headers: {
             "Content-Type": 'application/x-www-form-urlencoded;charset=utf-8'
         },
-        transformRequest: [function(data) {
+        transformRequest: [function (data) {
             return angular.isObject(data) ?
                 jQuery.param(data) :
                 data;
         }]
-    }).then(function(response) {
-        vm.Banners.b2 = response.data[0];
-        vm.Banners.b2.descripcion = $sce.trustAsHtml(vm.Banners.b2.descripcion);
+    }).then(function (response) {
+        vm.Organizacion = response.data[0];
     });
+
+
 }
 
 function BodegaController($http) {
@@ -238,7 +238,8 @@ function DocumentoController($http, $scope) {
         corridaA: 0,
         corridaB: 0,
         fraccionCorrida: 0,
-        categoriasArr: null
+        categoriasArr: null,
+        serialnumber: null
     };
 
     vm.Producto = {

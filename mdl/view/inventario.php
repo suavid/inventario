@@ -148,7 +148,7 @@ class inventarioView {
         } else { HttpHandler::redirect('/inventario/error/e403'); }
     }
 
-    public function doc_mantenimiento_de_productos($doc, $user)
+    public function doc_mantenimiento_de_productos($doc, $user, $sn)
     {
         import('scripts.secure');
         if(verifyAccess("inventario", "inventario", "doc_productos", $user))
@@ -160,6 +160,7 @@ class inventarioView {
             page()->addEstigma("TITULO", 'Registrar producto');
             page()->addEstigma("username", $user);
             page()->addEstigma("documento", $doc);
+            page()->addEstigma("serialnumber", $sn);
             template()->parseOutput();
             template()->parseExtras();
             print page()->getContent();

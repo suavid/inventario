@@ -14,7 +14,7 @@
     }
 
     var colsOption = [
-        {id: 'id', header: "Código", width: 50},
+        {id: 'serialnumber', header: "Código", width: 60},
         {id: 'nombre', header: "Nombre", width: 250},
         {id: 'encargado', header: "Encargado", width: 80},
         {id: 'descripcion', header: "Descripcion", width: 180},
@@ -64,25 +64,20 @@
                     <div class="panel-content">
                         <form action="" method="post" style="float: left;">
                             <div>
-                                <input type="checkbox" ng-model="vm.bodega.reutilizarCorrelativos"/>
-                                Rellenar correlativos vacíos  
+                                <p>
+                                    <input type="checkbox" ng-model="vm.bodega.manejaStock" />
+                                    Maneja stock
+                                </p>
                             </div>
-                            <div>
-                                <input type="checkbox"  ng-model="vm.bodega.manejaStock"/>
-                                Maneja stock  
-                            </div>
-                            <br/>
                             <br/>
                             <div class="input-control text"> 
-                                <span class="fg-red">*</span> Nombre
-                                <br/>
+                                <p><span class="fg-red">*</span> Nombre</p>
                                 <input type="text" style="width:300px;" ng-model="vm.bodega.nombre"/>
                             </div> 
                             <br/>
                             <br/> 
                             <div class="input-control select">
-                                Encargado
-                                <br/>
+                                <p>Encargado</p>
                                 <select style="width:300px;" ng-model="vm.bodega.encargado">
                                     <option ng-repeat="empleado in vm.listaDeEmpleados" value="{{empleado.id}}">
                                         {{empleado.usuario}}
@@ -92,8 +87,7 @@
                             <br/>
                             <br/>
                             <div class="input-control textarea">
-                                <span class="fg-red">*</span> Descripción
-                                <br/>
+                                <p><span class="fg-red">*</span> Descripción</p>
                                 <textarea style="width:300px;" ng-model="vm.bodega.descripcion"></textarea>
                             </div>
                             <br/>

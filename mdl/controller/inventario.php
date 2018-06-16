@@ -35,7 +35,8 @@ class inventarioController extends controller
     {
         $this->ValidateSession();
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->VerCategorias(array());
+        $params = array('username'=>Session::singleton()->getUser());
+        $result = $client->VerCategorias($params);
 
         echo  $result->{"VerCategoriasResult"};
     }
@@ -45,12 +46,24 @@ class inventarioController extends controller
         $this->ValidateSession();
         if(isset($_POST) && !empty($_POST))
         {
-            $id = $_POST['id'];
+            $modulo = $_POST['modulo'];
             $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-            $result = $client->VerMensajesBienvenida(array("id"=>$id));
+            $params = array('modulo'=>$modulo, 'username'=>Session::singleton()->getUser());
+            $result = $client->VerMensajesBienvenida($params);
 
             echo  $result->{"VerMensajesBienvenidaResult"};
         }
+    }
+
+    public function ObtenerInformacionDelSistema()
+    {
+        $this->ValidateSession();
+
+        $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
+        $params = array('username'=>Session::singleton()->getUser());
+        $result = $client->GetOrganizationInformation($params);
+
+        echo  $result->{"GetOrganizationInformationResult"};
     }
 
     public function ObtenerFormularioCategoria()
@@ -99,7 +112,8 @@ class inventarioController extends controller
         $this->ValidateSession();
 
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ObtenerBodegas(array("tipo_vista"=>0));
+        $params = array("tipo_vista"=>0, "username"=>Session::singleton()->getUser());
+        $result = $client->ObtenerBodegas($params);
         $data = json_decode($result->{"ObtenerBodegasResult"});
 
         $ret = "{data:" . $result->{"ObtenerBodegasResult"} . ",\n";
@@ -114,7 +128,8 @@ class inventarioController extends controller
         $this->ValidateSession();
 
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ObtenerBodegas(array("tipo_vista"=>0));
+        $params = array("tipo_vista"=>0, "username"=>Session::singleton()->getUser());
+        $result = $client->ObtenerBodegas($params);
         echo $result->{"ObtenerBodegasResult"};
     }
 
@@ -123,7 +138,8 @@ class inventarioController extends controller
         $this->ValidateSession();
 
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ListadoCatalogos();
+        $params = array('username'=>Session::singleton()->getUser());
+        $result = $client->ListadoCatalogos($params);
         $data = json_decode($result->{"ListadoCatalogosResult"});
 
         $ret = "{data:" . $result->{"ListadoCatalogosResult"} . ",\n";
@@ -138,7 +154,8 @@ class inventarioController extends controller
         $this->ValidateSession();
 
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ObtenerHistorialTransacciones();
+        $params = array("username"=>Session::singleton()->getUser());
+        $result = $client->ObtenerHistorialTransacciones($params);
         $data = json_decode($result->{"ObtenerHistorialTransaccionesResult"});
 
         $ret = "{data:" . $result->{"ObtenerHistorialTransaccionesResult"} . ",\n";
@@ -168,7 +185,8 @@ class inventarioController extends controller
         $this->ValidateSession();
 
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ListadoCatalogos();
+        $params = array("username"=>Session::singleton()->getUser());
+        $result = $client->ListadoCatalogos($params);
 
         echo $result->{"ListadoCatalogosResult"};
     }
@@ -178,7 +196,8 @@ class inventarioController extends controller
         $this->ValidateSession();
 
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ObtenerTipoTransacciones();
+        $params = array("username"=>Session::singleton()->getUser());
+        $result = $client->ObtenerTipoTransacciones($params);
 
         echo $result->{"ObtenerTipoTransaccionesResult"};
     }
@@ -217,7 +236,8 @@ class inventarioController extends controller
     {
         $this->ValidateSession();
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ObtenerEmpleados(array());
+        $params = array("username"=>Session::singleton()->getUser());
+        $result = $client->ObtenerEmpleados($params);
 
         echo  $result->{"ObtenerEmpleadosResult"};
     }
@@ -226,8 +246,8 @@ class inventarioController extends controller
     {
         $this->ValidateSession();
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->ObtenerListadoProveedores(array());
-
+        $params = array("username"=>Session::singleton()->getUser());
+        $result = $client->ObtenerListadoProveedores($params);
         echo  $result->{"ObtenerListadoProveedoresResult"};
     }
 
@@ -254,6 +274,7 @@ class inventarioController extends controller
                     ,   "descripcion"=>$descripcion
                     ,   "tiene_stock"=>$tiene_stock
                     ,   "reutilizar_id"=>$reutilizar_id
+                    ,   "username" => Session::singleton()->getUser()
                 ));
 
                 $result["success"] = true;
@@ -338,6 +359,7 @@ class inventarioController extends controller
                 ,   "descripcion"=>$data["descripcion"]
                 ,   "inicio"=>$data["inicio"]
                 ,   "final"=>$data["final"]
+                ,   "username"=>Session::singleton()->getUser()
             ));
 
             $data = json_decode($result->{"InsertarCatalogoResult"});
@@ -352,7 +374,7 @@ class inventarioController extends controller
             HttpHandler::redirect('/inventario/inventario/catalogos?result=500');
         }
     }
-
+    
     public function ObtenerDocumentosSinAplicar()
     {
         $this->ValidateSession();
@@ -374,9 +396,10 @@ class inventarioController extends controller
     public function doc_productos()
     {
         $this->ValidateSession();
-        $usuario = Session::getUser();
+        $usuario = Session::singleton()->getUser();
         $doc = (isset($_GET) && !empty($_GET)) ? $_GET['documento'] : 0;
-        $this->view->doc_mantenimiento_de_productos($doc, $usuario);
+        $sn = (isset($_GET) && !empty($_GET)) ? $_GET['serialnumber'] : 0;
+        $this->view->doc_mantenimiento_de_productos($doc, $usuario, $sn);
     }
 
     public function InsertarProducto()
@@ -450,15 +473,15 @@ class inventarioController extends controller
         try
         {
             $result = $client->InsertarTraslado(array(
-                    "proveedor_origen" =>$data["proveedorOrigen"]
-                    , "proveedor_nacional" =>$data["proveedorNacional"]
-                    , "bodega_origen" =>$data["bodegaOrigen"]
-                    , "bodega_destino" =>$data["bodegaDestino"]
-                    , "concepto" =>$data["conceptoTransaccion"]
-                    , "transaccion" =>$data["tipoTransaccion"]
-                    , "usuario" =>Session::getUser()
-                    , "cliente" =>$data["cliente"]
-                    , "referencia_retaceo" =>$data["hojaRetaceo"]
+                    "proveedor_origen" => $data["proveedorOrigen"]
+                    , "proveedor_nacional" => $data["proveedorNacional"]
+                    , "bodega_origen" => $data["bodegaOrigen"]
+                    , "bodega_destino" => $data["bodegaDestino"]
+                    , "concepto" => $data["conceptoTransaccion"]
+                    , "transaccion" => $data["tipoTransaccion"]
+                    , "usuario" => Session::singleton()->getUser()
+                    , "cliente" => $data["cliente"]
+                    , "referencia_retaceo" => $data["hojaRetaceo"]
             ));
 
             $data = json_decode($result->{"InsertarTrasladoResult"});
@@ -493,7 +516,7 @@ class inventarioController extends controller
         $this->ValidateSession();
         $_data = $_POST;
         $client  = new SoapClient(SERVICE_URL, self::$SOAP_OPTIONS);
-        $result = $client->VerEstadoInventario(array("proveedor"=>$_data["proveedor"], "linea"=>$_data["linea"], "estilo"=>$_data["estilo"], "color"=>$_data["color"], "talla"=>null, "bodega_origen"=>$_data["bodega_origen"], "bodega_destino"=>$_data["bodega_destino"], "cod"=>$_data["cod"]));
+        $result = $client->VerEstadoInventario(array("proveedor"=>$_data["proveedor"], "linea"=>$_data["linea"], "estilo"=>$_data["estilo"], "color"=>$_data["color"], "talla"=>null, "bodega_origen"=>$_data["bodega_origen"], "bodega_destino"=>$_data["bodega_destino"], "cod"=>$_data["cod"], "username"=>Session::singleton()->getUser()));
         $data = json_decode($result->{"VerEstadoInventarioResult"});
         $ret = "{data:" . $result->{"VerEstadoInventarioResult"} . ",\n";
         $ret .= "pageInfo:{totalRowNum:" . count($data) . "},\n";

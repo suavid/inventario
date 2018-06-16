@@ -61,11 +61,11 @@
                     </tr>
                 </thead>
                 <tr ng-repeat="documento in vm.ListaDeDocumentos">
-                    <td>{{documento.id_documento}}</td>
+                    <td>{{documento.serialnumber}}</td>
                     <td>{{documento.fecha_creacion}}</td>
                     <td>{{documento.propietario}}</td>
                     <td>
-                        <a class="button link" href="/inventario/inventario/doc_productos?documento={{documento.id_documento}}">
+                        <a class="button link" href="/inventario/inventario/doc_productos?documento={{documento.id_documento}}&serialnumber={{documento.serialnumber}}">
                            Agregar producto
                         </a>  
                     
